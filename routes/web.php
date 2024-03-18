@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Monday\RequestOnboardingController;
 use App\Http\Controllers\Monday\TrackOnboardingController;
 use App\Http\Controllers\Monday\StatusOnboardingController;
+use App\Http\Controllers\Monday\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +43,11 @@ Route::group(['prefix' => "monday"], function() {
     // Route::middleware('monday.auth')->group(function () {
     // Route::group(['middleware' => 'monday.auth'], function(){
         // Track Onboarding
-        Route::get('/track-onboarding/{cursor}', [TrackOnboardingController::class  , 'trackOnboarding'])->name('monday.trackOnboarding');      
+        Route::get('/dashboard', [DashboardController::class  , 'dashboard'])->name('monday.dashboard');
+        Route::post('/track-onboarding', [TrackOnboardingController::class  , 'trackOnboarding'])->name('monday.trackOnboarding');
+        Route::post('/track-onboarding-byid', [TrackOnboardingController::class  , 'trackOnboardingById'])->name('monday.trackOnboardingById');
+
+        Route::post('/status-onboarding-hiring-type', [StatusOnboardingController::class  , 'statusOnboardingHiringType'])->name('monday.statusOnboardingHiringType');
     // });
 });  
 
