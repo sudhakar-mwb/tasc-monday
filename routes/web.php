@@ -43,8 +43,12 @@ Route::group(['prefix' => "monday"], function() {
     // Route::middleware('monday.auth')->group(function () {
     // Route::group(['middleware' => 'monday.auth'], function(){
         // Track Onboarding
-        Route::get('/dashboard', [DashboardController::class  , 'dashboard'])->name('monday.dashboard');
-        Route::post('/track-onboarding', [TrackOnboardingController::class  , 'trackOnboarding'])->name('monday.trackOnboarding');
+        Route::group(['prefix' => "form"], function() {
+            Route::get('/', [DashboardController::class  , 'dashboard'])->name('monday.dashboard');
+            Route::get('/track-request', [DashboardController::class  , 'trackRequest'])->name('monday.track_request');
+            });
+    Route::post('/track-onboarding', [TrackOnboardingController::class  , 'trackOnboarding'])->name('monday.trackOnboarding');
+        
         Route::post('/track-onboarding-byid', [TrackOnboardingController::class  , 'trackOnboardingById'])->name('monday.trackOnboardingById');
 
         Route::post('/status-onboarding-hiring-type', [StatusOnboardingController::class  , 'statusOnboardingHiringType'])->name('monday.statusOnboardingHiringType');

@@ -22,7 +22,8 @@ trait MondayApis
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>json_encode($post_params),
+        // CURLOPT_POSTFIELDS =>json_encode($post_params),
+        CURLOPT_POSTFIELDS =>'{"query":'.json_encode($post_params).'}',
         CURLOPT_HTTPHEADER => array(
             'Authorization: Bearer '. env('MONDAY_API_KEY'),
             'Content-Type: application/json',
