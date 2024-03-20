@@ -16,7 +16,8 @@
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
         <header class="mb-auto pb-3 pt-3">
             <div>
-                <span class="header-logo float-md-start">
+                <a href="/monday/form" class="text-decoration-none">
+                    <span class="header-logo float-md-start">
                     <img width="140" height="auto" alt="logo" class="logo-image_HXE image-logo_cI-"
                         loading="lazy"
                         data-src="//res2.weblium.site/res/65d24af7b936dd000f78229f/65d250a047a0c800108806d0"
@@ -24,6 +25,7 @@
                         src="//res2.weblium.site/res/65d24af7b936dd000f78229f/65d250a047a0c800108806d0?nowebp"
                         data-was-processed="true">
                 </span>
+            </a>
                 <nav class="nav nav-masthead justify-content-center align-items-center float-md-end">
                     <span class="text-secondary
 
@@ -37,7 +39,8 @@
                 @endphp
                 
                 @if (in_array('form', $segments) && count($segments) > array_search('form', $segments) + 1)
-                <button class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center"
+                <a href="/monday/form" class="text-decoration-none">
+                    <button class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center"
                             type="button">
                             <span>
                                 Command Center
@@ -62,6 +65,7 @@
                                     </g>
                                 </svg></span>
                         </button>
+                </a>
                     @endif
 
                     <button class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center">

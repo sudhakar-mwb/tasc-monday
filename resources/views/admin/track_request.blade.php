@@ -139,23 +139,33 @@
                                         class="text-secondary fs-s text-decoration-none" href="#">@php echo findElementByTitle('Hiring Type',$columns,$trackdata[$x],'label');@endphp</a>
                                 </li>
                                 <li class="breadcrumb-item  text-secondary" aria-current="page"><span class="fs-s"> Created at
-                                    @php echo findElementByTitle('Joining Date',$columns,$trackdata[$x],'value');@endphp</span></li>
+                                    @php
+                                    $date=findElementByTitle('Joining Date',$columns,$trackdata[$x],'value');
+
+                                    $extract=json_decode($date, true);
+                                    if($extract['date']!==null)
+                                    echo dateFormater($extract['date']);
+                                    @endphp
+                                    
+                                </span></li>
                             </ol>
                         </nav>
-                        <h3 class="text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h3>
+                        <h4 class="text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h4>
                         <h5 class="text-start mt-4">@php echo findElementByTitle('Profession',$columns,$trackdata[$x],'value');@endphp</h5>
                         <h6 class="text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'label')); @endphp</h6>
+                      <a class="text-decoration-none" href="/monday/form/track-request/{{$trackdata[$x]['id']}}">
                         <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
-                            type="button">
-                            <span>
-                                Track Request
-                            </span>
+                        type="button">
+                        <span>
+                            Track Request
+                        </span>
 
-                            <span class="icon-btn_track"><img
-                                    src="//res2.weblium.site/res/5efdf94ff3bc420021179c9f/5f1aa6a7f642dd002299dea7"
-                                    class="button__icon-image_1Ob" alt="icon"></span>
-                        </button>
+                        <span class="icon-btn_track"><img
+                                src="//res2.weblium.site/res/5efdf94ff3bc420021179c9f/5f1aa6a7f642dd002299dea7"
+                                class="button__icon-image_1Ob" alt="icon"></span>
+                    </button>
 
+                      </a>
                     </div>
                 </div>
             </div>
