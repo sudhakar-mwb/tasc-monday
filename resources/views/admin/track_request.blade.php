@@ -14,24 +14,11 @@
     <div class="w-100 mt-3">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <?php $link = ''; ?>
-                @for ($i = 1; $i <= count(Request::segments()); $i++)
-                    @if (($i < count(Request::segments())) & ($i > 0))
-                        <?php $link .= '/' . Request::segment($i); ?>
-                        @if ($i == 1)
-                            <li class="breadcrumb-item "> <a href="<?= $link ?>"
-                                    class="inactive link-secondary text-decoration-none">
-                                    {{ ucwords(str_replace('-', ' ', Request::segment($i))) }}</a></li>
-                        @else
-                            <li class="breadcrumb-item"> <a href="<?= $link ?>"
-                                    class="inactive link-secondary text-decoration-none">{{ ucwords(str_replace('-', ' ', Request::segment($i))) }}</a>
-                            </li>
-                        @endif
-                    @else
-                        <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
-                                href=""> {{ ucwords(str_replace('-', ' ', Request::segment($i))) }}</a></li>
-                    @endif
-                @endfor
+                <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
+                    href="/monday"><u> {{ ucwords('Command Center') }}</u></a></li>
+                    <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
+                        href=""> {{ ucwords('Request Tracking') }}</a></li>
+                  
             </ol>
         </nav>
 
