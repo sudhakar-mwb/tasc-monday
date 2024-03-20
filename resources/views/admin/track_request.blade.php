@@ -11,14 +11,14 @@
         </div>
     </div>
 
-    <div class="w-100 mt-3">
+    <div class="w-100 mt-3" >
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
-                    href="/monday"><u> {{ ucwords('Command Center') }}</u></a></li>
-                    <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
+                        href="/monday"><u> {{ ucwords('Command Center') }}</u></a></li>
+                <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
                         href=""> {{ ucwords('Request Tracking') }}</a></li>
-                  
+
             </ol>
         </nav>
 
@@ -70,7 +70,8 @@
 
         <?php
         $trackdata = $response['data']['boards'][0]['items_page']['items'];
-        $columns = $response['data']['boards'][0]['columns'];
+        $cs = $response['data']['boards'][0]['items_page']['cursor'];
+        $columns = $response['data']['boards'][0]['columns']; 
         
         function getValueById($columnValues, $id, $key = 'value')
         {
@@ -117,49 +118,56 @@
         ?>
         @for ($x = 0; $x < count($trackdata); $x++)
             <div class="track-card-container animation-container mb-3" style="min-height:280px">
-                <div class="animation-content">
+                <div class="animation-content" style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
                     <div
                         class="track-card h-100 p-4  @php echo getClass(strtoupper(getValueById($trackdata[$x]['column_values'],'status8','label'))) @endphp rounded-3">
                         <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item text-secondary"><a
-                                        class="text-secondary fs-s text-decoration-none" href="#">@php echo findElementByTitle('Hiring Type',$columns,$trackdata[$x],'label');@endphp</a>
+                                        class="text-secondary fs-s text-decoration-none"
+                                        href="#">@php echo findElementByTitle('Hiring Type',$columns,$trackdata[$x],'label');@endphp</a>
                                 </li>
-                                <li class="breadcrumb-item  text-secondary" aria-current="page"><span class="fs-s"> Created at
-                                    @php
-                                    $date=findElementByTitle('Joining Date',$columns,$trackdata[$x],'value');
+                                <li class="breadcrumb-item  text-secondary" aria-current="page"><span class="fs-s">
+                                        Created at {{dateFormater($trackdata[$x]['created_at'])}}
 
-                                    $extract=json_decode($date, true);
-                                    if($extract['date']!==null)
-                                    echo dateFormater($extract['date']);
-                                    @endphp
-                                    
-                                </span></li>
+                                    </span></li>
                             </ol>
                         </nav>
                         <h4 class="text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h4>
                         <h5 class="text-start mt-4">@php echo findElementByTitle('Profession',$columns,$trackdata[$x],'value');@endphp</h5>
                         <h6 class="text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'label')); @endphp</h6>
-                      <a class="text-decoration-none" href="/monday/form/track-request/{{$trackdata[$x]['id']}}">
-                        <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
-                        type="button">
-                        <span>
-                            Track Request
-                        </span>
+                        <a class="text-decoration-none" href="/monday/form/track-request/{{ $trackdata[$x]['id'] }}/{{ str_replace(' ', '_', $trackdata[$x]['name']) }}">
+                            <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
+                                type="button">
+                                <span>
+                                    Track Request
+                                </span>
 
-                        <span class="icon-btn_track"><img
-                                src="//res2.weblium.site/res/5efdf94ff3bc420021179c9f/5f1aa6a7f642dd002299dea7"
-                                class="button__icon-image_1Ob" alt="icon"></span>
-                    </button>
+                                <span class="icon-btn_track"><img
+                                        src="//res2.weblium.site/res/5efdf94ff3bc420021179c9f/5f1aa6a7f642dd002299dea7"
+                                        class="button__icon-image_1Ob" alt="icon"></span>
+                            </button>
 
-                      </a>
+                        </a>
                     </div>
                 </div>
             </div>
         @endfor
 
     </div>
-    
+
+    @if($cs !== null)
+    <form action="" method="POST">
+        @csrf
+        <input type="hidden" name="cursor" value="{{ $cs }}">
+        <button class="btn btn-link mt-3" type="submit">
+            View More...
+        </button>
+    </form>
+@else
+    <small class="mt-3 text-secondary">No More Data Available.</small>
+@endif
+
     <div class="w-100 mt-5 mb-5 align-center text-secondary fs-6">
         <small>Powered by TASC Outsourcing®</small>
     </div>

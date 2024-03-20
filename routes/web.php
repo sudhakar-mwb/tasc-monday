@@ -47,7 +47,13 @@ Route::group(['prefix' => "monday"], function() {
         Route::group(['prefix' => "form"], function() {
             Route::get('/', [DashboardController::class  , 'dashboard'])->name('monday.dashboard');
             Route::get('/track-request', [DashboardController::class  , 'trackRequest'])->name('monday.track_request');
-            });
+            Route::post('/track-request', [DashboardController::class  , 'trackRequest'])->name('monday.track_request');
+           Route::get('/candidate-form', [DashboardController::class  , 'mobilityform'])->name('monday.mobilityform');
+            Route::get('/track-request/{id}/{userName}', [DashboardController::class  , 'manageById'])->name('user.show');
+      
+        });
+ 
+
     Route::post('/track-onboarding', [TrackOnboardingController::class  , 'trackOnboarding'])->name('monday.trackOnboarding');
         
         Route::post('/track-onboarding-byid', [TrackOnboardingController::class  , 'trackOnboardingById'])->name('monday.trackOnboardingById');

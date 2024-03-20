@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Traits\MondayApis;
-
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -23,6 +23,7 @@ class DashboardController extends Controller
                 'description' =>
                     'Streamline your employee onboarding with TASC Outsourcing. Request here for a hassle-free experience, letting us handle the rest with care and efficiency.',
            'link'=> URL::to('/').'/monday/form/track-request'
+        //    'link'=> URL::to('/').'/monday/form/candidate-form'
                 ],
             [
                 'title' => 'Track Onboarding',
@@ -47,18 +48,24 @@ class DashboardController extends Controller
         return view('admin.dashboard',compact('heading','cards'));
     }
     public function trackRequest (Request $request){
+        $cs = 'null';
+       if($request->isMethod('post')&&request()->has('cursor')) {
+       $cs= "\"".$request->input('cursor')."\"";
+    
+    };
         $query = "query {
             boards(ids: 1352607400) {
                columns {
                   title
                   id
                }
-               items_page (limit: 10, cursor:null) {
+               items_page (limit: 3, cursor:".$cs.") {
                   cursor
                   items {
                       id
                       name
                       email
+                      created_at
                       column_values {
                          id
                          value
@@ -73,9 +80,54 @@ class DashboardController extends Controller
             }
          }";
         $response = $this->_get($query)['response'];
+        // if($request->isMethod('post'))
+        // dd($response);
         $heading = 'Request Tracking'; 
         $subheading= 'Track your onboarding progress effortlessly by using our request-tracking center';
         
         return view('admin.track_request',compact('heading','subheading','response'));
+    }
+    public function manageById(Request $request){
+        $id = $request->query('id');
+        $userName = $request->query('userName');
+        $query = '{
+            boards(ids: 1390329031) {
+            columns {
+               title
+               id
+            }activity_logs (from: "'.Carbon::now()->subWeek()->startOfDay()->toIso8601String().'", to: "'.Carbon::now()->toIso8601String().'", column_ids:["status4","status7","status54","status6","status1"]) {
+              id
+              user_id
+              account_id
+              data
+              entity
+              event
+              created_at
+          }}
+         items (ids: ['.$id.']) {
+           id
+           name
+           email
+           column_values {
+                   id
+                      value
+                      type
+                      ... on StatusValue  {
+                         label
+                         update_id
+                         index
+                         value
+                      }
+               }
+           }
+       }';
+        $response = $this->_get($query)['response'];
+        $heading = 'Request Tracking'; 
+        $subheading= 'Track your onboarding progress effortlessly by using our request-tracking center';
+        
+        return view('admin.user_details',compact('response'));
+    }
+    public function mobilityform(){
+        return view('admin.mobilityform');
     }
 }
