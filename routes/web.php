@@ -51,6 +51,7 @@ Route::group(['prefix' => "monday"], function() {
     Route::post('/track-onboarding', [TrackOnboardingController::class  , 'trackOnboarding'])->name('monday.trackOnboarding');
         
         Route::post('/track-onboarding-byid', [TrackOnboardingController::class  , 'trackOnboardingById'])->name('monday.trackOnboardingById');
+        Route::get('/track-onboarding-export', [TrackOnboardingController::class  , 'trackOnboardingExport'])->name('monday.trackOnboardingExport');
 
         Route::post('/status-onboarding-hiring-type', [StatusOnboardingController::class  , 'statusOnboardingHiringType'])->name('monday.statusOnboardingHiringType');
     // });
