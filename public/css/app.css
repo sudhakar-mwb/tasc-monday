@@ -98,3 +98,9 @@
 .head-color{
   color:rgb(3,96,132);
 }
+.bg-warning{
+  background:rgb(244, 152, 31) !important;
+}
+.text-warning{
+  color:rgb(244, 152, 31) !important;
+}
