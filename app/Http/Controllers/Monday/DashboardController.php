@@ -41,7 +41,7 @@ class DashboardController extends Controller
                     '<span class="iconElement__inner_2iN"><svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" style="max-width:100%" height="100%"><g transform="translate(0,-952.36218)" style="" fill="currentColor"><path style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;opacity:1;color:#000000;fill-opacity:1;stroke:none;stroke-width:4;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans" d="M 40.8125 13 A 2.0002 2.0002 0 0 0 39 15 L 39 78 A 2.0002 2.0002 0 0 0 41 80 L 59 80 A 2.0002 2.0002 0 0 0 61 78 L 61 15 A 2.0002 2.0002 0 0 0 59 13 L 41 13 A 2.0002 2.0002 0 0 0 40.8125 13 z M 43 17 L 57 17 L 57 76 L 43 76 L 43 17 z M 67.8125 36 A 2.0002 2.0002 0 0 0 66 38 L 66 78 A 2.0002 2.0002 0 0 0 68 80 L 86 80 A 2.0002 2.0002 0 0 0 88 78 L 88 38 A 2.0002 2.0002 0 0 0 86 36 L 68 36 A 2.0002 2.0002 0 0 0 67.8125 36 z M 70 40 L 84 40 L 84 76 L 70 76 L 70 40 z M 13.8125 50 A 2.0002 2.0002 0 0 0 12 52 L 12 78 A 2.0002 2.0002 0 0 0 14 80 L 32 80 A 2.0002 2.0002 0 0 0 34 78 L 34 52 A 2.0002 2.0002 0 0 0 32 50 L 14 50 A 2.0002 2.0002 0 0 0 13.8125 50 z M 16 54 L 30 54 L 30 76 L 16 76 L 16 54 z M 7.8125 83 A 2.0021961 2.0021961 0 1 0 8 87 L 92 87 A 2.0002 2.0002 0 1 0 92 83 L 8 83 A 2.0002 2.0002 0 0 0 7.8125 83 z " transform="translate(0,952.36218)" fill="currentColor"></path></g></svg></span>',
                 'description' =>
                     'Stay in the loop with ease! Check the overall status of your onboarding requests and keep tabs on your employee onboarding progress for a comprehensive overview of the entire process.',
-                'link' => URL::to('/') . '/monday/form/track-request'
+                'link' => URL::to('/') . '/monday/form/candidate-stats'
             ],
             // Add more card data as needed
         ];
@@ -175,6 +175,22 @@ class DashboardController extends Controller
     }
     public function mobilityform()
     {
-        return view('admin.mobilityform');
+        $heading="Mobility Service Request";
+        $subheading="Provide essential details to ensure a smooth and efficient onboarding experience for your new team members. Let's get started on building your workforce seamlessly";
+        return view('admin.mobilityform',compact('heading','subheading'));
+        // return view('admin.mobilityform');
     }
+    public function stats()
+    {
+        $heading="Overall Status";
+        $subheading="Stay informed and in control of the overall status of your onboarding requests";
+        return view('admin.stats',compact('heading','subheading'));
+    }
+    public function userslist()
+    {
+        $heading="Registerd users";
+        $subheading="Stay informed and in control of the overall status of your onboarding requests";
+        return view('admin.users',compact('heading','subheading'));
+    }
+
 }

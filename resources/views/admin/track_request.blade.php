@@ -3,14 +3,7 @@
     // dd($response);
 @endphp
 <main class="px-3 pt-5">
-
-    <div class="animation-container" style="min-height: 200px; ">
-        <div class="animation-content" style="transition: transform 1s ease, opacity 2s ease;">
-            <h1 class="header-heading1 mt-2 fw-bold " style="color:rgb(3,96,132)">{{ $heading }}</h1>
-            <p class="header-heading3 fs-6 mb-5 text-secondary">{{ $subheading }}</p>
-        </div>
-    </div>
-
+    @include('admin.headtitle')
     <div class="w-100 mt-3">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">

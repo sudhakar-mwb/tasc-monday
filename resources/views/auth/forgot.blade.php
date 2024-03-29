@@ -1,16 +1,15 @@
-
 @include('auth.header')
+
 
         <main class="px-3 pt-5">
             @include('admin.headtitle')
 
             <form action="" class="form-auth">
                 <input type="text" placeholder="Email">
-                <input type="text" placeholder="Password">
                 <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
                     type="submit">
                     <span>
-                        Log In
+                       Send Link to Email
                     </span>
                     <span class="icon-btn_track" style="margin-left:10px">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -20,9 +19,8 @@
                         </svg>
                     </span>
                 </button>
-                <div class="d-flex justify-content-between align-items-start w-100 mt-2">
-                    <a href="forgot">Forgot Password?</a>
-                    <a href="signup">Create New Account?</a>
+                <div class="d-flex justify-content-center align-items-start w-100 mt-2">
+                    <a href="login">Back to Login?</a>
                    </div>
             </form>
    

@@ -200,7 +200,7 @@ $countryInfo = [
 $columns = $response['data']['boards'][0]['columns'];
 $activityLog = $response['data']['boards'][0]['activity_logs'] ?? [];
 $trackdata = $response['data']['items'][0];
-$created_at=$response['data']['items'][0]['created_at'];
+$created_at = $response['data']['items'][0]['created_at'];
 function getValueById($columnValues, $id, $key = 'value')
 {
     foreach ($columnValues as $item) {
@@ -239,24 +239,25 @@ function getClass($input)
 }
 function dateFormater($dateString)
 {
-    if($dateString==null)
-    return '';
+    if ($dateString == null) {
+        return '';
+    }
     $date = new DateTime($dateString);
     $formattedDate = $date->format('F j, Y');
     return $formattedDate;
 }
 function initiatedDate($activityLog, $detail)
 {
-
     foreach ($activityLog as $activity) {
         $activity_data = json_decode($activity['data'], true);
-        if($activity['data']!==null){
-        foreach ($activity_data as $key => $value) {
-            if ($key == 'column_title' && $value == $detail) {
-                // dd($activity['created_at']);
-                return date('F j, Y',$activity['created_at']/10000000);
+        if ($activity['data'] !== null) {
+            foreach ($activity_data as $key => $value) {
+                if ($key == 'column_title' && $value == $detail) {
+                    // dd($activity['created_at']);
+                    return date('F j, Y', $activity['created_at'] / 10000000);
+                }
             }
-        }}
+        }
     }
     return false;
 }
@@ -286,7 +287,7 @@ $joiningDate = findElementByTitle('Joining Date', $columns, $trackdata, 'value')
 if ($joiningDate !== null) {
     $joiningDate = dateFormater(json_decode($joiningDate, true)['date']);
 }
-$onboardings=["Visa Issuance","Visa / E-wakala","Degree Attestation","Police Clearance"];
+$onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance'];
 ?>
 <main class="px-3 pt-5">
     <div class="w-100 mt-3">
@@ -308,7 +309,7 @@ $onboardings=["Visa Issuance","Visa / E-wakala","Degree Attestation","Police Cle
         <div class="d-flex mt-5 w-100" style="gap:20px">
             <div class="col-6 d-flex flex-column" style="gap:30px">
                 <div class="d-flex mb-2" style="gap:16px">
-                    <div class="rounded-circle bg-{{getClass($profileStatus)}} p-4">
+                    <div class="rounded-circle bg-{{ getClass($profileStatus) }} p-4">
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
                             <svg xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
                                 xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"
@@ -336,11 +337,12 @@ $onboardings=["Visa Issuance","Visa / E-wakala","Degree Attestation","Police Cle
                         <h5 class="text-start m-0">{{ $name }}</h5>
                         <p class="profession m-0 text-start text-secondary" style="font-weight: 400">{{ $profession }}
                             | {{ $hiringType }}</p>
-                        <h6 class="status m-0 text-start text-{{getClass($profileStatus)}} fw-bold">{{ $profileStatus }}</h6>
+                        <h6 class="status m-0 text-start text-{{ getClass($profileStatus) }} fw-bold">
+                            {{ $profileStatus }}</h6>
                     </div>
                 </div>
                 <div class="w-100">
-                    <div class="card border-0 border-1 p-4" style="background: rgba(171, 174, 190, 0.06)">
+                    <div class="card border-0 border-1 p-4">
                         <h4 class="text-start head-color fw-bold pb-4 border-bottom">Candidate Information</h4>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex align-items-center border-0 text-start"
@@ -378,47 +380,49 @@ $onboardings=["Visa Issuance","Visa / E-wakala","Degree Attestation","Police Cle
 
                         </ul>
                     </div>
-                    <div class="card border-0 border-1 p-4" style="background: rgba(171, 174, 190, 0.06)">
+                    <div class="card border-0 border-1 p-4">
                         <h4 class="text-start head-color fw-bold pb-4 border-bottom">Onboarding Status</h4>
                         <ul class="list-group list-group-flush">
                             @foreach ($onboardings as $step)
-                            <?php
-                            $valued = json_decode(findElementByTitle($step, $columns, $trackdata, 'value'), true);
-                            $status = findElementByTitle($step, $columns, $trackdata, 'label');
-                            ?>
-                            <li class="list-group-item d-flex align-items-start border-0 text-start mb-1"
-                                style="background: inherit;gap:10px">
-                                <span style="width: 20px;height:20px"
-                                    class="text-{{ getClass(Str::upper($status)) }} mt-1">
-                                    <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"
-                                        style="max-width:100%" height="100%">
-                                        <path
-                                            d="M6 0c3.3137 0 6 2.6863 6 6s-2.6863 6-6 6-6-2.6863-6-6 2.6863-6 6-6zm2.6464 3.6464L5 7.293 3.3536 5.6464l-.7072.7072L5 8.707l4.3536-4.3535-.7072-.7072z"
-                                            fill="currentColor" fill-rule="evenodd" style=""></path>
-                                    </svg>
-                                </span>
-                                <div class="d-flex flex-column">
-                                    <span class="fw-bold text-secondary fs-5">{{$step}}</span>
-                                    <span class="text-secondary">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd"
-                                                d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
+                                <?php
+                                $valued = json_decode(findElementByTitle($step, $columns, $trackdata, 'value'), true);
+                                $status = findElementByTitle($step, $columns, $trackdata, 'label');
+                                ?>
+                                <li class="list-group-item d-flex align-items-start border-0 text-start mb-1"
+                                    style="background: inherit;gap:10px">
+                                    <span style="width: 20px;height:20px"
+                                        class="text-{{ getClass(Str::upper($status)) }} mt-1">
+                                        <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"
+                                            style="max-width:100%" height="100%">
+                                            <path
+                                                d="M6 0c3.3137 0 6 2.6863 6 6s-2.6863 6-6 6-6-2.6863-6-6 2.6863-6 6-6zm2.6464 3.6464L5 7.293 3.3536 5.6464l-.7072.7072L5 8.707l4.3536-4.3535-.7072-.7072z"
+                                                fill="currentColor" fill-rule="evenodd" style=""></path>
                                         </svg>
-                                        {{-- {{ $joiningDate }} --}}
-                                        Initiated | {{  $joiningDate }}</span>
-                                     @if($status!=null)   
-                                    <span class="text-secondary">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                            fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd"
-                                                d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
-                                        </svg> {{ $status }} |
-                                        {{$valued!==null?dateFormater($valued['changed_at']):'Pending' }}
                                     </span>
-                                    @endif
-                                </div>
-                            </li>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold text-secondary fs-5">{{ $step }}</span>
+                                        <span class="text-secondary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-arrow-right-short"
+                                                viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd"
+                                                    d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
+                                            </svg>
+                                            {{-- {{ $joiningDate }} --}}
+                                            Initiated | {{ $joiningDate }}</span>
+                                        @if ($status != null)
+                                            <span class="text-secondary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-arrow-right-short"
+                                                    viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                        d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
+                                                </svg> {{ $status }} |
+                                                {{ $valued !== null ? dateFormater($valued['changed_at']) : 'Pending' }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </li>
                             @endforeach
                         </ul>
                     </div>

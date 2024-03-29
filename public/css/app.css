@@ -92,15 +92,85 @@
   opacity: 1;
   transform: translateX(0);
 }
-.fs-s{
+.fs-s {
+  font-size: 14px;
+}
+.head-color {
+  color: rgb(3, 96, 132);
+}
+.bg-warning {
+  background: rgb(244, 152, 31) !important;
+}
+.text-warning {
+  color: rgb(244, 152, 31) !important;
+}
+
+.form-auth{
+  width: 100%;
+  max-width: 420px;
+  padding: 15px;
+  margin: 0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.form-auth > input {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  border-radius:10px;
+  padding:15px;
   font-size:14px;
+  background:#dbdbdb;
+  border:0px;
 }
-.head-color{
-  color:rgb(3,96,132);
+
+.form-auth > button {
+  display: flex;
+  justify-content: center;
+  border-radius:5px;
+  border-radius:10px;
+  padding:15px;
+  font-size:14px;
+  border:0px;
 }
-.bg-warning{
-  background:rgb(244, 152, 31) !important;
+.btn-copy:active{
+color:green !important;
 }
-.text-warning{
-  color:rgb(244, 152, 31) !important;
+#users-list-table td,#users-list-table th{
+max-width:200px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+#users-list-table td span,#users-list-table th span{
+  max-width:130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* .btn-gradiant */
+@media (max-width: 480px) {
+  .btn.btn-gradiant {
+    min-width: 30px;
+  }
+  .btn.btn-gradiant > span:first-child {
+    display: none;
+  }
+  .nav-masthead {
+    margin-top: 20px;
+  }
+  #iframe-signup {
+    width: auto;
+  }
+  .nav.nav-masthead > span.text-secondary:first-child {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .nav.nav-masthead {
+    justify-content: space-around !important;
+  }
 }

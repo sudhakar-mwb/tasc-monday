@@ -6,6 +6,7 @@ use App\Http\Controllers\Monday\RequestOnboardingController;
 use App\Http\Controllers\Monday\TrackOnboardingController;
 use App\Http\Controllers\Monday\StatusOnboardingController;
 use App\Http\Controllers\Monday\DashboardController;
+use App\Http\Controllers\Monday\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,27 +40,35 @@ Route::middleware('auth')->group(function () {
 
 //Monday.com
 
-Route::group(['prefix' => "monday"], function() {
+Route::group(['prefix' => "monday"], function () {
     // Route::middleware('monday.auth')->group(function () {
     // Route::group(['middleware' => 'monday.auth'], function(){
-        // Track Onboarding
-        Route::get('/', [DashboardController::class  , 'dashboard'])->name('monday.dashboard');
-        Route::group(['prefix' => "form"], function() {
-            Route::get('/', [DashboardController::class  , 'dashboard'])->name('monday.dashboard');
-            Route::get('/track-request', [DashboardController::class  , 'trackRequest'])->name('monday.track_request');
-            Route::post('/track-request', [DashboardController::class  , 'trackRequest'])->name('monday.track_request');
-           Route::get('/candidate-form', [DashboardController::class  , 'mobilityform'])->name('monday.mobilityform');
-            Route::get('/track-request/{id}/{userName}', [DashboardController::class  , 'manageById'])->name('user.show');
-      
-        });
- 
+    // Track Onboarding
+    Route::get('/', [DashboardController::class, 'dashboard'])->name('monday.dashboard');
+    Route::group(['prefix' => "form"], function () {
+        Route::get('/', [DashboardController::class, 'dashboard'])->name('monday.dashboard');
+        Route::get('/track-request', [DashboardController::class, 'trackRequest'])->name('monday.track_request');
+        Route::post('/track-request', [DashboardController::class, 'trackRequest'])->name('monday.track_request');
+        Route::get('/candidate-form', [DashboardController::class, 'mobilityform'])->name('monday.mobilityform');
+        Route::get('/candidate-stats', [DashboardController::class, 'stats'])->name('monday.stats');
+        Route::get('/track-request/{id}/{userName}', [DashboardController::class, 'manageById'])->name('user.show');
+        Route::get('/users', [DashboardController::class, 'userslist'])->name('user.users');
 
-    Route::post('/track-onboarding', [TrackOnboardingController::class  , 'trackOnboarding'])->name('monday.trackOnboarding');
-        
-        Route::post('/track-onboarding-byid', [TrackOnboardingController::class  , 'trackOnboardingById'])->name('monday.trackOnboardingById');
+    });
+    Route::get('/login', [AuthController::class, 'login'])->name('monday.login');
+    Route::get('/signup', [AuthController::class, 'signup'])->name('monday.signup');
+    Route::get('/forgot', [AuthController::class, 'forgot'])->name('monday.forgot');
+    Route::get('/thanks', [AuthController::class, 'thankssignup'])->name('monday.thankssignup');
 
-        Route::post('/status-onboarding-hiring-type', [StatusOnboardingController::class  , 'statusOnboardingHiringType'])->name('monday.statusOnboardingHiringType');
+
+
+
+    Route::post('/track-onboarding', [TrackOnboardingController::class, 'trackOnboarding'])->name('monday.trackOnboarding');
+
+    Route::post('/track-onboarding-byid', [TrackOnboardingController::class, 'trackOnboardingById'])->name('monday.trackOnboardingById');
+
+    Route::post('/status-onboarding-hiring-type', [StatusOnboardingController::class, 'statusOnboardingHiringType'])->name('monday.statusOnboardingHiringType');
     // });
-});  
+});
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
