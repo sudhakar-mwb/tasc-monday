@@ -3,12 +3,25 @@
 
 <main class="px-3 pt-5">
     @include('admin.headtitle')
-    <form action="thanks" class="form-auth" id="registration-custom-form">
-        <input type="text" placeholder="Name*">
-        <input type="text" placeholder="Company name*">
-        <input type="text" placeholder="Phone*">
-        <input type="text" placeholder="Email*">
-        <input type="text" placeholder="Password*">
+    @if($status!="")
+<div class="d-flex justify-content-center">
+    <div class="alert alert-{{$status}}" style="max-width:400px">    {{$msg}}</div>
+</div>
+    @endif
+    
+
+    <form class="form-auth" id="registration-custom-form" action="{{route('monday.post.signup')}}" method="POST">
+        {{-- @csrf --}}
+        <input type="text" placeholder="Name*" name="name" value="{{ old('name') }}">
+        @error('name')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+        <input type="text" placeholder="Company name*" name="company_name" value="{{ old('company_name') }}">
+        @error('company_name')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+        <input type="text" placeholder="Phone*" name="phone" value="{{ old('phone') }}">
+        @error('phone')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+        <input type="text" placeholder="Email*" name="email" value="{{ old('email') }}">
+        @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+        <input type="text" placeholder="Password*" name="password" value="{{ old('password') }}">
+        @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
         <div class="w-100 d-flex justify-content-center">
             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
             {{-- secret key:  6LchU6gpAAAAAAgx4pH2xz9R0VYoDn-c-T4RQri7 --}}
@@ -37,7 +50,7 @@
 
     <a href="login">Already have an Account?</a>
 </main>
-<script>
+{{-- <script>
     var form = document.getElementById('registration-custom-form');
     form.addEventListener("submit", function(event) {
         if (grecaptcha.getResponse() === '') {
@@ -45,5 +58,5 @@
             alert('Please check the recaptcha');
         }
     }, false);
-</script>
+</script> --}}
 @include('includes.footer')

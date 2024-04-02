@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Traits\MondayApis;
 use Carbon\Carbon;
+use App\Models\MondayUsers;
+use Illuminate\Contracts\Pagination\Paginator;
 
 class DashboardController extends Controller
 {
@@ -126,7 +128,143 @@ class DashboardController extends Controller
             // dd($query);
         $heading = 'Request Tracking';
         $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
+         if ($request->export == true) {
+            $query = "query {
+                boards(ids: 1352607400) {
+                   columns {
+                      title
+                      id
+                   }
+                   items_page (limit: 500, cursor: null) {
+                      cursor
+                      items {
+                          id
+                          name
+                          email
+                          created_at
+                          column_values {
+                             id
+                             value
+                             type
+                             text
+                             ... on StatusValue  {
+                                label
+                                update_id
+                                index
+                                value
+                             }
+                         }
+                      }
+                  }
+                }
+             }";
+            $response = $this->_get($query)['response'];
 
+            // Set headers for CSV download
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="monday_com_data.csv"');
+
+            // Open file pointer
+            $output = fopen('php://output', 'w');
+
+            // Write headers
+            // $headers = ['Name', 'Overall Status', 'Updates', 'Degree Attestation', 'Police Clearance', 'Medical Test', 'Visa Issuance', 'Visa / E-wakala', 'Nationality', 'Country of Residency', 'Profession', 'Hiring Type', 'Docs Group 1', 'Docs Group 2', 'Docs Group 3', 'Candidate Email Address', 'Is there specified joining date', 'Joining Date', 'Candidate Contact Number (Whatsapp Number)'];
+
+            $headers = ['Name', 'Overall Status', 'Updates', 'Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance', 'Medical Test', 'Nationality', 'Country of Residency', 'Profession', 'Hiring Type', 'Docs Group 1', 'Docs Group 2', 'Docs Group 3', 'Is there specified joining date', 'Joining Date','Candidate Contact Number (Whatsapp Number)', 'Candidate Email Address', 'Qiwa Request', 'Muqeem Generated', 'People'];
+
+            fputcsv($output, $headers);
+
+            // Loop through items and write data
+            if (!empty($response['data']['boards'][0]['items_page']['items'])) {
+                foreach ($response['data']['boards'][0]['items_page']['items'] as $item) {
+
+                    $docLinkPrepare = 'https://tascksa.monday.com/boards/1352607400/pulses/'.$item['id'].'?asset_id=';
+    
+                    if (!empty(json_decode($item['column_values'][11]['value'], true))) {
+                        $docGroupAssetIds1 = array_column(json_decode($item['column_values'][11]['value'], true)['files'], 'assetId');
+    
+                        $docGroupResult1 = array();
+                        foreach ($docGroupAssetIds1 as $id) {
+                            $docGroupResult1[] = $docLinkPrepare . $id;
+                        }
+    
+                        $docGroupResultString1 = implode(', ', $docGroupResult1);
+                    }
+    
+                    if (!empty(json_decode($item['column_values'][12]['value'], true))) {
+                        $docGroupAssetIds2 = array_column(json_decode($item['column_values'][12]['value'], true)['files'], 'assetId');
+    
+                        $docGroupResult2 = array();
+                        foreach ($docGroupAssetIds2 as $id) {
+                            $docGroupResult2[] = $docLinkPrepare . $id;
+                        }
+    
+                        $docGroupResultString2 = implode(', ', $docGroupResult2);
+                    }
+    
+                    if (!empty(json_decode($item['column_values'][13]['value'], true))) {
+                        $docGroupAssetIds3 = array_column(json_decode($item['column_values'][13]['value'], true)['files'], 'assetId');
+    
+                        $docGroupResult3 = array();
+                        foreach ($docGroupAssetIds3 as $id) {
+                            $docGroupResult3[] = $docLinkPrepare . $id;
+                        }
+    
+                        $docGroupResultString3 = implode(', ', $docGroupResult3);
+                    }
+    
+                    if (!empty($item['column_values'][20]['value']) ) {
+                        $value_decoded   =  json_decode($item['column_values'][20]['value'], true);
+                        $personsAndTeams = $value_decoded['personsAndTeams'];
+    
+                        $peopleIds = array();
+                        foreach ($personsAndTeams as $personOrTeam) {
+                            $peopleIds[] = $personOrTeam['id'];
+                        }
+    
+                        // Join the IDs with semicolon
+                        $peopleIdSeparated = implode(';', $peopleIds);
+                    }
+    
+                    $rowData = [
+                        $item['name'],   // Name
+                        $item['column_values'][0]['label'], // Overall Status
+                        !empty($item['column_values'][1]['value']) ? json_decode($item['column_values'][1]['value'], true)['text'] : '', // Updates
+                        $item['column_values'][2]['label'], // Visa Issuance
+                        $item['column_values'][3]['label'], // Visa / E-wakala
+                        $item['column_values'][4]['label'], // Degree Attestation
+                        $item['column_values'][5]['label'], // Police Clearance
+                        $item['column_values'][6]['label'], // Medical Test
+                        !empty($item['column_values'][7]['value']) ? json_decode($item['column_values'][7]['value'], true)['countryName'] : '', // Nationality
+                        !empty($item['column_values'][8]['value']) ? json_decode($item['column_values'][8]['value'], true)['countryName'] : '', // Country of Residency
+                        $item['column_values'][9]['value'], // Profession
+                        $item['column_values'][10]['label'], // Hiring Type
+                        $docGroupResultString1 ?? '', // Docs Group 1
+                        $docGroupResultString2 ?? '', // Docs Group 2
+                        $docGroupResultString3 ?? '', // Docs Group 3
+                        $item['column_values'][14]['label'], // Is there specified joining date
+                        !empty($item['column_values'][15]['value']) ? json_decode($item['column_values'][15]['value'], true)['date'] : '', // Joining Date
+                        !empty($item['column_values'][16]['value']) ? json_decode($item['column_values'][16]['value'], true)['phone'] : '', // Candidate Contact Number (Whatsapp Number)
+                        !empty($item['column_values'][17]['value']) ? json_decode($item['column_values'][17]['value'], true)['email'] : '', // Candidate Email Address
+                        $item['column_values'][18]['label'], // Qiwa Request
+                        $item['column_values'][19]['label'], // Muqeem Generated
+                        !empty($peopleIdSeparated) ? $peopleIdSeparated : '' , // People
+    
+                    ];
+
+                    fputcsv($output, $rowData);
+                }
+    
+                // Close file pointer
+                fclose($output);
+                return true;
+                // return Response::make('', 200, $headers);
+                
+                // Save the CSV file to a local storage folder
+                // $filePath = storage_path('app/monday_com_data.csv');
+                // file_put_contents($filePath, file_get_contents('php://output'));  
+            }
+         }
         return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery','sortbyname','status_filter'));
     }
     public function manageById(Request $request)
@@ -188,9 +326,70 @@ class DashboardController extends Controller
     }
     public function userslist()
     {
+        $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->paginate(10);
+        $query = 'query {
+            #   boards (limit: 2, page: 1){
+              boards {
+                id
+                name
+                state
+                permissions
+                board_kind
+
+                owners {
+                  id
+                  name
+                  email
+                }
+
+                subscribers {
+                  id,
+                  name,
+                  email
+                  enabled,
+                  is_guest,
+                  is_view_only
+                }
+              }
+            }';
+        $boardsData = $this->_get($query)['response']['data'];
         $heading="Registerd users";
         $subheading="Stay informed and in control of the overall status of your onboarding requests";
-        return view('admin.users',compact('heading','subheading'));
+        return view('admin.users',compact('heading','subheading', 'mondayUsers', 'boardsData'));
+    }
+
+    public function usersBoardAssign (Request $request) {
+        // $input   = $request->all();
+        // $id      = trim($input['id']);
+        // $boardId = trim($input['board_id']);
+        $id      = '3';
+        $boardId = '13526074001';
+
+        // Example data for the new record or update
+        $data = [
+            'board_id' => $boardId,
+        ];
+
+        // Criteria to check for existing record
+        $criteria = [
+            'id' => $id,
+            // Add more criteria as needed
+        ];
+
+        // Retrieve the existing record
+        $user = MondayUsers::find($criteria['id']);
+
+        // Using updateOrCreate
+        $response = MondayUsers::updateOrCreate($criteria, $data);
+
+        // Check if the record was updated
+        if ($user && $response->wasChanged()) {
+            Session::flash('message', 'User successfully assigned to board!');
+        } else {
+            Session::flash('message', 'User alredy assigned to board!');
+        }
+        // echo '<pre>'; print_r( $response ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+        // return response()->json(['status' => 'success', 'data' => 'Successfully updated the deal in hubspot']);
     }
 
 }

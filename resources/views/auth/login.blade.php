@@ -4,9 +4,11 @@
         <main class="px-3 pt-5">
             @include('admin.headtitle')
 
-            <form action="" class="form-auth">
-                <input type="text" placeholder="Email">
-                <input type="text" placeholder="Password">
+            <form action="{{route('monday.post.login')}}" method="POST" class="form-auth">
+                <input type="text" placeholder="Email" name="email" value="{{ old('email') }}">
+                @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+                <input type="text" placeholder="Password" name="password"  value="{{ old('password') }}">
+                @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
                 <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
                     type="submit">
                     <span>
