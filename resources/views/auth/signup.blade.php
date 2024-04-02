@@ -3,6 +3,7 @@
 
 <main class="px-3 pt-5">
     @include('admin.headtitle')
+
     @if($status!="")
 <div class="d-flex justify-content-center">
     <div class="alert alert-{{$status}}" style="max-width:400px">    {{$msg}}</div>
@@ -22,6 +23,7 @@
         @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
         <input type="text" placeholder="Password*" name="password" value="{{ old('password') }}">
         @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+
         <div class="w-100 d-flex justify-content-center">
             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
             {{-- secret key:  6LchU6gpAAAAAAgx4pH2xz9R0VYoDn-c-T4RQri7 --}}

@@ -324,8 +324,17 @@ class DashboardController extends Controller
         $subheading="Stay informed and in control of the overall status of your onboarding requests";
         return view('admin.stats',compact('heading','subheading'));
     }
+    public function columnAllowed(){
+        $heading="Columns Visibility";
+        $boards=['3454','5345','34553','5345','3553','3455','4355','34553','35345'];
+        $subheading="Column restrictions can be set per board by selecting respective column boards.";
+        return view('admin.visiblility',compact('heading','subheading','boards'));
+    }
     public function userslist()
     {
+
+        $heading="Board Visibility";
+
         $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->paginate(10);
         $query = 'query {
             #   boards (limit: 2, page: 1){
@@ -353,7 +362,7 @@ class DashboardController extends Controller
               }
             }';
         $boardsData = $this->_get($query)['response']['data'];
-        $heading="Registerd users";
+
         $subheading="Stay informed and in control of the overall status of your onboarding requests";
         return view('admin.users',compact('heading','subheading', 'mondayUsers', 'boardsData'));
     }
@@ -391,5 +400,6 @@ class DashboardController extends Controller
         // echo '<pre>'; print_r( $response ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
         // return response()->json(['status' => 'success', 'data' => 'Successfully updated the deal in hubspot']);
     }
+
 
 }

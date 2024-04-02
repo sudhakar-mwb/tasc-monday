@@ -49,6 +49,7 @@ class AuthController extends Controller
     }
     public function signup(Request $request)
     {
+
         $msg    = '';
         $status = '';
         if ($request->isMethod('post')) {

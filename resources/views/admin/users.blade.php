@@ -11,17 +11,20 @@
     <table class="table border table-hover table-bordered" id="users-list-table">
         <thead>
             <tr>
-                <th scope="col " class="bg-warning">#</th>
-                <th scope="col " class="bg-warning">Name</th>
-                <th scope="col " class="bg-warning">Company Name</th>
-                <th scope="col " class="bg-warning">Phone</th>
-                <th scope="col " class="bg-warning">Email</th>
+
+                <th scope="col " class="bg-success text-light">#</th>
+                <th scope="col " class="bg-success text-light">Name</th>
+                <th scope="col " class="bg-success text-light">Company Name</th>
+                <th scope="col " class="bg-success text-light">Phone</th>
+                <th scope="col " class="bg-success text-light">Email</th>
+
+
                 {{-- <th scope="col " class="bg-warning">Hiring Type</th> --}}
                 {{-- <th scope="col " class="bg-warning">Status</th> --}}
-                <th scope="col " class="bg-warning">Assign Board</th>
-                <th scope="col " class="bg-warning">Password</th>
-                <th scope="col " class="bg-warning">Created Date</th>
-                {{-- <th scope="col " class="bg-danger text-light">Action</th> --}}
+                <th scope="col " class="bg-success text-light">Assign Board</th>
+                <th scope="col " class="bg-success text-light">Password</th>
+                <th scope="col " class="bg-success text-light">Created Date</th>
+                <th scope="col " class="bg-success text-light">Forgot Pass</th>
             </tr>
         </thead>
         <tbody>
@@ -52,12 +55,14 @@
                     
                     <td class="m-0 p-0"><select class="form-select m-0 rounded-0 h-100 "
                             aria-label="Default select example">
+
                             <option class=" fs-5" selected>Not Assigned</option>
                             @if ( count($boardsData['boards']) > 0)
                             @foreach ($boardsData['boards'] as $board)
                                 <option class=" fs-5" value="{{$board['id']}}">{{$board['name']}}</option>
                             @endforeach
                             @endif
+
                         </select></td>
                     <td class="p-0">
                         <div class="d-flex align-items-center btn btn-outline-info border-0 rounded-0 text-dark"
@@ -71,6 +76,7 @@
                                         d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
                                 </svg></span>
 
+
                             <span>{{$user->password}}</span>
                         </div>
                     </td>
@@ -82,8 +88,9 @@
                                 <path
                                     d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
                             </svg>
+
                         </button>
-                    </td> --}}
+                    </td>
                 </tr>
                 @endforeach
             @else
