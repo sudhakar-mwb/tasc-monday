@@ -52,11 +52,16 @@ Route::group(['prefix' => "monday"], function () {
         Route::get('/candidate-form', [DashboardController::class, 'mobilityform'])->name('monday.mobilityform');
         Route::get('/candidate-stats', [DashboardController::class, 'stats'])->name('monday.stats');
         Route::get('/track-request/{id}/{userName}', [DashboardController::class, 'manageById'])->name('user.show');
-        Route::get('/users', [DashboardController::class, 'userslist'])->name('user.users');
-
     });
-    Route::get('/login', [AuthController::class, 'login'])->name('monday.login');
-    Route::get('/signup', [AuthController::class, 'signup'])->name('monday.signup');
+
+    Route::group(['prefix' => "admin"], function () {
+        Route::get('/users', [DashboardController::class, 'userslist'])->name('admin.users');
+        // Route::post('/users', [DashboardController::class, 'usersBoardAssign'])->name('admin.post.users');
+    });
+    Route::get('/login', [AuthController::class, 'login'])->name('monday.get.login');
+    Route::post('/login', [AuthController::class, 'login'])->name('monday.post.login');
+    Route::get('/signup', [AuthController::class, 'signup'])->name('monday.get.signup');
+    Route::post('/signup', [AuthController::class, 'signup'])->name('monday.post.signup');
     Route::get('/forgot', [AuthController::class, 'forgot'])->name('monday.forgot');
     Route::get('/thanks', [AuthController::class, 'thankssignup'])->name('monday.thankssignup');
 
