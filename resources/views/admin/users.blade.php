@@ -10,17 +10,17 @@
     <table class="table border table-hover table-bordered" id="users-list-table">
         <thead>
             <tr>
-                <th scope="col " class="bg-warning">#</th>
-                <th scope="col " class="bg-warning">Name</th>
-                <th scope="col " class="bg-warning">Company Name</th>
-                <th scope="col " class="bg-warning">Phone</th>
-                <th scope="col " class="bg-warning">Email</th>
-                <th scope="col " class="bg-warning">Hiring Type</th>
+                <th scope="col " class="bg-success text-light">#</th>
+                <th scope="col " class="bg-success text-light">Name</th>
+                <th scope="col " class="bg-success text-light">Company Name</th>
+                <th scope="col " class="bg-success text-light">Phone</th>
+                <th scope="col " class="bg-success text-light">Email</th>
+                {{-- <th scope="col " class="bg-warning">Hiring Type</th> --}}
                 {{-- <th scope="col " class="bg-warning">Status</th> --}}
-                <th scope="col " class="bg-warning">Assign Board</th>
-                <th scope="col " class="bg-warning">Password</th>
-                <th scope="col " class="bg-warning">Created Date</th>
-                {{-- <th scope="col " class="bg-danger text-light">Action</th> --}}
+                <th scope="col " class="bg-success text-light">Assign Board</th>
+                <th scope="col " class="bg-success text-light">Password</th>
+                <th scope="col " class="bg-success text-light">Created Date</th>
+                <th scope="col " class="bg-success text-light">Forgot Pass</th>
             </tr>
         </thead>
         <tbody>
@@ -43,11 +43,11 @@
                             <span>jaikrishnaverma@gmail.com</span>
                         </div>
                     </td>
-                    <td>Hiring Type</td>
+                    {{-- <td>Hiring Type</td> --}}
                     {{-- <td>Active</td> --}}
                     <td class="m-0 p-0"><select class="form-select m-0 rounded-0 h-100 "
                             aria-label="Default select example">
-                            <option class=" fs-5" selected>Not Assigned</option>
+                            <option class=" fs-5" selected>Unassigned</option>
                             <option class=" fs-5" value="1">B-345668</option>
                             <option class=" fs-5" value="2">B-346346</option>
                             <option class=" fs-5" value="3">B-3453453</option>
@@ -62,19 +62,18 @@
                                         d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
                                 </svg></span>
 
-                            <span>#21$5{{ $i }}6&3tryrtyr*</span>
+                            <span>#21$5{{ $i }}6&3tryrtyr</span>
                         </div>
                     </td>
                     <td>11-Mar-2023</td>
-                    {{-- <td class="text-danger p-0">
-                        <button class="btn btn-outline-danger btn-outline m-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-trash-fill" viewBox="0 0 16 16">
-                                <path
-                                    d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
-                            </svg>
+                    <td class="p-0">
+                        <button class="btn btn-outline-info btn-outline border-0 m-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
+                              </svg>
+                           
                         </button>
-                    </td> --}}
+                    </td>
                 </tr>
             @endfor
 

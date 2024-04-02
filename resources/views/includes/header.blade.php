@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 
 <body class=" container d-flex h-100 text-center">
@@ -67,8 +68,8 @@
                         </button>
                 </a>
                     @endif
-
-                    <button class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center">
+                    {{-- <a href="lo gin">Already have an Account?</a> --}}
+                    <a href="/monday/login" class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center">
                         <span>Log out</span>
                         <span class="icon-btn_track" style="height: 22px;width: 22px">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -85,7 +86,7 @@
                                     </g>
                                 </g>
                             </svg>
-                        </span></button>
+                        </span></a>
                 </nav>
             </div>
         </header>

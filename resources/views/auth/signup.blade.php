@@ -3,6 +3,7 @@
 
 <main class="px-3 pt-5">
     @include('admin.headtitle')
+    
     <form action="thanks" class="form-auth" id="registration-custom-form">
         <input type="text" placeholder="Name*">
         <input type="text" placeholder="Company name*">

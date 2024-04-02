@@ -186,11 +186,18 @@ class DashboardController extends Controller
         $subheading="Stay informed and in control of the overall status of your onboarding requests";
         return view('admin.stats',compact('heading','subheading'));
     }
+    public function columnAllowed(){
+        $heading="Columns Visibility";
+        $boards=['3454','5345','34553','5345','3553','3455','4355','34553','35345'];
+        $subheading="Column restrictions can be set per board by selecting respective column boards.";
+        return view('admin.visiblility',compact('heading','subheading','boards'));
+    }
     public function userslist()
     {
-        $heading="Registerd users";
+        $heading="Board Visibility";
         $subheading="Stay informed and in control of the overall status of your onboarding requests";
         return view('admin.users',compact('heading','subheading'));
     }
+
 
 }

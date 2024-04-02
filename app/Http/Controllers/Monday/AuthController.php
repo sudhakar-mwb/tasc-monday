@@ -21,8 +21,9 @@ class AuthController extends Controller
     public function signup()
     {
         $heading = "Sign Up";
-        $subheading = "In order to sign up, you have to be invited by TASC KSA admin. Please complete the form below.";
-        return view('auth.signup', compact('heading', 'subheading'), );
+        $subheading = "In order to sign up, you have to be invited by TASC KSA admin. ";
+        $secondaryHeading="Please complete the form below.";
+        return view('auth.signup', compact('heading', 'subheading','secondaryHeading'), );
     }
     public function forgot()
     {
