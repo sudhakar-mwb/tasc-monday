@@ -42,11 +42,11 @@
                     <div class="mb-3" id="form-step-1">
                         <label for="exampleInputEmail1" class="form-label">Select Board</label>
                         <select id="input-brand" class="form-select" id="exampleInputEmail1"
-                            aria-label="Default select example">
-                            <option selected>Open this select menu</option>
-                            <option value="1">One</option>
-                            <option value="phone">Phone</option>
-                            <option value="3">Three</option>
+                            aria-label="Default select example" required>
+                            <option value="">-- Select  Brand --</option>
+                            @for ($j = 0; $j < count($boards); $j++)
+                            <option value="{{ $boards[$j] }}">{{ $boards[$j] }}</option>
+                        @endfor
                         </select>
                     </div>
 
@@ -54,7 +54,7 @@
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Onboarding Status</label>
                             <select id="onboarding_columns" class="js-example-basic-multiple w-100"
-                                name="onboarding_coulumns[]" multiple="multiple" style="max-width:500px">
+                                name="onboarding_coulumns[]" multiple="multiple" style="max-width:500px" >
 
                                 @for ($j = 0; $j < count($boards); $j++)
                                     <option value="{{ $boards[$j] }}">{{ $boards[$j] }}</option>
@@ -65,7 +65,7 @@
                         <div class="mb-3">
                             <label for="exampleInputPassword1" class="form-label">Candidate Information</label>
                             <select id="candidate_columns" class="js-example-basic-multiple w-100"
-                                name="candidate_columns[]" multiple="multiple" style="max-width:500px">
+                                name="candidate_columns[]" multiple="multiple" style="max-width:500px" >
 
                                 @for ($j = 0; $j < count($boards); $j++)
                                     <option value="{{ $boards[$j] }}">{{ $boards[$j] }}</option>
@@ -80,9 +80,7 @@
                         <hr class="mt-4">
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Onboarding Updates</label>
-                        <select id="exampleInputEmail1" class="form-select" aria-label="Default select example">                        @for ($j = 0; $j < count($boards); $j++)
-                            <option value="{{ $boards[$j] }}">{{ $boards[$j] }}</option>
-                        @endfor
+                        <select id="onboarding-updates-option" class="form-select" aria-label="Default select example" required>
                     </select>
                     </div>
                     </div>

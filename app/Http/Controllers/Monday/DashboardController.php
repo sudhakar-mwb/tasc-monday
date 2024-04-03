@@ -356,14 +356,15 @@ class DashboardController extends Controller
             }
         }
         $heading="Columns Visibility";
-        $boards=['3454','5345','34553','5345','3553','3455','4355','34553','35345'];
+        // $boards=['3454','5345','34553','5345','3553','3455','4355','34553','35345'];
+        $boards=$idArray;
         $subheading="Column restrictions can be set per board by selecting respective column boards.";
         return view('admin.visiblility',compact('heading','subheading','boards'));
     }
     public function userslist()
     {
 
-        $heading="Board Visibility";
+        // $heading="Board Visibility";
 
         $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->paginate(10);
         $query = 'query {
@@ -393,6 +394,7 @@ class DashboardController extends Controller
             }';
         $boardsData = $this->_get($query)['response']['data'];
 
+        $heading="Registerd users";
         $subheading="Stay informed and in control of the overall status of your onboarding requests";
         return view('admin.users',compact('heading','subheading', 'mondayUsers', 'boardsData'));
     }
