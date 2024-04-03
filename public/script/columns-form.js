@@ -16,14 +16,16 @@ $(document).ready(function () {
     $("#columns_details_submit").show();
     data.board = val;
     const response = await fetch(
-      "https://dummyjson.com/products/search?q=" + val
+      // "https://dummyjson.com/products/search?q=" + val
+      "http://localhost:8000/monday/admin/get-board-columns/" + val
     );
     const columns = await response.json();
-    let options = columns["products"]
+    let options = columns
       .map((option) => `<option value="${option.id}">${option.title}</option>`)
       .join(" ");
     $("#candidate_columns").html(options);
     $("#onboarding_columns").html(options);
+    $("#onboarding-updates-option").html('<option value="">-- Select Column --</option>'+options)
     step2.show();
   });
 
@@ -78,11 +80,27 @@ $(document).ready(function () {
       };
     });
   });
-
+$("#onboarding-updates-option").change(function (e) {
+  const selected_columns = this.value;
+data.extra_details.key=selected_columns;
+console.log({selected_columns})
+});
   $(document).ready(function () {
-    $("#column_view_form").submit(function (e) {
+    $("#column_view_form").submit(async function (e) {
       e.preventDefault();
-      // publish
+     console.log(data);
+     const response = await fetch(
+      // "https://dummyjson.com/products/search?q=" + val
+      "http://localhost:8000/monday/admin/board-visiblilty",{
+method:"POST",
+headers:{
+  'Content-Type':'application/json'
+},
+body:JSON.stringify(data)
+      }
+    );
+    const res = await response.json();
+console.log(res)
     });
   });
 

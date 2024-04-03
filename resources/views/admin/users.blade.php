@@ -24,7 +24,7 @@
                 <th scope="col " class="bg-success text-light">Assign Board</th>
                 <th scope="col " class="bg-success text-light">Password</th>
                 <th scope="col " class="bg-success text-light">Created Date</th>
-                <th scope="col " class="bg-success text-light">Forgot Pass</th>
+                {{-- <th scope="col " class="bg-danger text-light">Action</th> --}}
             </tr>
         </thead>
         <tbody>
@@ -55,14 +55,12 @@
                     
                     <td class="m-0 p-0"><select class="form-select m-0 rounded-0 h-100 "
                             aria-label="Default select example">
-
                             <option class=" fs-5" selected>Not Assigned</option>
                             @if ( count($boardsData['boards']) > 0)
                             @foreach ($boardsData['boards'] as $board)
                                 <option class=" fs-5" value="{{$board['id']}}">{{$board['name']}}</option>
                             @endforeach
                             @endif
-
                         </select></td>
                     <td class="p-0">
                         <div class="d-flex align-items-center btn btn-outline-info border-0 rounded-0 text-dark"
@@ -90,12 +88,12 @@
                             </svg>
 
                         </button>
-                    </td>
+                    </td> --}}
                 </tr>
                 @endforeach
             @else
                 <tr>
-                    <td colspan="5"> Records Not Found. </td>
+                    <td colspan="8"> Records Not Found. </td>
                 </tr>
                 @endif
                 {{-- <div class="card-footer clearfix">
