@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\URL;
 use App\Traits\MondayApis;
 use Carbon\Carbon;
 use App\Models\MondayUsers;
+use App\Models\BoardColumnMappings;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Facades\Session;
 
 class DashboardController extends Controller
 {
@@ -325,6 +327,34 @@ class DashboardController extends Controller
         return view('admin.stats',compact('heading','subheading'));
     }
     public function columnAllowed(){
+        $query = 'query
+        {
+          boards {
+            id
+            name
+            state
+            permissions
+            board_kind
+            columns {
+              id
+              title
+              description
+              type
+              settings_str
+              archived
+              archived
+              width
+            }
+          }
+        }';
+        $boardsData = $this->_get($query)['response']['data'];
+
+        if (!empty($boardsData['boards'])) {
+            $idArray = array();
+            foreach ($boardsData['boards'] as $item) {
+                $idArray[] = $item['id'];
+            }
+        }
         $heading="Columns Visibility";
         $boards=['3454','5345','34553','5345','3553','3455','4355','34553','35345'];
         $subheading="Column restrictions can be set per board by selecting respective column boards.";
@@ -401,5 +431,91 @@ class DashboardController extends Controller
         // return response()->json(['status' => 'success', 'data' => 'Successfully updated the deal in hubspot']);
     }
 
+    public function getBoardColumns (Request $request) {
 
+        $boardId =  $request->id;
+        if (!empty($boardId)) {
+            $query = 'query
+                        {
+                            boards(ids: '.$boardId.') {
+                                columns {
+                                id
+                                title
+                                description
+                                type
+                                settings_str
+                                archived
+                                archived
+                                width
+                                }
+                            }
+                        }';
+            $boardsData = $this->_get($query)['response']['data'] ;
+            if (!empty($boardsData['boards']) && !empty($boardsData['boards'][0]['columns'] )) {
+                return $boardsData['boards'][0]['columns'];
+            }
+        }
+    }
+
+    public function boardColumnMapping (Request $request){
+        // $data = $request->all('columns');
+        $data  = $request->getContent();
+        // $data = '{
+        //     "board": "8001201",
+        //     "onboarding_columns": [
+        //         {
+        //             "id": "101",
+        //             "name": "Women Shoulder Bags 1",
+        //             "icon": ""
+        //         },
+        //         {
+        //             "id": "102",
+        //             "name": "Women Shoulder Bags 2",
+        //             "icon": ""
+        //         },
+        //         {
+        //             "id": "103",
+        //             "name": "Women Shoulder Bags 3",
+        //             "icon": ""
+        //         }
+        //     ],
+        //     "candidate_coulmns": [
+        //         {
+        //             "id": "71",
+        //             "name": "Women Shoulder Bags 71",
+        //             "icon": ""
+        //         },
+        //         {
+        //             "id": "7200",
+        //             "name": "Women Shoulder Bags 7200",
+        //             "icon": ""
+        //         }
+        //     ]
+        // }';
+        if (!empty($data)) {
+            $dataArray = json_decode($data, true);
+
+            $datatoUpdate = [
+                'columns' => $data,
+            ];
+            $criteria = [
+                'board_id' => $dataArray['board'],
+            ];
+
+            // Retrieve the existing record
+            $user = BoardColumnMappings::find($criteria['board_id']);
+
+            $response = BoardColumnMappings::updateOrCreate( $criteria, $datatoUpdate);
+
+            // Check if the record was updated
+            if ($user && $response->wasChanged()) {
+                Session::flash('message', 'Board column mapping successfully updated.');
+            } else {
+                Session::flash('message', 'Board column mapping updated.');
+            }
+            Session::flash('error', 'something went wrong during board column mapping.');
+        }else{
+            Session::flash('error', 'Board column mapping data not received.');
+        }
+    }
 }
