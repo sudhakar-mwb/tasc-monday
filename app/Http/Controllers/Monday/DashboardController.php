@@ -520,4 +520,38 @@ class DashboardController extends Controller
             Session::flash('error', 'Board column mapping data not received.');
         }
     }
+
+    public function getBoardColumnsData (Request $request) {
+        $BoardColumnMappingData = BoardColumnMappings::all();
+        if (!empty($BoardColumnMappingData)) {
+            $data = json_decode($BoardColumnMappingData, true);
+            $boardsData = array();
+
+            foreach ($data as $record) {
+                $boardsData[] = [
+                    'board_id' => $record['board_id'],
+                    'columns' =>  json_decode($record['columns'], true),
+                ];
+            }
+            return json_encode($boardsData);
+        }
+        Session::flash('error', 'Something went wrong during fetch board column mapping data.');
+    }
+
+    public function getBoardColumnsDataById (Request $request) {
+        $boardId =  $request->id;
+        $BoardColumnMappingData = BoardColumnMappings::where('board_id', $boardId)->get();
+        if (!empty($BoardColumnMappingData)) {
+            $data = json_decode($BoardColumnMappingData, true);
+            $boardsData = array();
+            foreach ($data as $record) {
+                $boardsData[] = [
+                    'board_id' => $record['board_id'],
+                    'columns' =>  json_decode($record['columns'], true),
+                ];
+            }
+            return json_encode($boardsData);
+        }
+        Session::flash('error', 'Something went wrong during fetch board column mapping data.');
+    }
 }
