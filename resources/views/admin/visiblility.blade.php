@@ -6,35 +6,10 @@
 
 <main class="px-3 pt-5 ">
     @include('admin.headtitle')
-    <div class="container row flex-nowrap" style="align-items: flex-start;gap:15px">
-        <div class="columnsTable-wrapper col-6">
-            <table class="table border table-hover table-bordered" id="columnsTable">
-                <thead>
-                    <tr>
-                        {{-- <th scope="col " class="bg-success text-light" style="max-width: 50px">#</th> --}}
-                        <th scope="col " class="bg-success text-light">Board</th>
-                        <th scope="col " class="bg-success text-light">Allowed Columns</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for ($i = 0; $i < 10; $i++)
-                        <tr>
-                            <td class="p-0">
-                                <div class="d-flex align-items-center justify-content-center" style="min-height:100px">
-                                    <h6 class="text-secondary">34534564-d{{ $i }}</h6>
-                                </div>
-                            </td>
-                            <td class="m-0 p-0 " style="width:500px">
+    <div class="d-flex w-100 justify-content-center" style="">
 
-                            </td>
-                        </tr>
-                    @endfor
-
-                </tbody>
-            </table>
-        </div>
-        <div class="col-6">
-            <div class="w-100 bg-success text-white">
+        <div style="max-width:500px;width:100%;">
+            <div class="bg-success text-white">
                 <p class="p-2 m-0"><strong>MANAGE COLUMNS</strong></p>
             </div>
             <div class="form_wrapper border border-success p-4">
@@ -60,7 +35,7 @@
                                     <option value="{{ $boards[$j] }}">{{ $boards[$j] }}</option>
                                 @endfor
                             </select>
-                            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                            {{-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> --}}
                         </div>
                         <div class="mb-3">
                             <label for="exampleInputPassword1" class="form-label">Candidate Information</label>

@@ -554,4 +554,12 @@ class DashboardController extends Controller
         }
         Session::flash('error', 'Something went wrong during fetch board column mapping data.');
     }
+    public function createAdmin (Request $request){
+        $heading = 'Add Admin';
+        $subheading='24234423423423';
+        if ($request->isMethod('post')) {
+            
+        }
+        return view('admin.addAdmin',compact('heading','subheading'));
+    }
 }

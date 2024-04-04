@@ -58,7 +58,8 @@ Route::group(['prefix' => "monday"], function () {
 
     Route::group(['prefix' => "admin"], function () {
         Route::get('/users', [DashboardController::class, 'userslist'])->name('admin.users');
-        // Route::post('/users', [DashboardController::class, 'usersBoardAssign'])->name('admin.post.users');
+        Route::get('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
+        Route::post('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
       Route::get('/board-visiblilty', [DashboardController::class, 'columnAllowed'])->name('admin.boardvisibility');
       Route::post('/board-visiblilty', [DashboardController::class, 'boardColumnMapping'])->name('admin.post.boardvisibility');
       Route::get('/get-board-columns/{id}', [DashboardController::class, 'getBoardColumns'])->name('admin.get.getBoardColumns');
