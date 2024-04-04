@@ -520,4 +520,12 @@ class DashboardController extends Controller
             Session::flash('error', 'Board column mapping data not received.');
         }
     }
+    public function createAdmin (Request $request){
+        $heading = 'Add Admin';
+        $subheading='24234423423423';
+        if ($request->isMethod('post')) {
+            
+        }
+        return view('admin.addAdmin',compact('heading','subheading'));
+    }
 }

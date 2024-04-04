@@ -42,11 +42,14 @@ $(document).ready(function () {
     });
   }
 
-  $(document).on("input", "#icon_inputs>li>input", function (e) {
+  $(document).on("input", "#icon_inputs>li>input.column_icon", function (e) {
     const index = $(this).attr("index");
     data.candidate_coulmns[index].icon = this.value;
   });
-
+  $(document).on("input", "#icon_inputs>li>input.column_title", function (e) {
+    const index = $(this).attr("index");
+    data.candidate_coulmns[index].title = this.value;
+  });
   function addIconInputs() {
     $("#icon_inputs").html("");
     const inputs = data.candidate_coulmns
@@ -55,10 +58,15 @@ $(document).ready(function () {
     <label for="${"icon_input" + li.id}" class="form-label">For ${
           li.name
         }</label>
-    <input  class="form-control" id="${"icon_input" + li.id}" 
+    <input  class="form-control mb-1 column_icon" id="${"icon_input" + li.id}" 
     index="${i}" type="text" value="${
           li.icon
-        }" name="icons[]" placeholder="Enter icon class"></li>`
+        }" name="icons[]" placeholder="Enter column title">
+        <input  class="form-control column_title" id="${"icon_input" + li.id}" 
+        index="${i}" type="text" value="${
+              li.title
+            }" name="icons[]" placeholder="Enter icon class">
+        </li>`
       )
       .join(" ");
     $("#icon_inputs").html(inputs);
@@ -77,13 +85,13 @@ $(document).ready(function () {
         id: el.id,
         name: el.text,
         icon: "",
+        title:""
       };
     });
   });
 $("#onboarding-updates-option").change(function (e) {
   const selected_columns = this.value;
 data.extra_details.key=selected_columns;
-console.log({selected_columns})
 });
   $(document).ready(function () {
     $("#column_view_form").submit(async function (e) {
