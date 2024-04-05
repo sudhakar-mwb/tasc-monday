@@ -152,9 +152,14 @@
       </div>
 </div>
 
+<div class="toast" sty>
 
+</div>
 
 <style>
+  .cover{
+    
+  }
   .full-loader{
     z-index: 200000;
     position: fixed; 

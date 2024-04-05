@@ -1,8 +1,9 @@
 const base_url = "http://localhost:8001/";
+
 /**
- * to remove refrence of an object
- * @param  state an object that have to be deep copy
- * @returns
+ * Create a deep copy of an object
+ * @param {Object} state - The object to be deep copied
+ * @returns {Object} - The deep copied object
  */
 function deepCopy(state) {
 	return JSON.parse(JSON.stringify(state));
@@ -23,61 +24,47 @@ const initial_state = {
 	},
 };
 let status_group = {};
-
 let data = deepCopy(initial_state);
 
 /**
- * responsible to popoulate inputs for candiate columns details
+ * Populate inputs for candidate columns details
  */
 function populateColumnDetails() {
 	$("#icon_inputs").html("");
 	const inputs = data.candidate_coulmns
 		.map(
-			(li, i) => `<li class="mb-2">
-  <label for="${"icon_input" + li.id}" class="form-label">For ${li.name}</label>
-  <input  class="form-control mb-2 column_icon" id="${"icon_input" + li.id}" 
-  index="${i}" type="text" value="${
-				li.icon
-			}" name="icons[]" placeholder="Enter column icon">
-      <input  class="form-control column_title" id="${"icon_input" + li.id}" 
-      index="${i}" type="text" value="${
-				li.custom_title
-			}" name="icons[]" placeholder="Enter column title">
-      </li>`
+			(column, index) => `
+        <li class="mb-2">
+            <label for="icon_input_${column.id}" class="form-label">For ${column.name}</label>
+            <input class="form-control mb-2 column_icon" id="icon_input_${column.id}" 
+                index="${index}" type="text" value="${column.icon}" name="icons[]" 
+                placeholder="Enter column icon">
+            <input class="form-control column_title" id="icon_input_${column.id}" 
+                index="${index}" type="text" value="${column.custom_title}" name="icons[]" 
+                placeholder="Enter column title">
+        </li>`
 		)
 		.join(" ");
 	$("#icon_inputs").html(inputs);
 }
 
 /**
- * responsible for show od badges in selected order of Select 2
- * @param {*} id
- * @param {*} forkey
+ * Update selected badges in the order of Select2
+ * @param {string} id - The ID of the Select2 element
+ * @param {string} forkey - The key of the data object
  */
 function updateSelectedInOrder(id, forkey) {
 	var $selectedContainer = $(id).next().find(".select2-selection__rendered");
 	$selectedContainer.empty();
 	data[forkey].forEach(function (item) {
 		var liElement = $(
-			'<li class="select2-selection__choice" title="' +
-				item.name +
-				'" data-select2-id="' +
-				item.id +
-				'">'
+			`<li class="select2-selection__choice" title="${item.name}" data-select2-id="${item.id}">`
 		);
 		var removeButton = $(
-			'<button type="button" data_id="' +
-				item.id +
-				'" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-onboarding_columns-container-choice-' +
-				item.id +
-				'"><span aria-hidden="true">×</span></button>'
+			`<button type="button" data_id="${item.id}" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-onboarding_columns-container-choice-${item.id}"><span aria-hidden="true">×</span></button>`
 		);
 		var displayText = $(
-			'<span class="select2-selection__choice__display" id="select2-onboarding_columns-container-choice-' +
-				item.id +
-				'">' +
-				item.name +
-				"</span>"
+			`<span class="select2-selection__choice__display" id="select2-onboarding_columns-container-choice-${item.id}">${item.name}</span>`
 		);
 		removeButton.on("click", function () {
 			var data_id = $(this).attr("data_id");
@@ -85,7 +72,7 @@ function updateSelectedInOrder(id, forkey) {
 				return item.id === data_id;
 			});
 			if (index !== -1) {
-				data[forkey].splice(index, 1); // Remove unselected value
+				data[forkey].splice(index, 1);
 				$(id).val(data[forkey].map((el) => el.id));
 				updateSelectedInOrder(id, forkey);
 			}
@@ -109,7 +96,7 @@ $(document).ready(function () {
 	$("#icon_inputs-wrapper").hide();
 
 	/**
-	 * on select onboarding columns
+	 * On select onboarding columns
 	 */
 	$("#onboarding_columns")
 		.on("select2:select", function (e) {
@@ -127,13 +114,13 @@ $(document).ready(function () {
 				return item.id === e.params.data.id;
 			});
 			if (index !== -1) {
-				data.onboarding_columns.splice(index, 1); // Remove unselected value
+				data.onboarding_columns.splice(index, 1);
 				updateSelectedInOrder("#onboarding_columns", "onboarding_columns");
 			}
 		});
 
 	/**
-	 * on select candidate columns
+	 * On select candidate columns
 	 */
 	$("#candidate_columns")
 		.on("select2:select", function (e) {
@@ -153,14 +140,14 @@ $(document).ready(function () {
 				return item.id === e.params.data.id;
 			});
 			if (index !== -1) {
-				data.candidate_coulmns.splice(index, 1); // Remove unselected value
+				data.candidate_coulmns.splice(index, 1);
 			}
 			populateColumnDetails();
 			updateSelectedInOrder("#candidate_columns", "candidate_coulmns");
 		});
 
 	/**
-	 * on select subheadings
+	 * On select subheadings
 	 */
 	$("#sub_headings")
 		.on("select2:select", function (e) {
@@ -180,7 +167,7 @@ $(document).ready(function () {
 				return item.id === e.params.data.id;
 			});
 			if (index !== -1) {
-				data.candidate_coulmns.splice(index, 1); // Remove unselected value
+				data.candidate_coulmns.splice(index, 1);
 			}
 			populateColumnDetails();
 			updateSelectedInOrder("#sub_headings", "sub_headings_column");
@@ -189,19 +176,21 @@ $(document).ready(function () {
 	function showLoader() {
 		$("#full-loader").show();
 	}
+
 	function hideLoader() {
 		$("#full-loader").hide();
 	}
 
 	/**
-	 *
-	 * @param {*} url
-	 * @param {*} id
-	 * @returns promise
+	 * Fetch saved data
+	 * @param {string} url - The URL to fetch data from
+	 * @param {string} id - The ID of the data to fetch
+	 * @returns {Promise} - The fetched data
 	 */
 	async function fetchSavedData(url, id) {
 		try {
-			return fetch(base_url + `monday/admin/${url}/` + id);
+			const response = await fetch(base_url + `monday/admin/${url}/` + id);
+			return response;
 		} catch (error) {
 			console.log("Api error", error);
 			return false;
@@ -259,6 +248,7 @@ $(document).ready(function () {
 		$("#card-column-2").val("");
 		$("#icon_inputs-wrapper").hide();
 	}
+
 	function setValuesFromData() {
 		populateColumnDetails();
 		setTimeout(() => {
@@ -296,7 +286,6 @@ $(document).ready(function () {
 			showLoader();
 			try {
 				const response = await fetch(
-					// "https://dummyjson.com/products/search?q=" + val
 					base_url + "monday/admin/board-visiblilty",
 					{
 						method: "POST",

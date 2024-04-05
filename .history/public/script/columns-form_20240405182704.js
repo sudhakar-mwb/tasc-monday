@@ -4,7 +4,7 @@ const base_url = "http://localhost:8001/";
  * @param  state an object that have to be deep copy
  * @returns
  */
-function deepCopy(state) {
+function noRef(state) {
 	return JSON.parse(JSON.stringify(state));
 }
 
@@ -24,7 +24,7 @@ const initial_state = {
 };
 let status_group = {};
 
-let data = deepCopy(initial_state);
+let data = noRef(initial_state);
 
 /**
  * responsible to popoulate inputs for candiate columns details
@@ -210,7 +210,7 @@ $(document).ready(function () {
 
 	$("#input-board-select").change(async function (e) {
 		let val = e.target.value;
-		body = deepCopy(initial_state);
+		body = noRef(initial_state);
 		data.board = val;
 		if (val == "") return;
 		showLoader();
