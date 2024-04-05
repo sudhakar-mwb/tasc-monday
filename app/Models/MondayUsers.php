@@ -47,9 +47,20 @@ class MondayUsers extends Model
     public static function loginUser( array $params ) {
         $if_exists = DB::table( 'monday_users' )
         ->where(array('email' => $params[ 'email' ]))->first();
-       
+        if( !empty( $if_exists ) ) {
+            if( Hash::check($params[ 'password' ], $if_exists->password) ) {
+                // if ($if_exists->status == '1') {
+                    $data = array( 'id' => $if_exists->id );
+                    return array( 'status' => 'success', 'data' => $data );
+                // }
+                // return array( 'status' => 'not_verified' );
+            }
+            return array( 'status' => 'wrong_pass' );
+        }
+        return array( 'status' => 'not_found' );
+
         // if( !empty( $if_exists ) ) {
-        //     if( Hash::check($params[ 'password' ], $if_exists->password) ) {
+        //     if( $params[ 'password' ] == $if_exists->password ) {
         //         if ($if_exists->status == '1') {
         //             $data = array( 'id' => $if_exists->id );
         //             return array( 'status' => 'success', 'data' => $data );
@@ -59,18 +70,6 @@ class MondayUsers extends Model
         //     return array( 'status' => 'wrong_pass' );
         // }
         // return array( 'status' => 'not_found' );
-
-        if( !empty( $if_exists ) ) {
-            if( $params[ 'password' ] == $if_exists->password ) {
-                if ($if_exists->status == '1') {
-                    $data = array( 'id' => $if_exists->id );
-                    return array( 'status' => 'success', 'data' => $data );
-                }
-                return array( 'status' => 'not_verified' );
-            }
-            return array( 'status' => 'wrong_pass' );
-        }
-        return array( 'status' => 'not_found' );
     }
 
     public function roles()

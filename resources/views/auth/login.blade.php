@@ -3,11 +3,15 @@
 
         <main class="px-3 pt-5">
             @include('admin.headtitle')
-
+            @if($status!="")
+                <div class="d-flex justify-content-center">
+                    <div class="alert alert-{{$status}}" style="max-width:400px">    {{$msg}}</div>
+                </div>
+            @endif
             <form action="{{route('monday.post.login')}}" method="POST" class="form-auth">
                 <input type="text" placeholder="Email" name="email" value="{{ old('email') }}">
                 @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
-                <input type="text" placeholder="Password" name="password"  value="{{ old('password') }}">
+                <input type="text" placeholder="Password" name="password">
                 @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
                 <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
                     type="submit">
