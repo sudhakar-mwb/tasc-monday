@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('board_column_mappings', function (Blueprint $table) {
             $table->id();
             $table->string('board_id');
-            $table->string('columns');
+            $table->text('columns');
             $table->timestamps();
         });
     }

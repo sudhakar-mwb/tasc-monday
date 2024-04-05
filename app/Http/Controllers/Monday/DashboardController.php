@@ -11,6 +11,8 @@ use App\Models\MondayUsers;
 use App\Models\BoardColumnMappings;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
@@ -556,10 +558,61 @@ class DashboardController extends Controller
     }
     public function createAdmin (Request $request){
         $heading = 'Add Admin';
-        $subheading='24234423423423';
+        $subheading='To Create User With Admin Role';
+        $msg    = '';
+        $status = '';
         if ($request->isMethod('post')) {
             
         }
-        return view('admin.addAdmin',compact('heading','subheading'));
+        return view('admin.addAdmin',compact('heading','subheading','msg', 'status'));
+    }
+
+    function getErrorMessages() {
+        return [
+            "required" => ":attribute is required.",
+            "max"   => ":attribute should not be more then :max characters.",
+            "min"   => ":attribute should not be less then :min characters."
+        ];
+    }
+
+    public function storeAdmin (Request $request){
+        $heading     = 'Add Admin';
+        $subheading  ='To Create User With Admin Role';
+        $msg    = '';
+        $status = '';
+
+        $request->validate([
+            'name'         => 'required',
+            'email'        => 'required|email|unique:monday_users',
+            'password'     => 'required|min:6|max:100'
+        ], $this->getErrorMessages());
+
+        $dataToSave = array(
+            'name'         => trim($request['name']),
+            'email'        => trim($request['email']),
+            'phone'        => '',
+            'company_name' => '',
+            'role'         => 2,
+            'created_at'   => date("Y-m-d H:i:s"),
+            'updated_at'   => date("Y-m-d H:i:s"),
+            // 'password'     => trim($request['password']),
+            'password'     => Hash::make(trim($request['password']))
+        );
+        $insertUserInDB = MondayUsers::createUser($dataToSave);
+
+        if ($insertUserInDB['status'] == "success") {
+            $msg    = "Admin Created Successfully.";
+            $status = "success";
+            return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
+        } elseif ($insertUserInDB['status'] == "already") {
+            $msg    = "Admin Already Exists.";
+            $status = "success";
+            return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
+        }else{
+            $msg    = "Something went wrong. Please try again.";
+            $status = "danger";
+            return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
+        }
+        return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
     }
 }

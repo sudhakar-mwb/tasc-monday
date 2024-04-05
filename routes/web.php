@@ -44,32 +44,37 @@ Route::group(['prefix' => "monday"], function () {
     // Route::middleware('monday.auth')->group(function () {
     // Route::group(['middleware' => 'monday.auth'], function(){
     // Track Onboarding
-    Route::get('/', [DashboardController::class, 'dashboard'])->name('monday.dashboard');
-    Route::group(['prefix' => "form"], function () {
+    // Route::get('/', [DashboardController::class, 'dashboard'])->name('monday.dashboard');
+    Route::group(['prefix' => "form", 'middleware'=>['web','isUser']], function () {
         Route::get('/', [DashboardController::class, 'dashboard'])->name('monday.dashboard');
         Route::get('/track-request', [DashboardController::class, 'trackRequest'])->name('monday.track_request');
         Route::post('/track-request', [DashboardController::class, 'trackRequest'])->name('monday.track_request');
-        Route::get('/candidate-form', [DashboardController::class, 'mobilityform'])->name('monday.mobilityform');
-        Route::get('/candidate-stats', [DashboardController::class, 'stats'])->name('monday.stats');
+        Route::get('/candidate-form', [DashboardController::class, 'mobilityform'])->name('monday.mobilityform'); // monday-form
+        Route::get('/candidate-stats', [DashboardController::class, 'stats'])->name('monday.stats'); // chart
         Route::get('/track-request/{id}/{userName}', [DashboardController::class, 'manageById'])->name('user.show');
 
 
     });
 
-    Route::group(['prefix' => "admin"], function () {
+    Route::group(['prefix' => "admin", 'middleware'=>['web','isAdmin']], function () {
         Route::get('/users', [DashboardController::class, 'userslist'])->name('admin.users');
-        Route::get('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
-        Route::post('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
+        // Route::get('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
+        // Route::post('/create-admin', [DashboardController::class, 'storeAdmin'])->name('admin.post.storeAdmin');
       Route::get('/board-visiblilty', [DashboardController::class, 'columnAllowed'])->name('admin.boardvisibility');
       Route::post('/board-visiblilty', [DashboardController::class, 'boardColumnMapping'])->name('admin.post.boardvisibility');
       Route::get('/get-board-columns/{id}', [DashboardController::class, 'getBoardColumns'])->name('admin.get.getBoardColumns');
       Route::get('/get-board-columns-data', [DashboardController::class, 'getBoardColumnsData'])->name('admin.getBoardColumnsData');
       Route::get('/get-board-columns-data/{id}', [DashboardController::class, 'getBoardColumnsDataById'])->name('admin.getBoardColumnsDataById');
     });
+    Route::group(['prefix' => "admin", 'middleware'=>['web','isSuperAdmin']], function () {
+        Route::get('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
+        Route::post('/create-admin', [DashboardController::class, 'storeAdmin'])->name('admin.post.storeAdmin');
+    });
     Route::get('/login', [AuthController::class, 'login'])->name('monday.get.login');
     Route::post('/login', [AuthController::class, 'login'])->name('monday.post.login');
     Route::get('/signup', [AuthController::class, 'signup'])->name('monday.get.signup');
     Route::post('/signup', [AuthController::class, 'signup'])->name('monday.post.signup');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('monday.get.logout');
 
     Route::get('/forgot', [AuthController::class, 'forgot'])->name('monday.forgot');
     Route::get('/thanks', [AuthController::class, 'thankssignup'])->name('monday.thankssignup');

@@ -19,8 +19,10 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $msg    = '';
-        $status = '';
+        $msg        = '';
+        $status     = '';
+        $heading    = "Log In";
+        $subheading = "TASC Outsourcing KSA";
         if ($request->isMethod('post')) {
             $input = $request->all();
             $this->validate($request, [
@@ -30,21 +32,17 @@ class AuthController extends Controller
 
            $userInDb = MondayUsers::loginUser(array( 'email' => trim($input['email']), 'password' =>  trim($input['password'])));
 
-           echo '<pre>'; print_r( $userInDb ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
             $userCredential = $request->only('email','password');
             if(Auth::attempt($userCredential)){
-                echo '<pre>'; print_r( 'in' ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
                 $route = $this->redirectDash();
                 return redirect($route);
             }
             else{
-                echo '<pre>'; print_r( 'out' ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
-                return back()->with('error','Username & Password is incorrect');
+            $msg    = "Email or Password is incorrect.";
+            $status = "danger";
+            return view('auth.login',compact('heading','subheading',  'msg', 'status'));
             }
-            echo '<pre>'; print_r( 'here' ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
         }
-        $heading = "Log In";
-        $subheading = "TASC Outsourcing KSA";
         return view('auth.login', compact('heading', 'subheading', 'msg', 'status'), );
     }
     public function signup(Request $request)
@@ -58,8 +56,8 @@ class AuthController extends Controller
             $validator = FacadesValidator::make($request->all(),[
                 'name'         => 'required',
                 'company_name' => 'required',
-                'phone'        => 'required',
-                'email'        => 'required|email',
+                'phone'        => 'required|max:10',
+                'email'        => 'required|email|unique:monday_users',
                 'password'     => 'required|min:6|max:100'
             // ]);
             ], $this->getErrorMessages());
@@ -70,10 +68,10 @@ class AuthController extends Controller
                     'company_name' => trim($input['company_name']),
                     'phone'        => trim($input['phone']),
                     'email'        => trim($input['email']),
-                    'password'     => trim($input['password']),
+                    // 'password'     => trim($input['password']),
                     'created_at'   => date("Y-m-d H:i:s"),
                     'updated_at'   => date("Y-m-d H:i:s"),
-                    // 'password'     => Hash::make(trim($input['password']))
+                    'password'     => Hash::make(trim($input['password']))
                 );
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
                 if ($insertUserInDB['status'] == "success") {
@@ -114,27 +112,32 @@ class AuthController extends Controller
         ];
     }
 
-    // public function redirectDash()
-    // {
-    //     $redirect = '';
+    public function redirectDash()
+    {
+        $redirect = '';
 
-    //     if(Auth::user() && Auth::user()->role == 1){
-    //         $redirect = '/super-admin/dashboard';
-    //     }
-    //     else if(Auth::user() && Auth::user()->role == 2){
-    //         $redirect = '/admin/dashboard';
-    //     }
-    //     else{
-    //         $redirect = '/dashboard';
-    //     }
+        // Super Admin
+        if(Auth::user() && Auth::user()->role == 1){
+            $redirect = 'monday/admin/create-admin';
+        }
+        // Admin
+        else if(Auth::user() && Auth::user()->role == 2){
+            $redirect = 'monday/admin/board-visiblilty';
+        }// User
+        else{
+            $redirect = '/monday/form';
+        }
 
-    //     return $redirect;
-    // }
+        return $redirect;
+    }
 
-    // public function logout(Request $request)
-    // {
-    //     $request->session()->flush();
-    //     Auth::logout();
-    //     return redirect('/');
-    // }
+    public function logout(Request $request)
+    {
+        $request->session()->flush();
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        Auth::guard('web')->logout();
+        return redirect('/monday/login');
+    }
 }
