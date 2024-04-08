@@ -9,9 +9,14 @@ use App\Traits\MondayApis;
 use Carbon\Carbon;
 use App\Models\MondayUsers;
 use App\Models\BoardColumnMappings;
+use App\Models\ColourMappings;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\Session;
 use App\Models\ColourMappings;
+use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Illuminate\Support\Facades\Hash;
+
+
 class DashboardController extends Controller
 {
     use MondayApis;
@@ -569,11 +574,107 @@ class DashboardController extends Controller
     }
     public function createAdmin (Request $request){
         $heading = 'Add Admin';
-        $subheading='24234423423423';
+        $subheading='To Create User With Admin Role';
+        $msg    = '';
+        $status = '';
         if ($request->isMethod('post')) {
             
         }
-        return view('admin.addAdmin',compact('heading','subheading'));
+        return view('admin.addAdmin',compact('heading','subheading','msg', 'status'));
+    }
+
+    function getErrorMessages() {
+        return [
+            "required" => ":attribute is required.",
+            "max"   => ":attribute should not be more then :max characters.",
+            "min"   => ":attribute should not be less then :min characters."
+        ];
+    }
+
+    public function storeAdmin (Request $request){
+        $heading     = 'Add Admin';
+        $subheading  ='To Create User With Admin Role';
+        $msg    = '';
+        $status = '';
+
+        $request->validate([
+            'name'         => 'required',
+            'email'        => 'required|email|unique:monday_users',
+            'password'     => 'required|min:6|max:100'
+        ], $this->getErrorMessages());
+
+        $dataToSave = array(
+            'name'         => trim($request['name']),
+            'email'        => trim($request['email']),
+            'phone'        => '',
+            'company_name' => '',
+            'role'         => 2,
+            'created_at'   => date("Y-m-d H:i:s"),
+            'updated_at'   => date("Y-m-d H:i:s"),
+            // 'password'     => trim($request['password']),
+            'password'     => Hash::make(trim($request['password']))
+        );
+        $insertUserInDB = MondayUsers::createUser($dataToSave);
+
+        if ($insertUserInDB['status'] == "success") {
+            $msg    = "Admin Created Successfully.";
+            $status = "success";
+            return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
+        } elseif ($insertUserInDB['status'] == "already") {
+            $msg    = "Admin Already Exists.";
+            $status = "success";
+            return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
+        }else{
+            $msg    = "Something went wrong. Please try again.";
+            $status = "danger";
+            return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
+        }
+        return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
+    }
+
+    public function getColourMapping ( ){
+        $colourMappingsData = ColourMappings::get();
+
+        if (!empty($colourMappingsData)) {
+            $data = json_decode($colourMappingsData, true);
+
+            $coloursData = array();
+            foreach ($data as $record) {
+                $coloursData[] = [
+                    $record['colour_name'] =>  json_decode($record['colour_value'], true),
+                ];
+            }
+            return json_encode($coloursData);
+            return json_encode($coloursData);
+        }
+        Session::flash('error', 'Something went wrong during fetch colour mapping data.');
+    }
+
+    public function postColourMapping (Request  $request) {
+        $data  = $request->getContent();
+        if (!empty($data)) {
+            $dataArray = json_decode($data, true);
+            foreach ($dataArray as $key => $value) {
+                $datatoUpdate = [
+                    'colour_value' => json_encode($value),
+                ];
+                $criteria = [
+                    'colour_name' => $key,
+                ];
+                $colourMappingDBData = ColourMappings::find($criteria['colour_name']);
+                $response = ColourMappings::updateOrCreate( $criteria, $datatoUpdate);
+            }
+
+            // Check if the record was updated
+            if ($colourMappingDBData && $response->wasChanged()) {
+                Session::flash('message', 'Colour mapping successfully updated.');
+            } else {
+                Session::flash('message', 'Colour mapping successfully updated.');
+            }
+            Session::flash('error', 'something went wrong during colour mapping.');
+        }else{
+            Session::flash('error', 'Colour mapping data not received.');
+        }
     }
 
 

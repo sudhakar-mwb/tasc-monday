@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('board_column_mappings', function (Blueprint $table) {
+        Schema::create('colour_mappings', function (Blueprint $table) {
             $table->id();
-            $table->string('board_id');
-            $table->text('columns');
+            $table->string('colour_name');
+            $table->text('colour_value');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('board_column_mappings');
+        Schema::dropIfExists('colour_mappings');
     }
 };

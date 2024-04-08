@@ -33,8 +33,11 @@
                     <span class="text-secondary
 
             ">
-                        Welcome
-                        <strong>Hani</strong>
+                        @if(auth()->check())
+                            <strong>Welcome, {{ auth()->user()->name }}</strong>
+                        @else
+                            <strong>Welcome</strong>
+                        @endif
                     </span>
                 
                     @php
@@ -71,7 +74,7 @@
                 </a>
                     @endif
                     {{-- <a href="lo gin">Already have an Account?</a> --}}
-                    <a href="/monday/login" class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center">
+                    <a href="{{route('monday.get.logout')}}" class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center">
                         <span>Log out</span>
                         <span class="icon-btn_track" style="height: 22px;width: 22px">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"

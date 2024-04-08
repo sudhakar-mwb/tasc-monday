@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class AdminAuthentication
 {
     /**
@@ -19,7 +19,7 @@ class AdminAuthentication
         if(auth()->user() && auth()->user()->role == 2){
             return $next($request);
         }
-
-        return redirect('/');
+        Auth::logout();
+        return redirect('/monday/login');
     }
 }
