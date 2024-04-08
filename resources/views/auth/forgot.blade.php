@@ -26,7 +26,7 @@
                     </span>
                 </button>
                 <div class="d-flex justify-content-center align-items-start w-100 mt-2">
-                    <a href="login">Back to Login?</a>
+                    <a href="{{route('monday.get.login')}}">Back to Login?</a>
                    </div>
             </form>
    

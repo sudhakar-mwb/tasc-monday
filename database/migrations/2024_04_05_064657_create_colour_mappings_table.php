@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('colour_name');
             $table->text('colour_value');
+            $table->string('rgb_code');
             $table->timestamps();
         });
     }
