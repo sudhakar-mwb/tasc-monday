@@ -370,7 +370,7 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                             @foreach ($candidate_coulmns as $col)
                                 <li class="list-group-item d-flex align-items-center border-0 text-start"
                                     style="background: inherit;gap:16px"><span>
-                                        <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-asterisk' }}"></i>
+                                        <i class="bi {{ $col['icon'] }}"></i>
                                     </span><span><strong>{{ $col['custom_title'] }}&nbsp;:&nbsp;</strong>{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
                                 </li>
                             @endforeach
@@ -419,8 +419,6 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                 // dd($valued);
                                 // json_decode(getValueById($step, $columns, $trackdata, 'value'), true);
                                 $status = getValueById($columns_val, $step['id'], 'text');
-                                if($status !=='NA')
-{
                                 ?>
                                 <li class="list-group-item d-flex align-items-start border-0 text-start mb-1"
                                     style="background: inherit;gap:10px">
@@ -456,7 +454,6 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                         @endif
                                     </div>
                                 </li>
-                                <?php } ?>
                             @endforeach
                         </ul>
                     </div>

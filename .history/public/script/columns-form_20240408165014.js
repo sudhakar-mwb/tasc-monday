@@ -279,7 +279,7 @@ $(document).ready(function () {
 		$("#sub_headings").val(data.sub_headings_column.map((el) => el.id));
 		$("#sub_headings").trigger("change");
 		$("#onboarding-updates-option").val(data.extra_details.key);
-		// console.log({ data });
+		console.log({ data });
 		$("#card-column-1").val(data.card_section.column1);
 		$("#card-column-2").val(data.card_section.column2);
 	}

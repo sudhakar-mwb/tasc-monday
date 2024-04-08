@@ -274,30 +274,14 @@ class DashboardController extends Controller
          }
         return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery','sortbyname','status_filter'));
     }
-
-
     public function manageById(Request $request)
     {
         $id = request()->route('id');
         ;
         $userName = request()->route('username');
         ;
-        $boardId  ="";
-        $data="{}";
-        if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
-          $boardId  = auth()->user()->board_id;
-          $response = BoardColumnMappings::where('board_id','=',$boardId)->get();
-          $response = json_decode($response, true);
-          if ($response['0']['columns']) {
-              $data = json_decode($response['0']['columns'],true);
-          } else {
-              die('board column mapping not exist in db');
-          }
-      }else{
-          die('board not assigned!');
-        }
         $query = '{
-            boards(ids: '.$boardId.') {
+            boards(ids: 1390329031) {
             columns {
                title
                id
@@ -317,7 +301,6 @@ class DashboardController extends Controller
            created_at
            column_values {
                    id
-                   text
                       value
                       type
                       ... on StatusValue  {
@@ -333,7 +316,7 @@ class DashboardController extends Controller
         $heading = 'Request Tracking';
         $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
 
-        return view('admin.user_details', compact('response','data'));
+        return view('admin.user_details', compact('response'));
     }
     public function mobilityform()
     {

@@ -275,7 +275,7 @@ class DashboardController extends Controller
         return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery','sortbyname','status_filter'));
     }
 
-
+  
     public function manageById(Request $request)
     {
         $id = request()->route('id');
@@ -317,7 +317,6 @@ class DashboardController extends Controller
            created_at
            column_values {
                    id
-                   text
                       value
                       type
                       ... on StatusValue  {
@@ -330,6 +329,13 @@ class DashboardController extends Controller
            }
        }';
         $response = $this->_get($query)['response'];
+        function view_data($data,$response){
+          $structured=$data;
+          $structured[board]
+          return [];
+      }
+  
+        dd(view_data($data,$response));
         $heading = 'Request Tracking';
         $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
 

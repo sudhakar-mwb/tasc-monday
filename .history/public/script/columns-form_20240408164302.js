@@ -30,6 +30,7 @@ let data = deepCopy(initial_state);
  * responsible to popoulate inputs for candiate columns details
  */
 function populateColumnDetails() {
+	console.log("ddd", data.candidate_coulmns, $("#icon_inputs"));
 	$("#icon_inputs").html("");
 	const inputs = data.candidate_coulmns
 		.map(
@@ -89,11 +90,11 @@ function updateSelectedInOrder(id, forkey) {
 				$(id).val(data[forkey].map((el) => el.id));
 				updateSelectedInOrder(id, forkey);
 			}
-			populateColumnDetails();
 		});
 		liElement.append(removeButton);
 		liElement.append(displayText);
 		$selectedContainer.append(liElement);
+		populateColumnDetails();
 	});
 }
 
@@ -222,9 +223,8 @@ $(document).ready(function () {
 		const res_saved = await fetchSavedData("get-board-columns-data", val);
 		const saved_data = await res_saved.json();
 		if (saved_data?.[0]?.columns) data = saved_data[0].columns;
-
 		if (data?.["candidate_coulmns"]?.length > 0) {
-			$("#icon_inputs-wrapper").show();
+			populateColumnDetails();
 		}
 
 		let options = columns
@@ -279,7 +279,7 @@ $(document).ready(function () {
 		$("#sub_headings").val(data.sub_headings_column.map((el) => el.id));
 		$("#sub_headings").trigger("change");
 		$("#onboarding-updates-option").val(data.extra_details.key);
-		// console.log({ data });
+		console.log({ data });
 		$("#card-column-1").val(data.card_section.column1);
 		$("#card-column-2").val(data.card_section.column2);
 	}

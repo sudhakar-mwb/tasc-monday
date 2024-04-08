@@ -274,8 +274,6 @@ class DashboardController extends Controller
          }
         return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery','sortbyname','status_filter'));
     }
-
-
     public function manageById(Request $request)
     {
         $id = request()->route('id');
@@ -317,7 +315,6 @@ class DashboardController extends Controller
            created_at
            column_values {
                    id
-                   text
                       value
                       type
                       ... on StatusValue  {

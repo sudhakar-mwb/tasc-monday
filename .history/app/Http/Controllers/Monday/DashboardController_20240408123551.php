@@ -274,30 +274,14 @@ class DashboardController extends Controller
          }
         return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery','sortbyname','status_filter'));
     }
-
-
     public function manageById(Request $request)
     {
         $id = request()->route('id');
         ;
         $userName = request()->route('username');
         ;
-        $boardId  ="";
-        $data="{}";
-        if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
-          $boardId  = auth()->user()->board_id;
-          $response = BoardColumnMappings::where('board_id','=',$boardId)->get();
-          $response = json_decode($response, true);
-          if ($response['0']['columns']) {
-              $data = json_decode($response['0']['columns'],true);
-          } else {
-              die('board column mapping not exist in db');
-          }
-      }else{
-          die('board not assigned!');
-        }
         $query = '{
-            boards(ids: '.$boardId.') {
+            boards(ids: 1390329031) {
             columns {
                title
                id
@@ -317,7 +301,6 @@ class DashboardController extends Controller
            created_at
            column_values {
                    id
-                   text
                       value
                       type
                       ... on StatusValue  {
@@ -332,7 +315,78 @@ class DashboardController extends Controller
         $response = $this->_get($query)['response'];
         $heading = 'Request Tracking';
         $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
-
+$data=json_decode('{
+  "board": "1352607400",
+  "overall_status": "COMPLETED",
+  "onboarding_columns": [
+    {
+      "id": "long_text3",
+      "name": "Updates",
+      "icon": "",
+      "custom_title": ""
+    },
+    {
+      "id": "status7",
+      "name": "Visa / E-wakala",
+      "icon": "",
+      "custom_title": ""
+    },
+    {
+      "id": "name",
+      "name": "Name",
+      "icon": "",
+      "custom_title": ""
+    }
+  ],
+  "candidate_coulmns": [
+    {
+      "id": "name",
+      "name": "Name",
+      "icon": "wrwrwe",
+      "custom_title": "icon-text"
+    },
+    {
+      "id": "status4",
+      "name": "Visa Issuance",
+      "icon": "",
+      "custom_title": ""
+    },
+    {
+      "id": "status8",
+      "name": "Overall Status",
+      "icon": "",
+      "custom_title": ""
+    }
+  ],
+  "sub_headings_column": [
+    {
+      "id": "1446175235",
+      "name": "Employee Requests Lobby (Zi Cloud Access)",
+      "icon": "",
+      "custom_title": ""
+    },
+    {
+      "id": "status4",
+      "name": "Visa Issuance",
+      "icon": "",
+      "custom_title": ""
+    },
+    {
+      "id": "name",
+      "name": "Name",
+      "icon": "",
+      "custom_title": ""
+    }
+  ],
+  "card_section": {
+    "column1": "country34",
+    "column2": "status6"
+  },
+  "extra_details": {
+    "key": "date",
+    "time_stamp": ""
+  }
+}',true);
         return view('admin.user_details', compact('response','data'));
     }
     public function mobilityform()

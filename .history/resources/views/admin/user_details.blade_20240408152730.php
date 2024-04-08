@@ -197,16 +197,11 @@ $countryInfo = [
     'ZM' => ['flag' => '🇿🇲', 'calling_code' => '+260'],
     'ZW' => ['flag' => '🇿🇼', 'calling_code' => '+263'],
 ];
-$candidate_coulmns = $data['candidate_coulmns'];
-$onboarding_columns = $data['onboarding_columns'];
-$sub_headings_column = $data['sub_headings_column'];
-$onboarding_updates_columns = $data['extra_details']['key'];
+$candidate_coulmns=$data['candidate_coulmns'];
 $columns = $response['data']['boards'][0]['columns'];
 $activityLog = $response['data']['boards'][0]['activity_logs'] ?? [];
 $trackdata = $response['data']['items'][0];
-$columns_val = $response['data']['items'][0]['column_values'];
 $created_at = $response['data']['items'][0]['created_at'];
-
 function getValueById($columnValues, $id, $key = 'value')
 {
     foreach ($columnValues as $item) {
@@ -341,24 +336,8 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                     </div>
                     <div class="d-flex flex-column justify-content-around">
                         <h5 class="text-start m-0">{{ $name }}</h5>
-                        <p class="profession m-0 text-start text-secondary" style="font-weight: 400">
-                            <?php
-                            $str = [];
-                            for ($cnt = 0; $cnt < count($sub_headings_column); $cnt++) {
-                                $el = $sub_headings_column[$cnt];
-                            }
-                            $txt = getValueById($columns_val, $el['id'], 'text');
-                            echo $txt;
-                            if ($txt) {
-                                if ($cnt > 0 && $cnt !== count($sub_headings_column) - 1 && $txt !== '') {
-                                    array_push($str, '|');
-                                }
-                                array_push($str, $txt);
-                            }
-                            ?>
-
-                            {{ implode(' ', $str) }}
-                        </p>
+                        <p class="profession m-0 text-start text-secondary" style="font-weight: 400">{{ $profession }}
+                            | {{ $hiringType }}</p>
                         <h6 class="status m-0 text-start text-{{ getClass($profileStatus) }} fw-bold">
                             {{ $profileStatus }}</h6>
                     </div>
@@ -367,14 +346,17 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                     <div class="card border-0 border-1 p-4">
                         <h4 class="text-start head-color fw-bold pb-4 border-bottom">Candidate Information</h4>
                         <ul class="list-group list-group-flush">
-                            @foreach ($candidate_coulmns as $col)
-                                <li class="list-group-item d-flex align-items-center border-0 text-start"
-                                    style="background: inherit;gap:16px"><span>
-                                        <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-asterisk' }}"></i>
-                                    </span><span><strong>{{ $col['custom_title'] }}&nbsp;:&nbsp;</strong>{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
-                                </li>
-                            @endforeach
-                            {{-- <li class="list-group-item d-flex align-items-center border-0 text-start"
+                          @foreach($candidate_coulmns as $col)
+                          <li class="list-group-item d-flex align-items-center border-0 text-start"
+                          style="background: inherit;gap:16px"><span><svg xmlns="http://www.w3.org/2000/svg"
+                                  width="16" height="16" fill="currentColor" class="bi bi-flag-fill"
+                                  viewBox="0 0 16 16">
+                                  <path
+                                      d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12 12 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A20 20 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a20 20 0 0 0 1.349-.476l.019-.007.004-.002h.001" />
+                              </svg></span><span>{{getValueById($column['column_values'],$col['id'],'text') ?? $countryOfResidence }}</span></li>
+                     
+                      @endforeach
+                            <li class="list-group-item d-flex align-items-center border-0 text-start"
                                 style="background: inherit;gap:16px"><span><svg xmlns="http://www.w3.org/2000/svg"
                                         width="16" height="16" fill="currentColor" class="bi bi-flag-fill"
                                         viewBox="0 0 16 16">
@@ -405,22 +387,17 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                             d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z" />
                                         <path
                                             d="M9 7.5a.5.5 0 0 1 .5-.5H15v2H9.5a.5.5 0 0 1-.5-.5zm-2 3v1a.5.5 0 0 1-.5.5H1v-2h5.5a.5.5 0 0 1 .5.5" />
-                                    </svg></span><span>Joining Date | {{ $joiningDate }}</span></li> --}}
+                                    </svg></span><span>Joining Date | {{ $joiningDate }}</span></li>
 
                         </ul>
                     </div>
                     <div class="card border-0 border-1 p-4">
                         <h4 class="text-start head-color fw-bold pb-4 border-bottom">Onboarding Status</h4>
                         <ul class="list-group list-group-flush">
-                            @foreach ($onboarding_columns as $step)
+                            @foreach ($onboardings as $step)
                                 <?php
-                                
-                                $valued = json_decode(getValueById($columns_val, $step['id'], 'value'), true);
-                                // dd($valued);
-                                // json_decode(getValueById($step, $columns, $trackdata, 'value'), true);
-                                $status = getValueById($columns_val, $step['id'], 'text');
-                                if($status !=='NA')
-{
+                                $valued = json_decode(findElementByTitle($step, $columns, $trackdata, 'value'), true);
+                                $status = findElementByTitle($step, $columns, $trackdata, 'label');
                                 ?>
                                 <li class="list-group-item d-flex align-items-start border-0 text-start mb-1"
                                     style="background: inherit;gap:10px">
@@ -434,10 +411,11 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                         </svg>
                                     </span>
                                     <div class="d-flex flex-column">
-                                        <span class="fw-bold text-secondary fs-5">{{ $step['name'] }}</span>
+                                        <span class="fw-bold text-secondary fs-5">{{ $step }}</span>
                                         <span class="text-secondary">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
+                                                fill="currentColor" class="bi bi-arrow-right-short"
+                                                viewBox="0 0 16 16">
                                                 <path fill-rule="evenodd"
                                                     d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
                                             </svg>
@@ -456,7 +434,6 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                         @endif
                                     </div>
                                 </li>
-                                <?php } ?>
                             @endforeach
                         </ul>
                     </div>
@@ -467,8 +444,7 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                     <h5 class="text-start head-color fw-bold pb-4 border-bottom">Onboarding Updates</h5>
                     <h6 class="text-start mt-2 mb-4 fw-bold text-secondary">
                         {{ dateFormater($created_at) ?? '' }}</h6>
-                    <p class="text-start text-secondary">
-                        {{ getValueById($columns_val, $onboarding_updates_columns, 'text') ?? '' }}</p>
+                    <p class="text-start text-secondary">{{ $updatesMsg['text'] ?? '' }}</p>
 
                 </div>
             </div>

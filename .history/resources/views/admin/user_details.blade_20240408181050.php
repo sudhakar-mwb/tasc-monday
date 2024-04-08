@@ -370,7 +370,7 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                             @foreach ($candidate_coulmns as $col)
                                 <li class="list-group-item d-flex align-items-center border-0 text-start"
                                     style="background: inherit;gap:16px"><span>
-                                        <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-asterisk' }}"></i>
+                                        <i class="bi {{ $col['icon']?? 'bi-asterisk' }}"></i>
                                     </span><span><strong>{{ $col['custom_title'] }}&nbsp;:&nbsp;</strong>{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
                                 </li>
                             @endforeach
