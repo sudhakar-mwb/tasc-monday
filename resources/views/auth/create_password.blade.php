@@ -1,21 +1,24 @@
-@include('auth.header')
 
+@include('auth.header')
 
         <main class="px-3 pt-5">
             @include('admin.headtitle')
-
             @if($status!="")
                 <div class="d-flex justify-content-center">
                     <div class="alert alert-{{$status}}" style="max-width:400px">    {{$msg}}</div>
                 </div>
             @endif
-            <form action="{{route('monday.post.forgot')}}" method="POST" class="form-auth">
-                <input type="text" placeholder="Email" name="email" value="{{ old('email') }}" required/><br/>
-                @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+            <form action="{{route('monday.post.login')}}" method="POST" class="form-auth">
+                {{-- <input type="email" disabled placeholder="Email" name="email" value="{{ old('email') }}"> --}}
+                {{-- @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror --}}
+                <input type="password" placeholder="Password" name="password">
+                @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+                <input type="password" placeholder="Confirm Password" name="conf_password">
+                @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
                 <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
                     type="submit">
                     <span>
-                       Send Link to Email
+                        Change Password
                     </span>
                     <span class="icon-btn_track" style="margin-left:10px">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -25,9 +28,10 @@
                         </svg>
                     </span>
                 </button>
-                <div class="d-flex justify-content-center align-items-start w-100 mt-2">
-                    <a href="login">Back to Login?</a>
-                   </div>
+                {{-- <div class="d-flex justify-content-between align-items-start w-100 mt-2">
+                    <a href="forgot">Forgot Password?</a>
+                    <a href="signup">Create New Account?</a>
+                </div> --}}
             </form>
    
         </main>

@@ -9,6 +9,7 @@ use App\Traits\MondayApis;
 use Carbon\Carbon;
 use App\Models\MondayUsers;
 use App\Models\BoardColumnMappings;
+use App\Models\ColourMappings;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
@@ -614,5 +615,50 @@ class DashboardController extends Controller
             return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
         }
         return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
+    }
+
+    public function getColourMapping ( ){
+        $colourMappingsData = ColourMappings::get();
+
+        if (!empty($colourMappingsData)) {
+            $data = json_decode($colourMappingsData, true);
+
+            $coloursData = array();
+            foreach ($data as $record) {
+                $coloursData[] = [
+                    $record['colour_name'] =>  json_decode($record['colour_value'], true),
+                ];
+            }
+            return json_encode($coloursData);
+            return json_encode($coloursData);
+        }
+        Session::flash('error', 'Something went wrong during fetch colour mapping data.');
+    }
+
+    public function postColourMapping (Request  $request) {
+        $data  = $request->getContent();
+        if (!empty($data)) {
+            $dataArray = json_decode($data, true);
+            foreach ($dataArray as $key => $value) {
+                $datatoUpdate = [
+                    'colour_value' => json_encode($value),
+                ];
+                $criteria = [
+                    'colour_name' => $key,
+                ];
+                $colourMappingDBData = ColourMappings::find($criteria['colour_name']);
+                $response = ColourMappings::updateOrCreate( $criteria, $datatoUpdate);
+            }
+
+            // Check if the record was updated
+            if ($colourMappingDBData && $response->wasChanged()) {
+                Session::flash('message', 'Colour mapping successfully updated.');
+            } else {
+                Session::flash('message', 'Colour mapping successfully updated.');
+            }
+            Session::flash('error', 'something went wrong during colour mapping.');
+        }else{
+            Session::flash('error', 'Colour mapping data not received.');
+        }
     }
 }
