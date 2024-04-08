@@ -65,6 +65,8 @@ Route::group(['prefix' => "monday"], function () {
       Route::get('/get-board-columns/{id}', [DashboardController::class, 'getBoardColumns'])->name('admin.get.getBoardColumns');
       Route::get('/get-board-columns-data', [DashboardController::class, 'getBoardColumnsData'])->name('admin.getBoardColumnsData');
       Route::get('/get-board-columns-data/{id}', [DashboardController::class, 'getBoardColumnsDataById'])->name('admin.getBoardColumnsDataById');
+      Route::get('/colour-mapping', [DashboardController::class, 'getColourMapping'])->name('admin.getColourMapping');
+      Route::post('/colour-mapping', [DashboardController::class, 'postColourMapping'])->name('admin.postColourMapping');
     });
     Route::group(['prefix' => "admin", 'middleware'=>['web','isSuperAdmin']], function () {
         Route::get('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
@@ -77,6 +79,9 @@ Route::group(['prefix' => "monday"], function () {
     Route::get('/logout', [AuthController::class, 'logout'])->name('monday.get.logout');
 
     Route::get('/forgot', [AuthController::class, 'forgot'])->name('monday.forgot');
+    Route::post('/forgot', [AuthController::class, 'forgot'])->name('monday.post.forgot');
+    Route::get('/create-password/{token}', [AuthController::class, 'createNewPassword'])->name('monday.createNewPassword');
+    // Route::post('/create-password', [AuthController::class, 'createNewPasswordPost'])->name('monday.createNewPasswordPost');
     Route::get('/thanks', [AuthController::class, 'thankssignup'])->name('monday.thankssignup');
 
 

@@ -76,4 +76,11 @@ class MondayUsers extends Model
     {
         return $this->hasOne(Role::class,'id', 'role');
     }
+
+    public static function getUser( array $params ) {
+        if (!empty($params)) {
+            return DB::table( 'monday_users' )->where($params)->first();
+        }
+        return false;
+    }
 }
