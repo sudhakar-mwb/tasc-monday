@@ -9,7 +9,7 @@ use App\Traits\MondayApis;
 use Carbon\Carbon;
 use App\Models\MondayUsers;
 use App\Models\BoardColumnMappings;
-use App\Models\ColourMappings;
+// use App\Models\ColourMappings;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\Session;
 use App\Models\ColourMappings;
@@ -274,14 +274,30 @@ class DashboardController extends Controller
          }
         return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery','sortbyname','status_filter'));
     }
+
+
     public function manageById(Request $request)
     {
         $id = request()->route('id');
         ;
         $userName = request()->route('username');
         ;
+        $boardId  ="";
+        $data="{}";
+        if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
+          $boardId  = auth()->user()->board_id;
+          $response = BoardColumnMappings::where('board_id','=',$boardId)->get();
+          $response = json_decode($response, true);
+          if ($response['0']['columns']) {
+              $data = json_decode($response['0']['columns'],true);
+          } else {
+              die('board column mapping not exist in db');
+          }
+      }else{
+          die('board not assigned!');
+        }
         $query = '{
-            boards(ids: 1390329031) {
+            boards(ids: '.$boardId.') {
             columns {
                title
                id
@@ -301,6 +317,7 @@ class DashboardController extends Controller
            created_at
            column_values {
                    id
+                   text
                       value
                       type
                       ... on StatusValue  {
@@ -316,7 +333,7 @@ class DashboardController extends Controller
         $heading = 'Request Tracking';
         $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
 
-        return view('admin.user_details', compact('response'));
+        return view('admin.user_details', compact('response','data'));
     }
     public function mobilityform()
     {
@@ -676,32 +693,4 @@ class DashboardController extends Controller
             Session::flash('error', 'Colour mapping data not received.');
         }
     }
-
-
-  public function postColourMapping (Request  $request) {
-      $data  = $request->getContent();
-      if (!empty($data)) {
-          $dataArray = json_decode($data, true);
-          foreach ($dataArray as $key => $value) {
-              $datatoUpdate = [
-                  'colour_value' => json_encode($value),
-              ];
-              $criteria = [
-                  'colour_name' => $key,
-              ];
-              $colourMappingDBData = ColourMappings::find($criteria['colour_name']);
-              $response = ColourMappings::updateOrCreate( $criteria, $datatoUpdate);
-          }
-
-          // Check if the record was updated
-          if ($colourMappingDBData && $response->wasChanged()) {
-              Session::flash('message', 'Colour mapping successfully updated.');
-          } else {
-              Session::flash('message', 'Colour mapping successfully updated.');
-          }
-          Session::flash('error', 'something went wrong during colour mapping.');
-      }else{
-          Session::flash('error', 'Colour mapping data not received.');
-      }
-  }
 }
