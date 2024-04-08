@@ -1,7 +1,56 @@
 @include('includes.header')
-@php
-    // dd($response);
-@endphp
+<?php
+$trackdata = $response['data']['boards'][0]['items_page']['items'];
+$cs = $response['data']['boards'][0]['items_page']['cursor'];
+$columns = $response['data']['boards'][0]['columns'];
+
+function getValueById($columnValues, $id, $key = 'value')
+{
+    foreach ($columnValues as $item) {
+        if ($item['id'] === $id) {
+            return trim($item[$key], '"') ? trim($item[$key], '"') : 'N/A';
+        }
+    }
+    return null; // Return null if no matching id found
+}
+function findElementByTitle($name, $data, $trackdata, $key = 'value')
+{
+    $columnsid = null;
+    foreach ($data as $element) {
+        if (isset($element['title']) && $element['title'] === $name) {
+            $columnsid = $element['id'];
+        }
+    }
+
+    if ($columnsid !== null) {
+        return getValueById($trackdata['column_values'], $columnsid, $key);
+    } // Return null if element not found
+    return null;
+}
+function getClass($input)
+{
+    switch ($input) {
+        case 'IN PROGRESS':
+            return 'bg-light-progress';
+        case 'COMPLETED':
+            return 'bg-light-success';
+        case 'STUCK':
+            return 'bg-light-danger';
+        default:
+            return 'bg-light-progress';
+    }
+}
+function dateFormater($dateString)
+{
+    $date = new DateTime($dateString);
+    $formattedDate = $date->format('F j, Y');
+    return $formattedDate;
+}
+$column1=getValueById($trackdata[0]['column_values'],$data['column1'],'text');
+$column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
+?>
+
+
 <main class="px-3 pt-5">
     @include('admin.headtitle')
     <div class="w-100 mt-3">
@@ -143,54 +192,8 @@
                 </a>
             </div>
         </form>
-        <?php
-        $trackdata = $response['data']['boards'][0]['items_page']['items'];
-        $cs = $response['data']['boards'][0]['items_page']['cursor'];
-        $columns = $response['data']['boards'][0]['columns'];
-        
-        function getValueById($columnValues, $id, $key = 'value')
-        {
-            foreach ($columnValues as $item) {
-                if ($item['id'] === $id) {
-                    return trim($item[$key], '"') ? trim($item[$key], '"') : 'N/A';
-                }
-            }
-            return null; // Return null if no matching id found
-        }
-        function findElementByTitle($name, $data, $trackdata, $key = 'value')
-        {
-            $columnsid = null;
-            foreach ($data as $element) {
-                if (isset($element['title']) && $element['title'] === $name) {
-                    $columnsid = $element['id'];
-                }
-            }
-        
-            if ($columnsid !== null) {
-                return getValueById($trackdata['column_values'], $columnsid, $key);
-            } // Return null if element not found
-            return null;
-        }
-        function getClass($input)
-        {
-            switch ($input) {
-                case 'IN PROGRESS':
-                    return 'bg-light-progress';
-                case 'COMPLETED':
-                    return 'bg-light-success';
-                case 'STUCK':
-                    return 'bg-light-danger';
-                default:
-                    return 'bg-light-progress';
-            }
-        }
-        function dateFormater($dateString)
-        {
-            $date = new DateTime($dateString);
-            $formattedDate = $date->format('F j, Y');
-            return $formattedDate;
-        }
-        ?>
+
+       
         @for ($x = 0; $x < count($trackdata); $x++)
             <div class="track-card-container animation-container mb-3" style="min-height:280px">
                 <div class="animation-content" style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
@@ -200,7 +203,7 @@
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item text-secondary"><a
                                         class="text-secondary fs-s text-decoration-none"
-                                        href="#">@php echo findElementByTitle('Hiring Type',$columns,$trackdata[$x],'label');@endphp</a>
+                                        href="#">{{$column1 }}</a>
                                 </li>
                                 <li class="breadcrumb-item  text-secondary" aria-current="page"><span class="fs-s">
                                         Created at {{ dateFormater($trackdata[$x]['created_at']) }}
@@ -209,7 +212,7 @@
                             </ol>
                         </nav>
                         <h4 class="text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h4>
-                        <h5 class="text-start mt-4">@php echo findElementByTitle('Profession',$columns,$trackdata[$x],'value');@endphp</h5>
+                        <h5 class="text-start mt-4">{{ $column2 }}</h5>
                         <h6 class="text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'label')); @endphp</h6>
                         <a class="text-decoration-none"
                             href="/monday/form/track-request/{{ $trackdata[$x]['id'] }}/{{ str_replace(' ', '_', $trackdata[$x]['name']) }}">
