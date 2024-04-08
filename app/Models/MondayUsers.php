@@ -83,4 +83,11 @@ class MondayUsers extends Model
         }
         return false;
     }
+
+    public static function setUser( array $params, array $data ) {
+        if (!empty($params) && !empty($data)) {
+            return DB::table( 'monday_users' )->where($params)->update( $data );
+        }
+        return false;
+    }
 }

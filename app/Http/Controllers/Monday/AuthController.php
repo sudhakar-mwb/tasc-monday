@@ -292,27 +292,56 @@ class AuthController extends Controller
         $decryptedData = Crypt::decrypt($request->token);
         $decryptedData = json_decode($decryptedData, true);
         if (!empty($decryptedData)) {
-            // $getUser = MondayUsers::getUser( array( 'email' => trim($decryptedData['email']) ) );
+            $getUser = MondayUsers::getUser( array( 'email' => trim($decryptedData['email']) ) );
 
-            if ( date("Y-m-d H:i:s") >= $decryptedData['email_exp']) {
-                echo '<pre>'; print_r( 'gggggg' ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+            if ( date("Y-m-d H:i:s") <= $decryptedData['email_exp'] && !empty($getUser->email_exp)) {
                 if (!empty($decryptedData['email'])) {
                     $subheading = 'for '.$decryptedData['email'];
                 }
                 $msg    = '';
                 $status = '';
-                return view('auth.create_password', compact('heading', 'subheading', 'msg', 'status'));
+                $token  = $request->token;
+                return view('auth.create_password', compact('heading', 'subheading', 'msg', 'status', 'token'));
             }else{
                 $heading    = "Forgot Password";
                 $subheading = "Please provide the email associated with your account.";
-                $msg    = 'Invalid Email.';
+                $msg    = 'Your forgot password link is expired. Please re-create a new link';
                 $status = 'danger';
                 return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
             }
         }
     }
 
-    public function createNewPasswordPost (){
-        echo '<pre>'; print_r( 'dd' ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+    public function createNewPasswordPost (Request $request){
+        $this->validate($request, [
+            'password' => 'required|min:6|max:100',
+            'conf_password' => 'required|min:6|max:100',
+        ], $this->getErrorMessages());
+        $decryptedData = Crypt::decrypt($request->token);
+        $decryptedData = json_decode($decryptedData, true);
+        if (trim($request->password) !== trim($request->conf_password)) {
+            $heading       = "Enter New Password";
+            $subheading    = 'for '.$decryptedData['email'];
+            $msg           = 'current password and confirm new password not matched';
+            $status        = 'danger';
+            $token         =  $request->token;
+            return view('auth.create_password', compact('heading', 'subheading', 'msg', 'status', 'token'));
+        }elseif (trim($request->password) == trim($request->conf_password)) {
+            $getUser = MondayUsers::getUser( array( 'email' => $decryptedData['email'] ) );
+            $dataToUpdate = array(
+                'password'   => Hash::make($request->password),
+                'email_exp'  => Null,
+                'updated_at' => date("Y-m-d H:i:s")
+            );
+            $updatePassword = MondayUsers::setUser( array( 'id' => $getUser->id ), $dataToUpdate );
+            if ($updatePassword) {
+                $heading       = "Enter New Password";
+                $subheading    = 'for '.$decryptedData['email'];
+                $msg           = 'Password updated successfully. Now you can login with new password';
+                $status        = 'success';
+                return view('auth.login', compact('heading', 'subheading', 'msg', 'status'));
+            }
+            return view('auth.login', compact('heading', 'subheading', 'msg', 'status', 'token'));
+        }
     }
 }

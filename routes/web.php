@@ -83,7 +83,7 @@ Route::group(['prefix' => "monday"], function () {
     Route::get('/forgot', [AuthController::class, 'forgot'])->name('monday.forgot');
     Route::post('/forgot', [AuthController::class, 'forgot'])->name('monday.post.forgot');
     Route::get('/create-password/{token}', [AuthController::class, 'createNewPassword'])->name('monday.createNewPassword');
-    // Route::post('/create-password', [AuthController::class, 'createNewPasswordPost'])->name('monday.createNewPasswordPost');
+    Route::post('/create-password', [AuthController::class, 'createNewPasswordPost'])->name('monday.createNewPasswordPost');
     Route::get('/thanks', [AuthController::class, 'thankssignup'])->name('monday.thankssignup');
 
 

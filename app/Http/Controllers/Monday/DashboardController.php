@@ -12,7 +12,7 @@ use App\Models\BoardColumnMappings;
 use App\Models\ColourMappings;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\Session;
-use App\Models\ColourMappings;
+// use App\Models\ColourMappings;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Facades\Hash;
 
@@ -63,7 +63,31 @@ class DashboardController extends Controller
         $searchquery = "";
         $sortbyname=request()->input('sort_by_name')??'';
         $status_filter=request()->input('status_filter')??'';
-
+        // if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
+        //     $boardId = auth()->user()->board_id;
+        //     // $response = DB::table('board_column_mappings')->where('board_id', '=',(string)$boardId);
+        //     $response = BoardColumnMappings::where('board_id','=',$boardId)->get();
+        //     echo '<pre>'; print_r( $response ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+        //     if ($response->isEmpty()) {
+        //         echo '<pre>'; print_r( 'ff' ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+        //         echo "No records found";
+        //     } else {
+        //         echo '<pre>'; print_r( 'ddd' ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+        //         // Iterate through each record and display its properties
+        //         foreach ($response as $record) {
+        //             echo "ID: " . $record->id . "<br>";
+        //             echo "Board ID: " . $record->board_id . "<br>";
+        //             echo "Column ID: " . $record->column_id . "<br>";
+        //             // Display other properties as needed
+        //             echo "<br>";
+        //         }
+        //     }
+        //     echo '<pre>'; print_r( $response ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+  
+        //     // die('in');
+        //   }else{
+        //     die('board not assigned!');
+        //   }
 
         if ($request->isMethod('post')) {
             $searchAvailable=(request()->has('search') && trim(request()->input('search')) !== "");
@@ -276,6 +300,18 @@ class DashboardController extends Controller
     }
     public function manageById(Request $request)
     {
+        if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
+            $boardId  = auth()->user()->board_id;
+            $response = BoardColumnMappings::where('board_id','=',$boardId)->get();
+            $response = json_decode($response, true);
+            if ($response['0']['columns']) {
+                $boardColumnMappingDbData = $response['0']['columns'];
+            } else {
+                die('board column mapping not exist in db');
+            }
+        }else{
+            die('board not assigned!');
+        }
         $id = request()->route('id');
         ;
         $userName = request()->route('username');
@@ -678,30 +714,30 @@ class DashboardController extends Controller
     }
 
 
-  public function postColourMapping (Request  $request) {
-      $data  = $request->getContent();
-      if (!empty($data)) {
-          $dataArray = json_decode($data, true);
-          foreach ($dataArray as $key => $value) {
-              $datatoUpdate = [
-                  'colour_value' => json_encode($value),
-              ];
-              $criteria = [
-                  'colour_name' => $key,
-              ];
-              $colourMappingDBData = ColourMappings::find($criteria['colour_name']);
-              $response = ColourMappings::updateOrCreate( $criteria, $datatoUpdate);
-          }
+//   public function postColourMapping (Request  $request) {
+//       $data  = $request->getContent();
+//       if (!empty($data)) {
+//           $dataArray = json_decode($data, true);
+//           foreach ($dataArray as $key => $value) {
+//               $datatoUpdate = [
+//                   'colour_value' => json_encode($value),
+//               ];
+//               $criteria = [
+//                   'colour_name' => $key,
+//               ];
+//               $colourMappingDBData = ColourMappings::find($criteria['colour_name']);
+//               $response = ColourMappings::updateOrCreate( $criteria, $datatoUpdate);
+//           }
 
-          // Check if the record was updated
-          if ($colourMappingDBData && $response->wasChanged()) {
-              Session::flash('message', 'Colour mapping successfully updated.');
-          } else {
-              Session::flash('message', 'Colour mapping successfully updated.');
-          }
-          Session::flash('error', 'something went wrong during colour mapping.');
-      }else{
-          Session::flash('error', 'Colour mapping data not received.');
-      }
-  }
+//           // Check if the record was updated
+//           if ($colourMappingDBData && $response->wasChanged()) {
+//               Session::flash('message', 'Colour mapping successfully updated.');
+//           } else {
+//               Session::flash('message', 'Colour mapping successfully updated.');
+//           }
+//           Session::flash('error', 'something went wrong during colour mapping.');
+//       }else{
+//           Session::flash('error', 'Colour mapping data not received.');
+//       }
+//   }
 }

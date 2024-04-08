@@ -8,10 +8,11 @@
                     <div class="alert alert-{{$status}}" style="max-width:400px">    {{$msg}}</div>
                 </div>
             @endif
-            <form action="{{route('monday.post.login')}}" method="POST" class="form-auth">
+            <form action="{{route('monday.createNewPasswordPost')}}" method="POST" class="form-auth">
                 {{-- <input type="email" disabled placeholder="Email" name="email" value="{{ old('email') }}"> --}}
                 {{-- @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror --}}
-                <input type="password" placeholder="Password" name="password">
+                <input type="text" name="token" hidden value="{{$token}}">
+                <input type="password" placeholder="Password" name="password" value="{{ old('password') }}">
                 @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
                 <input type="password" placeholder="Confirm Password" name="conf_password">
                 @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
