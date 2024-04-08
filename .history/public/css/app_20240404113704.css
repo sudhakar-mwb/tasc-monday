@@ -1,0 +1,177 @@
+.header-icons {
+  height: 100px;
+  width: 100px;
+  margin: 0px auto;
+}
+.btn-gradiant {
+  background-image: linear-gradient(
+    to right,
+    #28dd7a 0%,
+    #185a9d 51%,
+    #45ce43 100%
+  );
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 0 20px #eee;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  min-width: 110px;
+}
+.header-heading1 {
+  font-size: 56px;
+}
+.btn-gradiant:hover {
+  background: #016cff; /* change the direction of the change here */
+  color: #fff;
+  text-decoration: none;
+}
+.header-search-input {
+  font-size: 12px !important;
+  padding: 10px 15px;
+}
+
+.track-card.bg-light-success {
+  background: rgb(190, 237, 207);
+}
+.track-card.bg-light-success > .track-profession {
+  color: rgb(31, 192, 91);
+}
+
+.track-card.bg-light-progress {
+  background: rgb(238 218 40 / 36%);
+}
+.track-card.bg-light-progress > .track-profession {
+  color: rgb(244, 152, 31);
+}
+.track-card.bg-light-danger {
+  background: rgba(225, 24, 24, 0.29);
+}
+.track-card.bg-light-danger > .track-profession {
+  color: rgb(225, 64, 20);
+}
+.track-card.bg-light-default {
+  background: #8080803b;
+}
+.track-card.bg-light-default > .track-profession {
+  color: grey;
+}
+
+.btn-to-link {
+  gap: 6px;
+}
+.icon-btn_track img {
+  display: block;
+  height: 100%;
+  max-height: 20px;
+  max-width: 20px;
+  margin: auto;
+}
+
+.animation-container {
+  position: relative;
+  overflow: hidden;
+  /* Ensure content does not overflow */
+}
+
+.animation-content {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  right: 0;
+  transform: translateX(100%);
+  transform-origin: right;
+  opacity: 0;
+  transition: transform 1s ease 0.5s, opacity 1s ease 0.5s;
+}
+
+.animation-content.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+.fs-s {
+  font-size: 14px;
+}
+.head-color {
+  color: rgb(3, 96, 132);
+}
+.bg-warning {
+  background: rgb(244, 152, 31) !important;
+}
+.text-warning {
+  color: rgb(244, 152, 31) !important;
+}
+
+.form-auth{
+  width: 100%;
+  max-width: 420px;
+  padding: 15px;
+  margin: 0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.form-auth > input {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  border-radius:10px;
+  padding:15px;
+  font-size:14px;
+  background:#dbdbdb;
+  border:0px;
+}
+
+.form-auth > button {
+  display: flex;
+  justify-content: center;
+  border-radius:5px;
+  border-radius:10px;
+  padding:15px;
+  font-size:14px;
+  border:0px;
+}
+.btn-copy:active{
+color:green !important;
+}
+#users-list-table td,#users-list-table th{
+max-width:230px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+#users-list-table td span,#users-list-table th span{
+  max-width:160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* .btn-gradiant */
+@media (max-width: 480px) {
+  .btn.btn-gradiant {
+    min-width: 30px;
+  }
+  .btn.btn-gradiant > span:first-child {
+    display: none;
+  }
+  .nav-masthead {
+    margin-top: 20px;
+  }
+  #iframe-signup {
+    width: auto;
+  }
+  .nav.nav-masthead > span.text-secondary:first-child {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .nav.nav-masthead {
+    justify-content: space-around !important;
+  }
+}
+

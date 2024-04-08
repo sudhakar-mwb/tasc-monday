@@ -12,8 +12,10 @@ use App\Models\BoardColumnMappings;
 use App\Models\ColourMappings;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Facades\Session;
+use App\Models\ColourMappings;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Facades\Hash;
+
 
 class DashboardController extends Controller
 {
@@ -62,7 +64,7 @@ class DashboardController extends Controller
         $sortbyname=request()->input('sort_by_name')??'';
         $status_filter=request()->input('status_filter')??'';
 
-  
+
         if ($request->isMethod('post')) {
             $searchAvailable=(request()->has('search') && trim(request()->input('search')) !== "");
             $statusfilterAvailable=(request()->has('status_filter') && trim(request()->input('status_filter') !== ''));
@@ -355,14 +357,27 @@ class DashboardController extends Controller
         if (!empty($boardsData['boards'])) {
             $idArray = array();
             foreach ($boardsData['boards'] as $item) {
-                $idArray[] = $item['id'];
+                $idArray[] = ['id'=>$item['id'],'name'=>$item['name']];
             }
         }
+
+        $colourMappingsData = ColourMappings::get();
+
+      if (!empty($colourMappingsData)) {
+          $data = json_decode($colourMappingsData, true);
+
+          $coloursData = array();
+          foreach ($data as $record) {
+              $coloursData[$record['colour_name']] = ["val"=>json_decode($record['colour_value'], true),"rgb_code"=>$record['rgb_code']];
+          }
+         
+      }
+      Session::flash('error', 'Something went wrong during fetch colour mapping data.');
         $heading="Columns Visibility";
         // $boards=['3454','5345','34553','5345','3553','3455','4355','34553','35345'];
         $boards=$idArray;
         $subheading="Column restrictions can be set per board by selecting respective column boards.";
-        return view('admin.visiblility',compact('heading','subheading','boards'));
+        return view('admin.visiblility',compact('heading','subheading','boards','coloursData'));
     }
     public function userslist()
     {
@@ -661,4 +676,32 @@ class DashboardController extends Controller
             Session::flash('error', 'Colour mapping data not received.');
         }
     }
+
+
+  public function postColourMapping (Request  $request) {
+      $data  = $request->getContent();
+      if (!empty($data)) {
+          $dataArray = json_decode($data, true);
+          foreach ($dataArray as $key => $value) {
+              $datatoUpdate = [
+                  'colour_value' => json_encode($value),
+              ];
+              $criteria = [
+                  'colour_name' => $key,
+              ];
+              $colourMappingDBData = ColourMappings::find($criteria['colour_name']);
+              $response = ColourMappings::updateOrCreate( $criteria, $datatoUpdate);
+          }
+
+          // Check if the record was updated
+          if ($colourMappingDBData && $response->wasChanged()) {
+              Session::flash('message', 'Colour mapping successfully updated.');
+          } else {
+              Session::flash('message', 'Colour mapping successfully updated.');
+          }
+          Session::flash('error', 'something went wrong during colour mapping.');
+      }else{
+          Session::flash('error', 'Colour mapping data not received.');
+      }
+  }
 }

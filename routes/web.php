@@ -67,10 +67,12 @@ Route::group(['prefix' => "monday"], function () {
       Route::get('/get-board-columns-data/{id}', [DashboardController::class, 'getBoardColumnsDataById'])->name('admin.getBoardColumnsDataById');
       Route::get('/colour-mapping', [DashboardController::class, 'getColourMapping'])->name('admin.getColourMapping');
       Route::post('/colour-mapping', [DashboardController::class, 'postColourMapping'])->name('admin.postColourMapping');
+
     });
     Route::group(['prefix' => "admin", 'middleware'=>['web','isSuperAdmin']], function () {
         Route::get('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
         Route::post('/create-admin', [DashboardController::class, 'storeAdmin'])->name('admin.post.storeAdmin');
+
     });
     Route::get('/login', [AuthController::class, 'login'])->name('monday.get.login');
     Route::post('/login', [AuthController::class, 'login'])->name('monday.post.login');
