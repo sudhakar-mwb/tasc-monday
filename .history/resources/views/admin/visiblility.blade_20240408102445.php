@@ -1,6 +1,8 @@
 @include('includes.header')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
 
 <main class="px-3 pt-5 ">
     @include('admin.headtitle')
@@ -92,13 +94,13 @@
               <form id="status_view_form" class="text-start">
            
                    @foreach($coloursData as $key => $value)
-                   <?php $val= implode(", ",$value['val']);?>
+                   <?php $val= implode(", ",$value);?>
                    <div class="mb-3" >
-                    <h5 class="p-2 " style="border-radius:20%;border-left:10px solid {{ $value['rgb_code']}};">Color: {{ $key}}</h3>
+                    <h5 class="p-2 " style="border-radius:20%;border-left:10px solid {{ strtolower($key );}};">Color: {{ $key}}</h3>
                     <ul style="list-style: none" class="color-section">
                       <li>
                         <div class="form-floating">
-                        <textarea name="{{ $key }}" current_color="{{ $key  }}" class="form-control color-input" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px">{{ $val }}</textarea>
+                        <textarea  current_color="{{ $key  }}" class="form-control color-input" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px">{{ $val }}</textarea>
                         <label for="floatingTextarea2">Write Status</label>
                       </div>
                     </li>
@@ -137,7 +139,11 @@
     </style>
 
     <script src="{{ asset('script/columns-form.js') }}"></script>
-
+    <script>
+  status_group = $coloursData ;
+  console.log(status_group)
+   $('#columnsTable').DataTable();
+    </script>
 </main>
 
 

@@ -59,7 +59,7 @@ class DashboardController extends Controller
         $sortbyname=request()->input('sort_by_name')??'';
         $status_filter=request()->input('status_filter')??'';
 
-
+  
         if ($request->isMethod('post')) {
             $searchAvailable=(request()->has('search') && trim(request()->input('search')) !== "");
             $statusfilterAvailable=(request()->has('status_filter') && trim(request()->input('status_filter') !== ''));

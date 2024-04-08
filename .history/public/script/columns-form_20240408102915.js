@@ -334,19 +334,9 @@ $(document).ready(function () {
 		status_group[color] = val;
 	});
 
-	$(document).ready(function () {
+	$(document).ready(function (e) {
 		$("#status_view_form").submit(async function (e) {
 			e.preventDefault();
-			var formData = {};
-			$(this)
-				.find("input, textarea")
-				.each(function () {
-					formData[$(this).attr("name")] = $(this)
-						.val()
-						.split(", ")
-						.filter((el) => el !== "");
-				});
-
 			showLoader();
 			try {
 				const response = await fetch(
@@ -356,7 +346,7 @@ $(document).ready(function () {
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify(formData),
+						body: JSON.stringify(status_group),
 					}
 				);
 

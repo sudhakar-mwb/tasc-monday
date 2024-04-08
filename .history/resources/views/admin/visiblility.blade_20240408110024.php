@@ -94,7 +94,7 @@
                    @foreach($coloursData as $key => $value)
                    <?php $val= implode(", ",$value['val']);?>
                    <div class="mb-3" >
-                    <h5 class="p-2 " style="border-radius:20%;border-left:10px solid {{ $value['rgb_code']}};">Color: {{ $key}}</h3>
+                    <h5 class="p-2 " style="border-radius:20%;border-left:10px solid {{ $value['rgb-code']}};">Color: {{ $key}}</h3>
                     <ul style="list-style: none" class="color-section">
                       <li>
                         <div class="form-floating">

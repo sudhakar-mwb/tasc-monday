@@ -341,10 +341,7 @@ $(document).ready(function () {
 			$(this)
 				.find("input, textarea")
 				.each(function () {
-					formData[$(this).attr("name")] = $(this)
-						.val()
-						.split(", ")
-						.filter((el) => el !== "");
+					formData[$(this).attr("name")] = $(this).val().split(",");
 				});
 
 			showLoader();

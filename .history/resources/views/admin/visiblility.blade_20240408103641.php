@@ -92,9 +92,9 @@
               <form id="status_view_form" class="text-start">
            
                    @foreach($coloursData as $key => $value)
-                   <?php $val= implode(", ",$value['val']);?>
+                   <?php $val= implode(", ",$value);?>
                    <div class="mb-3" >
-                    <h5 class="p-2 " style="border-radius:20%;border-left:10px solid {{ $value['rgb_code']}};">Color: {{ $key}}</h3>
+                    <h5 class="p-2 " style="border-radius:20%;border-left:10px solid {{ strtolower($key );}};">Color: {{ $key}}</h3>
                     <ul style="list-style: none" class="color-section">
                       <li>
                         <div class="form-floating">

@@ -337,16 +337,8 @@ $(document).ready(function () {
 	$(document).ready(function () {
 		$("#status_view_form").submit(async function (e) {
 			e.preventDefault();
-			var formData = {};
-			$(this)
-				.find("input, textarea")
-				.each(function () {
-					formData[$(this).attr("name")] = $(this)
-						.val()
-						.split(", ")
-						.filter((el) => el !== "");
-				});
-
+			var formDataArray = $(this).serializeArray();
+			var formDataString = $(this).serialize();
 			showLoader();
 			try {
 				const response = await fetch(
@@ -356,7 +348,7 @@ $(document).ready(function () {
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify(formData),
+						body: JSON.stringify(status_group),
 					}
 				);
 
