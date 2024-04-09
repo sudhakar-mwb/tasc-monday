@@ -1,4 +1,3 @@
-const base_url = "{{ url('/') }}/";
 /**
  * to remove refrence of an object
  * @param  state an object that have to be deep copy

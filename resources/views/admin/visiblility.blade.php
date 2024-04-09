@@ -136,7 +136,9 @@
 
 {{-- full page loader --}}
 
-
+<script>
+    const base_url = "{{ url('/') }}/";
+</script>
 
 <style>
 
