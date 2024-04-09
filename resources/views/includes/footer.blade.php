@@ -1,5 +1,21 @@
 <footer class="mt-auto text-white-50">
-
+  <div  id="full-loader" style="display: none">
+    <div  class="full-loader d-flex align-items-center justify-content-center" >
+      <img src="{{ asset('asset/loading5.gif') }}" alt="" >
+      </div>
+  </div>
+  <style>
+      .full-loader{
+      z-index: 200000;
+      position: fixed; 
+      background-color:rgba(0, 94, 255, 0.297);
+      height:100vh;
+      width:100vw;
+      top:0;
+      left:0;
+      border: 2px solid rgb(0, 94, 255);
+    }
+  </style>
 </footer>
 </div>
 
