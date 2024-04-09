@@ -1,4 +1,4 @@
-const base_url = "http://localhost:8001/";
+const base_url = "{{ url('/') }}/";
 /**
  * to remove refrence of an object
  * @param  state an object that have to be deep copy
@@ -13,6 +13,7 @@ const initial_state = {
 	onboarding_columns: [],
 	candidate_coulmns: [],
 	sub_headings_column: [],
+	documents_columns: [],
 	card_section: {
 		column1: "",
 		column2: "",
@@ -68,12 +69,16 @@ function updateSelectedInOrder(id, forkey) {
 		var removeButton = $(
 			'<button type="button" data_id="' +
 				item.id +
-				'" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-onboarding_columns-container-choice-' +
+				'" class="select2-selection__choice__remove" tabindex="-1" title="Remove item" aria-label="Remove item" aria-describedby="select2-' +
+				forkey +
+				"-container-choice-" +
 				item.id +
 				'"><span aria-hidden="true">×</span></button>'
 		);
 		var displayText = $(
-			'<span class="select2-selection__choice__display" id="select2-onboarding_columns-container-choice-' +
+			'<span class="select2-selection__choice__display" id="select2-' +
+				forkey +
+				"-container-choice-" +
 				item.id +
 				'">' +
 				item.name +
@@ -132,7 +137,28 @@ $(document).ready(function () {
 				updateSelectedInOrder("#onboarding_columns", "onboarding_columns");
 			}
 		});
+	//
 
+	$("#documents_columns")
+		.on("select2:select", function (e) {
+			const el = e.params.data;
+			data.documents_columns.push({
+				id: el.id,
+				name: el.text,
+				icon: "",
+				custom_title: "",
+			});
+			updateSelectedInOrder("#documents_columns", "documents_columns");
+		})
+		.on("select2:unselect", function (e) {
+			var index = data.documents_columns.findIndex(function (item) {
+				return item.id === e.params.data.id;
+			});
+			if (index !== -1) {
+				data.documents_columns.splice(index, 1); // Remove unselected value
+				updateSelectedInOrder("#documents_columns", "documents_columns");
+			}
+		});
 	/**
 	 * on select candidate columns
 	 */
@@ -221,7 +247,7 @@ $(document).ready(function () {
 		const columns = await res.json();
 		const res_saved = await fetchSavedData("get-board-columns-data", val);
 		const saved_data = await res_saved.json();
-		if (saved_data?.[0]?.columns) data = saved_data[0].columns;
+		if (saved_data?.[0]?.columns) data = { ...data, ...saved_data[0].columns };
 
 		if (data?.["candidate_coulmns"]?.length > 0) {
 			$("#icon_inputs-wrapper").show();
@@ -233,6 +259,7 @@ $(document).ready(function () {
 
 		$("#candidate_columns").html(options);
 		$("#onboarding_columns").html(options);
+		$("#documents_columns").html(options);
 		$("#sub_headings").html(options);
 		const single_select_options =
 			'<option value="">-- Select Column --</option>' + options;
@@ -259,6 +286,7 @@ $(document).ready(function () {
 	function resetFields() {
 		$("#candidate_columns").val(null).trigger("change");
 		$("#onboarding_columns").val(null).trigger("change");
+		$("#documents_columns").val(null).trigger("change");
 		$("#sub_headings").val(null).trigger("change");
 		$("#onboarding-updates-option").val("");
 		$("#card-column-1").val("");
@@ -270,6 +298,7 @@ $(document).ready(function () {
 		setTimeout(() => {
 			updateSelectedInOrder("#onboarding_columns", "onboarding_columns");
 			updateSelectedInOrder("#candidate_columns", "candidate_coulmns");
+			updateSelectedInOrder("#documents_columns", "documents_columns");
 			updateSelectedInOrder("#sub_headings", "sub_headings_column");
 		}, 100);
 		$("#candidate_columns").val(data.candidate_coulmns.map((el) => el.id));
@@ -278,8 +307,10 @@ $(document).ready(function () {
 		$("#onboarding_columns").trigger("change");
 		$("#sub_headings").val(data.sub_headings_column.map((el) => el.id));
 		$("#sub_headings").trigger("change");
+		console.log({ data });
+		$("#documents_columns").val(data?.documents_columns.map((el) => el.id));
+		$("#documents_columns").trigger("change");
 		$("#onboarding-updates-option").val(data.extra_details.key);
-		// console.log({ data });
 		$("#card-column-1").val(data.card_section.column1);
 		$("#card-column-2").val(data.card_section.column2);
 	}

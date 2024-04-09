@@ -1,7 +1,6 @@
 @include('includes.header')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <main class="px-3 pt-5 ">
     @include('admin.headtitle')
     <div class="d-flex w-100 justify-content-center" style="gap:20px">
@@ -22,7 +21,6 @@
                         @endfor
                         </select>
                     </div>
-
                     <div class="hiddenstep" class="" id="form-step-2">
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">User Subheadings</label>
@@ -30,21 +28,23 @@
                             name="subHeadings[]" multiple="multiple" style="max-width:500px" >
 
                         </select>
-                        {{-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> --}}
-                    </div>
+ </div>
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Onboarding Status</label>
                             <select id="onboarding_columns" class="js-example-basic-multiple w-100"
                                 name="onboarding_coulumns[]" multiple="multiple" style="max-width:500px" >
-
                             </select>
-                            {{-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> --}}
-                        </div>
+                       </div>
+                       <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Document Columns</label>
+                        <select id="documents_columns" class="js-example-basic-multiple w-100"
+                            name="documents_columns[]" multiple="multiple" style="max-width:500px" >
+                        </select>
+                   </div>
                         <div class="mb-3">
                             <label for="exampleInputPassword1" class="form-label">Candidate Information</label>
                             <select id="candidate_columns" class="js-example-basic-multiple w-100"
                                 name="candidate_columns[]" multiple="multiple" style="max-width:500px" >
-
                             </select>
                         </div>
                         <div class="mb-3" id="icon_inputs-wrapper">
@@ -54,14 +54,12 @@
                              <ol id="icon_inputs">
                              </ol>
                         </div>
-                      
-                        
+                     
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Onboarding Updates</label>
                         <select id="onboarding-updates-option" class="form-select" aria-label="Default select example"  >
                         </select>
                     </div>
-
                     <h5 class="text-secondary mt-5 mb-3 pb-2 border-bottom">Card Columns:</h5>
                     <div class="mb-3">
                       <label for="exampleInputEmail1" class="form-label">Top Details column</label>
@@ -82,15 +80,12 @@
                 </form>
             </div>
         </div>
-
         <div title="status visibility manage" style="max-width:550px;width:100%;">
-        
           <div class="bg-success text-white">
               <p class="p-2 m-0 fs-5"><strong>Manage Status Background</strong></p>
           </div>
           <div class="form_wrapper border border-success p-4 primary-shadow">
               <form id="status_view_form" class="text-start">
-           
                    @foreach($coloursData as $key => $value)
                    <?php $val= implode(", ",$value['val']);?>
                    <div class="mb-3" >
@@ -105,11 +100,9 @@
                     </ul>
                   </div>
                    @endforeach
-
                   <div class="d-grid gap-2 mt-5"> <button id="columns_details_submit" type="submit"
                           class="btn btn-success btn-lg">Submit</button>
                   </div>
-
               </form>
           </div>
       </div>
@@ -142,25 +135,11 @@
 
 
 {{-- full page loader --}}
-  <div  id="full-loader" style="display: none">
-    <div  class="full-loader d-flex align-items-center justify-content-center" >
-      <img src="{{ asset('asset/loading5.gif') }}" alt="" >
-      </div>
-</div>
 
 
 
 <style>
-  .full-loader{
-    z-index: 200000;
-    position: fixed; 
-    background-color:rgba(0, 94, 255, 0.297);
-    height:100vh;
-    width:100vw;
-    top:0;
-    left:0;
-    border: 2px solid rgb(0, 94, 255);
-  }
+
   .color-block>li>ul{
     margin-bottom: 15px
   }

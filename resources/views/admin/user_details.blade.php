@@ -371,42 +371,10 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                 <li class="list-group-item d-flex align-items-center border-0 text-start"
                                     style="background: inherit;gap:16px"><span>
                                         <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-asterisk' }}"></i>
-                                    </span><span><strong>{{ $col['custom_title'] }}&nbsp;:&nbsp;</strong>{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
+                                    </span><span><strong>{{ $col['custom_title']?$col['custom_title'].' : ':'' }}</strong>{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
                                 </li>
                             @endforeach
-                            {{-- <li class="list-group-item d-flex align-items-center border-0 text-start"
-                                style="background: inherit;gap:16px"><span><svg xmlns="http://www.w3.org/2000/svg"
-                                        width="16" height="16" fill="currentColor" class="bi bi-flag-fill"
-                                        viewBox="0 0 16 16">
-                                        <path
-                                            d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12 12 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A20 20 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a20 20 0 0 0 1.349-.476l.019-.007.004-.002h.001" />
-                                    </svg></span><span>{{ $countryOfResidence }}</span></li>
-                            <li class="list-group-item d-flex align-items-center border-0 text-start"
-                                style="background: inherit;gap:16px"><span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        fill="currentColor" class="bi bi-house-fill" viewBox="0 0 16 16">
-                                        <path
-                                            d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293z" />
-                                        <path
-                                            d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293z" />
-                                    </svg></span>{{ $nationality }} <span></span></li>
-                            <li class="list-group-item d-flex align-items-center border-0 text-start"
-                                style="background: inherit;gap:16px"><span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        fill="currentColor" class="bi bi-telephone-fill" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z" />
-                                    </svg></span><span>{{ $whatsappNumber }}</span></li>
-                            <li class="list-group-item d-flex align-items-center border-0 text-start"
-                                style="background: inherit;gap:16px"><span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                        fill="currentColor" class="bi bi-calendar4-range" viewBox="0 0 16 16">
-                                        <path
-                                            d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z" />
-                                        <path
-                                            d="M9 7.5a.5.5 0 0 1 .5-.5H15v2H9.5a.5.5 0 0 1-.5-.5zm-2 3v1a.5.5 0 0 1-.5.5H1v-2h5.5a.5.5 0 0 1 .5.5" />
-                                    </svg></span><span>Joining Date | {{ $joiningDate }}</span></li> --}}
-
+                            
                         </ul>
                     </div>
                     <div class="card border-0 border-1 p-4">
@@ -416,8 +384,6 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                 <?php
                                 
                                 $valued = json_decode(getValueById($columns_val, $step['id'], 'value'), true);
-                                // dd($valued);
-                                // json_decode(getValueById($step, $columns, $trackdata, 'value'), true);
                                 $status = getValueById($columns_val, $step['id'], 'text');
                                 if($status !=='NA')
 {
