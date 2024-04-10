@@ -74,10 +74,10 @@
                           email_id="{{  $user->email }}"
                                 class="board_change form-select m-0 rounded-0 h-100 "
                                 aria-label="Default select example">
-                                <option class=" fs-5" selected>Not Assigned</option>
+                                <option class=" fs-5" >Not Assigned</option>
                                 @if (count($boardsData['boards']) > 0)
                                     @foreach ($boardsData['boards'] as $board)
-                                        <option class=" fs-5" value="{{ $board['id'] }}">{{ $board['name'] }}</option>
+                                        <option class=" fs-5" value="{{ $board['id'] }}" {{$board['id'] == $user->board_id ? 'selected' : ''}}>{{ $board['name'] }}</option>
                                     @endforeach
                                 @endif
                             </select></td>
@@ -95,11 +95,12 @@
 
 
                                 <span>{{ $user->password }}</span>
+                                {{-- <input type="password" disabled value="{{ $user->password }}"></input> --}}
                             </div>
                         </td>
                         <td>{{ $user->created_at }}</td>
                         <td class="text-info p-0 btn-primary">
-                            <a href="http://localhost:8001/monday/forgot?email={{ $user->email }}" target="_blank"
+                            <a href="{{url('/')}}/monday/forgot?email={{ $user->email }}" target="_blank"
                                 class="btn m-0 fs-5 rounded-0" style="display: block !important">
                                 <i class="bi bi-send-arrow-up-fill"></i>
 
@@ -127,29 +128,30 @@
         const email_id = $(this).attr('email_id')
         const board_id = $(this).val()
         showLoader();
+
         if (user_id && board_id) {
-            try {
+        try {
+            const response = await fetch(
+                base_url + "monday/admin/users/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        user_id,
+                        board_id,
+                        email_id
+                    }),
+                }
+            );
 
-                const response = await fetch(
-                    base_url + "monday/admin/colour-mapping/", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            user_id,
-                            board_id,
-                            email_id
-                        }),
-                    }
-                );
+            if (!response.ok) throw new Error("HTTP status " + response.status);
+            alert("status group saved");
+        } catch (error) {
+            console.log("Api error", error);
+            alert("Something wents wrong.");
+          }
 
-                if (!response.ok) throw new Error("HTTP status " + response.status);
-                alert("status group saved");
-            } catch (error) {
-                console.log("Api error", error);
-                alert("Something wents wrong.");
-            }
         }
         hideLoader();
     }
