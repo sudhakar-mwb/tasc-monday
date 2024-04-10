@@ -2,7 +2,8 @@
 
 
 <?php
-// dd(['data'=>$data,'response'=>$response]);
+// dd(['data' => $data, 'response' => $response]);
+
 $countryInfo = [
     'AF' => ['flag' => '🇦🇫', 'calling_code' => '+93'],
     'AL' => ['flag' => '🇦🇱', 'calling_code' => '+355'],
@@ -198,6 +199,7 @@ $countryInfo = [
     'ZW' => ['flag' => '🇿🇼', 'calling_code' => '+263'],
 ];
 $candidate_coulmns = $data['candidate_coulmns'];
+$documents_columns = $data['documents_columns'];
 $onboarding_columns = $data['onboarding_columns'];
 $sub_headings_column = $data['sub_headings_column'];
 $onboarding_updates_columns = $data['extra_details']['key'];
@@ -371,10 +373,10 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                 <li class="list-group-item d-flex align-items-center border-0 text-start"
                                     style="background: inherit;gap:16px"><span>
                                         <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-asterisk' }}"></i>
-                                    </span><span><strong>{{ $col['custom_title']?$col['custom_title'].' : ':'' }}</strong>{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
+                                    </span><span><strong>{{ $col['custom_title'] ? $col['custom_title'] . ' : ' : '' }}</strong>{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
                                 </li>
                             @endforeach
-                            
+
                         </ul>
                     </div>
                     <div class="card border-0 border-1 p-4">
@@ -428,7 +430,7 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                     </div>
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-6 d-flex flex-column" style="gap:30px">
                 <div class="card border-0 border-1 p-4" style="background: rgba(111, 116, 144, 0.06)">
                     <h5 class="text-start head-color fw-bold pb-4 border-bottom">Onboarding Updates</h5>
                     <h6 class="text-start mt-2 mb-4 fw-bold text-secondary">
@@ -437,8 +439,46 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                         {{ getValueById($columns_val, $onboarding_updates_columns, 'text') ?? '' }}</p>
 
                 </div>
+
+                {{-- <div class="card border-0 border-1 p-4">
+                    <h5 class="text-start head-color fw-bold pb-4 border-bottom">Documents</h5>
+                    @for ($j = 0; $j < count($documents_columns); $j++)
+                        <div class="d-flex align-items-center mt-1 mb-2" style="gap:8px">
+
+                            <?php
+                           $col = $documents_columns[$j];
+                           $str= getValueById($columns_val, $col['id'], 'text');
+                           $str=explode(",",$str);
+                           for($i=0;$i < count($str) && $i < 6;$i++)
+                           {
+                        ?>
+
+                            <a href="{{ $str[$i] }}" target="_blank" class="zoom" style="display: block">
+                                <span class=" text-start mt-1 fw-bold text-secondary text-danger"
+                                    style="cursor: pointer">
+                                    <i class="bi bi-file-earmark-pdf-fill fs-3"></i>
+                                </span>
+                            </a>
+                            <?php
+                           } 
+                              $remainings=count($str) -6;
+                              if($remainings>0){
+                              ?>
+                            <span
+                                class="d-flex align-items-center mt-2 justify-content-center btn btn-dark rounded-circle p-0"
+                                style="min-height: 30px;min-width:30px">+{{ $remainings }}</span>
+                            <?php }   ?>
+                        </div>
+                    @endfor
+                </div> --}}
             </div>
         </div>
     </div>
 </main>
+<style>
+    .zoom:hover {
+        transform: scale(1.5);
+        /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+    }
+</style>
 @include('includes.footer')

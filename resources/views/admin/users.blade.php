@@ -1,6 +1,18 @@
 @include('includes.header')
+<?php
+// dd($boardsData);
+?>
 <main class="px-3 pt-5">
     @include('admin.headtitle')
+    <nav class="my-2" style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          {{-- <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
+                  href="users"><u> {{ ucwords('users list') }}</u></a></li> --}}
+          <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
+                  href="board-visiblilty"> {{ ucwords('Manage Columns Visibility') }}&nbsp;<i class="bi bi-box-arrow-up-right"></i></a></li>
+
+      </ol>
+  </nav>
     <script>
         function copyToBoard(val) {
             // Copy the text inside the text field
@@ -57,7 +69,9 @@
                             </div>
                         </td>
 
-                        <td class="m-0 p-0"><select user_id="{{ $user->id }}"
+                        <td class="m-0 p-0"><select 
+                          user_id="{{ $user->id }}"
+                          email_id="{{  $user->email }}"
                                 class="board_change form-select m-0 rounded-0 h-100 "
                                 aria-label="Default select example">
                                 <option class=" fs-5" selected>Not Assigned</option>
@@ -110,27 +124,32 @@
     $('.board_change').on('change', setBoard)
     async function setBoard() {
         const user_id = $(this).attr('user_id')
+        const email_id = $(this).attr('email_id')
         const board_id = $(this).val()
         showLoader();
-        try {
-            const response = await fetch(
-                base_url + "monday/admin/colour-mapping/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        user_id,
-                        board_id
-                    }),
-                }
-            );
+        if (user_id && board_id) {
+            try {
 
-            if (!response.ok) throw new Error("HTTP status " + response.status);
-            alert("status group saved");
-        } catch (error) {
-            console.log("Api error", error);
-            alert("Something wents wrong.");
+                const response = await fetch(
+                    base_url + "monday/admin/colour-mapping/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            user_id,
+                            board_id,
+                            email_id
+                        }),
+                    }
+                );
+
+                if (!response.ok) throw new Error("HTTP status " + response.status);
+                alert("status group saved");
+            } catch (error) {
+                console.log("Api error", error);
+                alert("Something wents wrong.");
+            }
         }
         hideLoader();
     }

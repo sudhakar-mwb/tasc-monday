@@ -72,6 +72,8 @@ Route::group(['prefix' => "monday"], function () {
     Route::group(['prefix' => "admin", 'middleware'=>['web','isSuperAdmin']], function () {
         Route::get('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
         Route::post('/create-admin', [DashboardController::class, 'storeAdmin'])->name('admin.post.storeAdmin');
+        Route::get('/settings', [DashboardController::class, 'settings'])->name('admin.post.storeAdmin');
+        Route::post('/settings', [DashboardController::class, 'settings'])->name('admin.post.storeAdmin');
 
     });
     Route::get('/login', [AuthController::class, 'login'])->name('monday.get.login');
