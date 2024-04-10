@@ -698,7 +698,14 @@ class DashboardController extends Controller
         }
         return view('admin.addAdmin',compact('heading','subheading',  'msg', 'status'));
     }
-
+    public function settings (Request $request){
+      $msg    = '';
+      $status = '';
+      if ($request->isMethod('post')) {
+          
+      }
+      return view('admin.settings',compact( 'msg', 'status'));
+    }
     public function getColourMapping ( ){
         $colourMappingsData = ColourMappings::get();
 

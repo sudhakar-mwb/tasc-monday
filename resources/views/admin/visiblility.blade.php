@@ -3,6 +3,15 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <main class="px-3 pt-5 ">
     @include('admin.headtitle')
+    <nav class="my-2" style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
+      <ol class="breadcrumb">
+          <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
+                  href="users"><u> {{ ucwords('users list') }}&nbsp; <i class="bi bi-box-arrow-up-right"></i></u></a></li>
+          {{-- <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
+                  href=""> {{ ucwords('Request Tracking') }}</a></li> --}}
+
+      </ol>
+  </nav>
     <div class="d-flex w-100 justify-content-center" style="gap:20px">
 
         <div title="coloumn visibility form" style="max-width:550px;width:100%;">
@@ -22,6 +31,10 @@
                         </select>
                     </div>
                     <div class="hiddenstep" class="" id="form-step-2">
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Paste Chart Embed Code</label><br>
+                        <input type="text" id="chart_embed_code"  class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
+ </div>
                       <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">User Subheadings</label>
                         <select id="sub_headings" class="js-example-basic-multiple w-100"
@@ -136,7 +149,9 @@
 
 {{-- full page loader --}}
 
-
+<script>
+    const base_url = "{{ url('/') }}/";
+</script>
 
 <style>
 
