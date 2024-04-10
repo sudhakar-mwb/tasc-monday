@@ -58,6 +58,7 @@ Route::group(['prefix' => "monday"], function () {
 
     Route::group(['prefix' => "admin", 'middleware'=>['web','isAdmin']], function () {
         Route::get('/users', [DashboardController::class, 'userslist'])->name('admin.users');
+        Route::post('/users', [DashboardController::class, 'userslist'])->name('admin.post.users');
         // Route::get('/create-admin', [DashboardController::class, 'createAdmin'])->name('admin.get.createAdmin');
         // Route::post('/create-admin', [DashboardController::class, 'storeAdmin'])->name('admin.post.storeAdmin');
       Route::get('/board-visiblilty', [DashboardController::class, 'columnAllowed'])->name('admin.boardvisibility');

@@ -421,12 +421,13 @@ class DashboardController extends Controller
         $subheading="Column restrictions can be set per board by selecting respective column boards.";
         return view('admin.visiblility',compact('heading','subheading','boards','coloursData'));
     }
-    public function userslist()
+    public function userslist(Request $request)
     {
-
-        // $heading="Board Visibility";
-
-        $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->paginate(10);
+        $msg        = '';
+        $status     = '';
+        $heading    = "Registerd users";
+        $subheading = "Stay informed and in control of the overall status of your onboarding requests";
+        $mondayUsers= MondayUsers::where('role', '=', '0')->latest()->paginate(10);
         $query = 'query {
             #   boards (limit: 2, page: 1){
               boards {
@@ -453,9 +454,33 @@ class DashboardController extends Controller
               }
             }';
         $boardsData = $this->_get($query)['response']['data'];
-
-        $heading="Registerd users";
-        $subheading="Stay informed and in control of the overall status of your onboarding requests";
+        if ($request->isMethod('post')) {
+            if (!empty(auth()->user()) && auth()->user()->role == 2) {
+                if (!empty($request->board_id) && !empty($request->user_id)) {
+                    $boardId  = $request->board_id;
+                    $id    = $request->user_id;
+                    $response = MondayUsers::where('id', $id)->update(['board_id' => $boardId]);
+                    if ($response) {
+                        $msg    = 'Board ID assign to user successfully.';
+                        $status = 'success';
+                        return view('admin.users',compact('heading','subheading', 'msg', 'status', 'mondayUsers', 'boardsData'));
+                    } else {
+                        $msg    = 'Something went wrong during assign board to user.';
+                        $status = 'danger';
+                        return view('admin.users',compact('heading','subheading', 'msg', 'status', 'mondayUsers', 'boardsData'));
+                    }
+                }else{
+                    $msg    = 'Request not received for assign board to the user.';
+                    $status = 'danger';
+                    return view('admin.users',compact('heading','subheading', 'msg', 'status', 'mondayUsers', 'boardsData'));
+                }
+            }else{
+                $msg    = 'You have not authorized to update user board mapping field.';
+                $status = 'danger';
+                return view('admin.users',compact('heading','subheading', 'msg', 'status', 'mondayUsers', 'boardsData'));
+            }
+        }
+        // $heading="Board Visibility";
         return view('admin.users',compact('heading','subheading', 'mondayUsers', 'boardsData'));
     }
 

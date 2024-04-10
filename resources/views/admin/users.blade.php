@@ -60,10 +60,10 @@
                         <td class="m-0 p-0"><select user_id="{{ $user->id }}"
                                 class="board_change form-select m-0 rounded-0 h-100 "
                                 aria-label="Default select example">
-                                <option class=" fs-5" selected>Not Assigned</option>
+                                <option class=" fs-5" >Not Assigned</option>
                                 @if (count($boardsData['boards']) > 0)
                                     @foreach ($boardsData['boards'] as $board)
-                                        <option class=" fs-5" value="{{ $board['id'] }}">{{ $board['name'] }}</option>
+                                        <option class=" fs-5" value="{{ $board['id'] }}" {{$board['id'] == $user->board_id ? 'selected' : ''}}>{{ $board['name'] }}</option>
                                     @endforeach
                                 @endif
                             </select></td>
@@ -81,11 +81,12 @@
 
 
                                 <span>{{ $user->password }}</span>
+                                {{-- <input type="password" disabled value="{{ $user->password }}"></input> --}}
                             </div>
                         </td>
                         <td>{{ $user->created_at }}</td>
                         <td class="text-info p-0 btn-primary">
-                            <a href="http://localhost:8001/monday/forgot?email={{ $user->email }}" target="_blank"
+                            <a href="{{url('/')}}/monday/forgot?email={{ $user->email }}" target="_blank"
                                 class="btn m-0 fs-5 rounded-0" style="display: block !important">
                                 <i class="bi bi-send-arrow-up-fill"></i>
 
@@ -114,7 +115,7 @@
         showLoader();
         try {
             const response = await fetch(
-                base_url + "monday/admin/colour-mapping/", {
+                base_url + "monday/admin/users/", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
