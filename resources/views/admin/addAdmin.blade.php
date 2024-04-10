@@ -42,7 +42,7 @@
             </div>
 
             <div class="d-grid gap-2 mt-5">
-                <button type="submit" class="btn btn-success">Submit</button>
+                <button type="submit" class="btn btn-success btn-lg btn-custom">Submit</button>
             </div>
         </form>
       </div>

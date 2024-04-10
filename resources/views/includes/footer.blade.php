@@ -4,7 +4,9 @@
       <img src="{{ asset('asset/loading5.gif') }}" alt="" >
       </div>
   </div>
+</div>
   <style>
+
       .full-loader{
       z-index: 200000;
       position: fixed; 

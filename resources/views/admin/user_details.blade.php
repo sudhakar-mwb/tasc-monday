@@ -198,8 +198,9 @@ $countryInfo = [
     'ZM' => ['flag' => '🇿🇲', 'calling_code' => '+260'],
     'ZW' => ['flag' => '🇿🇼', 'calling_code' => '+263'],
 ];
+$status_color=$data['status_color'];
+// print_r($status_color);
 $candidate_coulmns = $data['candidate_coulmns'];
-$documents_columns = $data['documents_columns'];
 $onboarding_columns = $data['onboarding_columns'];
 $sub_headings_column = $data['sub_headings_column'];
 $onboarding_updates_columns = $data['extra_details']['key'];
@@ -232,8 +233,29 @@ function findElementByTitle($name, $data, $trackdata, $key = 'value')
     } // Return null if element not found
     return null;
 }
-function getClass($input)
+function matchStatus($inputString, $statusArray) {
+    // Convert input string to uppercase
+    $inputString = strtoupper($inputString);
+
+    // Loop through the status array
+    foreach ($statusArray as $statusObject) {
+        foreach ($statusObject as $statusName => $statusValues) {
+            // Check if any of the status values match the input string
+            foreach ($statusValues as $statusValue) {
+                if (strtoupper($statusValue) === $inputString) {
+                    // Return the name of the array if a match is found
+                    return $statusName;
+                }
+            }
+        }
+    }
+
+    // If no match is found, return false
+    return false;
+}
+function getClass($str,$status_color)
 {
+  $input = matchStatus($str, $status_color);
     switch ($input) {
         case 'IN PROGRESS':
             return 'warning';
@@ -273,29 +295,17 @@ $profession = ucwords(findElementByTitle('Profession', $columns, $trackdata, 'va
 $profileStatus = Str::upper(strtoupper(findElementByTitle('Overall Status', $columns, $trackdata, 'label')));
 $requestTracking = ucwords('Request Tracking');
 $name = ucwords($trackdata['name']);
-$hiringType = findElementByTitle('Hiring Type', $columns, $trackdata, 'label');
-$nationality = json_decode(findElementByTitle('Country of Residency', $columns, $trackdata, 'value'), true) ?? '';
-$nationality = ($nationality['countryName'] ?? '') . ' ' . ($countryInfo[$nationality['countryCode']]['flag'] ?? '');
-$countryOfResidence = json_decode(findElementByTitle('Nationality', $columns, $trackdata, 'value'), true);
-$countryOfResidence = ($countryOfResidence['countryName'] ?? '') . ' ' . ($countryInfo[$countryOfResidence['countryCode']]['flag'] ?? '');
-$updatesMsg = json_decode(findElementByTitle('Updates', $columns, $trackdata, 'value'), true) ?? '';
 $whatsappNumber = findElementByTitle('Candidate Contact Number (Whatsapp Number)', $columns, $trackdata, 'value');
 $VisaIssuanceValue = json_decode(findElementByTitle('Visa Issuance', $columns, $trackdata, 'value'), true);
 $VisaIssuancestatus = findElementByTitle('Visa Issuance', $columns, $trackdata, 'label');
 
-if ($whatsappNumber !== null) {
-    $number_details = json_decode($whatsappNumber, true);
-    $whatsappNumber = $countryInfo[$number_details['countryShortName']]['calling_code'] ?? '';
-    if ($whatsappNumber !== '') {
-        $whatsappNumber = '(' . $whatsappNumber . ') ';
-    }
-    $whatsappNumber = $whatsappNumber . ($number_details['phone'] ?? '');
-}
 $joiningDate = findElementByTitle('Joining Date', $columns, $trackdata, 'value');
 if ($joiningDate !== null) {
     $joiningDate = dateFormater(json_decode($joiningDate, true)['date']);
+}else{
+  $joiningDate="NA";
 }
-$onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance'];
+// $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance'];
 ?>
 <main class="px-3 pt-5">
     <div class="w-100 mt-3">
@@ -317,7 +327,7 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
         <div class="d-flex mt-5 w-100" style="gap:20px">
             <div class="col-6 d-flex flex-column" style="gap:30px">
                 <div class="d-flex mb-2" style="gap:16px">
-                    <div class="rounded-circle bg-{{ getClass($profileStatus) }} p-4">
+                    <div class="rounded-circle bg-{{ getClass($profileStatus,$status_color) }} p-4">
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
                             <svg xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
                                 xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"
@@ -361,7 +371,7 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
 
                             {{ implode(' ', $str) }}
                         </p>
-                        <h6 class="status m-0 text-start text-{{ getClass($profileStatus) }} fw-bold">
+                        <h6 class="status m-0 text-start text-{{ getClass($profileStatus,$status_color) }} fw-bold">
                             {{ $profileStatus }}</h6>
                     </div>
                 </div>
@@ -370,11 +380,18 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                         <h4 class="text-start head-color fw-bold pb-4 border-bottom">Candidate Information</h4>
                         <ul class="list-group list-group-flush">
                             @foreach ($candidate_coulmns as $col)
+                                <?php 
+                            $text=getValueById($columns_val, $col['id'], 'text')??"NA";
+                            if($text!=="NA")
+                           {
+                            ?>
                                 <li class="list-group-item d-flex align-items-center border-0 text-start"
                                     style="background: inherit;gap:16px"><span>
                                         <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-asterisk' }}"></i>
-                                    </span><span> {{ $col['custom_title'] ? $col['custom_title'] . ' : ' : '' }}{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
+                                    </span><span>
+                                        {{ $col['custom_title'] ? $col['custom_title'] . ' : ' : '' }}{{ $text }}</span>
                                 </li>
+                                <?php }?>
                             @endforeach
 
                         </ul>
@@ -387,13 +404,14 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                 
                                 $valued = json_decode(getValueById($columns_val, $step['id'], 'value'), true);
                                 $status = getValueById($columns_val, $step['id'], 'text');
-                                if($status !=='NA')
+                                 
+                                if($status !=='NA'&&$joiningDate!=="NA")
 {
                                 ?>
                                 <li class="list-group-item d-flex align-items-start border-0 text-start mb-1"
                                     style="background: inherit;gap:10px">
                                     <span style="width: 20px;height:20px"
-                                        class="text-{{ getClass(Str::upper($status)) }} mt-1">
+                                        class="text-{{ getClass(Str::upper($status),$status_color) }} mt-1">
                                         <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"
                                             style="max-width:100%" height="100%">
                                             <path
@@ -446,12 +464,12 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                         <div class="d-flex align-items-center mt-1 mb-2" style="gap:8px">
 
                             <?php
-                           $col = $documents_columns[$j];
-                           $str= getValueById($columns_val, $col['id'], 'text');
-                           $str=explode(",",$str);
-                           for($i=0;$i < count($str) && $i < 6;$i++)
-                           {
-                        ?>
+                            //  $col = $documents_columns[$j];
+                            //  $str= getValueById($columns_val, $col['id'], 'text');
+                            //  $str=explode(",",$str);
+                            //  for($i=0;$i < count($str) && $i < 6;$i++)
+                            //  {
+                            ?>
 
                             <a href="{{ $str[$i] }}" target="_blank" class="zoom" style="display: block">
                                 <span class=" text-start mt-1 fw-bold text-secondary text-danger"
@@ -460,14 +478,16 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                 </span>
                             </a>
                             <?php
-                           } 
-                              $remainings=count($str) -6;
-                              if($remainings>0){
-                              ?>
+                            //  }
+                            //     $remainings=count($str) -6;
+                            //     if($remainings>0){
+                            ?>
                             <span
                                 class="d-flex align-items-center mt-2 justify-content-center btn btn-dark rounded-circle p-0"
                                 style="min-height: 30px;min-width:30px">+{{ $remainings }}</span>
-                            <?php }   ?>
+                            <?php
+                            // }
+                            ?>
                         </div>
                     @endfor
                 </div> --}}

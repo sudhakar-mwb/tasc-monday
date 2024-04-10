@@ -7,7 +7,7 @@
     <div class="d-flex w-100 justify-content-center" style="gap:20px">
 
         <div title="coloumn visibility form" style="max-width:550px;width:100%;">
-            <div class="bg-success text-white">
+            <div class="bg-success text-white site-bg">
                 <p class="p-2 m-0 fs-5"><strong>Manage Boards settings</strong></p>
             </div>
             <div class="form_wrapper border border-success p-4 primary-shadow">
@@ -99,7 +99,7 @@
         {
         ?>
         <div title="status visibility manage" style="max-width:550px;width:100%;">
-            <div class="bg-success text-white">
+            <div class="bg-success text-white site-bg">
                 <p class="p-2 m-0 fs-5"><strong>Manage Status Background</strong></p>
             </div>
             <div class="form_wrapper border border-success p-4 primary-shadow">

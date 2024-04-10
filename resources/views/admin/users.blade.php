@@ -24,19 +24,15 @@
         <thead>
             <tr>
 
-                <th scope="col " class="bg-success text-light">#</th>
-                <th scope="col " class="bg-success text-light">Name</th>
-                <th scope="col " class="bg-success text-light">Company Name</th>
-                <th scope="col " class="bg-success text-light">Phone</th>
-                <th scope="col " class="bg-success text-light">Email</th>
-
-
-                {{-- <th scope="col " class="bg-warning">Hiring Type</th> --}}
-                {{-- <th scope="col " class="bg-warning">Status</th> --}}
-                <th scope="col " class="bg-success text-light">Assign Board</th>
-                <th scope="col " class="bg-success text-light">Password</th>
-                <th scope="col " class="bg-success text-light">Created Date</th>
-                <th scope="col " class="bg-success text-light">Forgot Pass</th>
+                <th scope="col " class="bg-success site-bg text-light">#</th>
+                <th scope="col " class="bg-success site-bg text-light">Name</th>
+                <th scope="col " class="bg-success site-bg text-light">Company Name</th>
+                <th scope="col " class="bg-success site-bg text-light">Phone</th>
+                <th scope="col " class="bg-success site-bg text-light">Email</th>
+                <th scope="col " class="bg-success site-bg text-light">Assign Board</th>
+                <th scope="col " class="bg-success site-bg text-light">Password</th>
+                <th scope="col " class="bg-success site-bg text-light">Created Date</th>
+                <th scope="col " class="bg-success site-bg text-light">Forgot Pass</th>
             </tr>
         </thead>
         <tbody>
