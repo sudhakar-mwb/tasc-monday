@@ -373,7 +373,7 @@ $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Polic
                                 <li class="list-group-item d-flex align-items-center border-0 text-start"
                                     style="background: inherit;gap:16px"><span>
                                         <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-asterisk' }}"></i>
-                                    </span><span><strong>{{ $col['custom_title'] ? $col['custom_title'] . ' : ' : '' }}</strong>{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
+                                    </span><span> {{ $col['custom_title'] ? $col['custom_title'] . ' : ' : '' }}{{ getValueById($columns_val, $col['id'], 'text') ?? $countryOfResidence }}</span>
                                 </li>
                             @endforeach
 

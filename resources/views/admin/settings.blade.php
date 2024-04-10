@@ -2,7 +2,7 @@
 
 <main class="px-3 pt-5">
     {{-- @include('admin.headtitle') --}}
-
+    @include('includes.links',['active'=>'settings'])
     @if ($status != '')
         <div class="d-flex justify-content-center">
             <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }} </div>
@@ -10,7 +10,7 @@
     @endif
     <div class="w-100 d-flex flex-column align-items-center">
         <div class="col-md-7 col-lg-8 text-start">
-            <h4 class="mb-3"><i class="bi bi-gear-fill"></i> &nbsp;General settings</h4>
+            <h4 class="mb-3"><i class="bi bi-gear-fill"></i><span class="mt-1 ms-2">General Settings</h4>
             <hr>
             <form class="needs-validation" novalidate="" id="general_settings_form">
                 <div class="row g-3">

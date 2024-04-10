@@ -4,15 +4,7 @@
 ?>
 <main class="px-3 pt-5">
     @include('admin.headtitle')
-    <nav class="my-2" style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-      <ol class="breadcrumb">
-          {{-- <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
-                  href="users"><u> {{ ucwords('users list') }}</u></a></li> --}}
-          <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
-                  href="board-visiblilty"> {{ ucwords('Manage Columns Visibility') }}&nbsp;<i class="bi bi-box-arrow-up-right"></i></a></li>
-
-      </ol>
-  </nav>
+    @include('includes.links', ['active' => 'users'])
     <script>
         function copyToBoard(val) {
             // Copy the text inside the text field
@@ -110,7 +102,7 @@
                 @endforeach
             @else
                 <tr>
-                    <td colspan="8"> Records Not Found. </td>
+                    <td colspan="9"> Records Not Found. </td>
                 </tr>
             @endif
             {{-- <div class="card-footer clearfix">
@@ -146,7 +138,7 @@
             );
 
             if (!response.ok) throw new Error("HTTP status " + response.status);
-            alert("status group saved");
+            alert("Board assigned successfully.");
         } catch (error) {
             console.log("Api error", error);
             alert("Something wents wrong.");

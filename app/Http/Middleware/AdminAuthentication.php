@@ -16,7 +16,7 @@ class AdminAuthentication
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth()->user() && auth()->user()->role == 2){
+        if(auth()->user() &&(auth()->user()->role == 2 ||auth()->user()->role == 1)){
             return $next($request);
         }
         Auth::logout();

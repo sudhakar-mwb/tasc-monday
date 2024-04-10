@@ -30,7 +30,7 @@
                     <span class="text-secondary
 
             ">
-                        Welcome
+                        {{-- Welcome --}}
                     </span>
 
                     @php

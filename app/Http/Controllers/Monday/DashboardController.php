@@ -112,7 +112,7 @@ class DashboardController extends Controller
         }
         ;
         $query = "query {
-            boards(ids: 1352607400) {
+            boards(ids: ".auth()->user()->board_id.") {
                columns {
                   title
                   id
@@ -148,7 +148,7 @@ class DashboardController extends Controller
         $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
          if ($request->export == true) {
             $query = "query {
-                boards(ids: 1352607400) {
+            boards(ids: ".auth()->user()->board_id.") {
                    columns {
                       title
                       id
@@ -415,7 +415,7 @@ class DashboardController extends Controller
          
       }
       Session::flash('error', 'Something went wrong during fetch colour mapping data.');
-        $heading="Columns Visibility";
+        $heading="Board Visibility";
         // $boards=['3454','5345','34553','5345','3553','3455','4355','34553','35345'];
         $boards=$idArray;
         $subheading="Column restrictions can be set per board by selecting respective column boards.";
@@ -659,6 +659,7 @@ class DashboardController extends Controller
     }
 
     public function storeAdmin (Request $request){
+
         $heading     = 'Add Admin';
         $subheading  ='To Create User With Admin Role';
         $msg    = '';

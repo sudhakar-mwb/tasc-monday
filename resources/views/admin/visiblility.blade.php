@@ -3,20 +3,12 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <main class="px-3 pt-5 ">
     @include('admin.headtitle')
-    <nav class="my-2" style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none" href="users"><u>
-                        {{ ucwords('users list') }}&nbsp; <i class="bi bi-box-arrow-up-right"></i></u></a></li>
-            {{-- <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
-                  href=""> {{ ucwords('Request Tracking') }}</a></li> --}}
-
-        </ol>
-    </nav>
+    @include('includes.links', ['active' => 'board-visiblilty'])
     <div class="d-flex w-100 justify-content-center" style="gap:20px">
 
         <div title="coloumn visibility form" style="max-width:550px;width:100%;">
             <div class="bg-success text-white">
-                <p class="p-2 m-0 fs-5"><strong>Board Wise Manage Columns </strong></p>
+                <p class="p-2 m-0 fs-5"><strong>Manage Boards settings</strong></p>
             </div>
             <div class="form_wrapper border border-success p-4 primary-shadow">
                 <form id="column_view_form" class="text-start ">
@@ -32,24 +24,24 @@
                     </div>
                     <div class="hiddenstep" class="" id="form-step-2">
                         <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Paste Form Embed Code</label><br>
+                            <label for="form_embed_code" class="form-label">Form Embed Code &nbsp;<i class="bi bi-clipboard-fill"></i></label><br>
                             <input type="text" id="form_embed_code" class="form-control" placeholder=""
                                 aria-label="Example text with button addon" aria-describedby="button-addon1">
                         </div>
                         <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Paste Chart Embed Code</label><br>
+                            <label for="chart_embed_code" class="form-label">Chart Embed Code&nbsp;<i class="bi bi-clipboard-fill"></i></label><br>
                             <input type="text" id="chart_embed_code" class="form-control" placeholder=""
                                 aria-label="Example text with button addon" aria-describedby="button-addon1">
                         </div>
                         <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">User Subheadings</label>
+                            <label for="exampleInputEmail1" class="form-label">User Subheadings Columns</label>
                             <select id="sub_headings" class="js-example-basic-multiple w-100" name="subHeadings[]"
                                 multiple="multiple" style="max-width:500px">
 
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Onboarding Status</label>
+                            <label for="exampleInputEmail1" class="form-label">Onboarding Status Columns</label>
                             <select id="onboarding_columns" class="js-example-basic-multiple w-100"
                                 name="onboarding_coulumns[]" multiple="multiple" style="max-width:500px">
                             </select>
@@ -61,7 +53,7 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Candidate Information</label>
+                            <label for="exampleInputPassword1" class="form-label">Candidate Information Columns</label>
                             <select id="candidate_columns" class="js-example-basic-multiple w-100"
                                 name="candidate_columns[]" multiple="multiple" style="max-width:500px">
                             </select>
@@ -102,6 +94,10 @@
                 </form>
             </div>
         </div>
+        <?php
+        if(auth()->user()->role==1)
+        {
+        ?>
         <div title="status visibility manage" style="max-width:550px;width:100%;">
             <div class="bg-success text-white">
                 <p class="p-2 m-0 fs-5"><strong>Manage Status Background</strong></p>
@@ -131,6 +127,7 @@
                 </form>
             </div>
         </div>
+       <?php } ?>
     </div>
 
 

@@ -115,7 +115,7 @@ class AuthController extends Controller
                 );
 
                 $linkHash        = Crypt::encrypt(json_encode($dataToEncrypt));
-                $verificationURL = 'http://localhost:8000/monday/create-password/'.$linkHash;
+                $verificationURL = url('/').'/monday/create-password/'.$linkHash;
                 $verificationData = array(
                     'emailType'  => 'forget_password_verification',
                     'name'       => $getUser->name,
