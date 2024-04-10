@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\Session;
 use App\Models\ColourMappings;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Http\UploadedFile;
+use App\Models\SiteSettings;
 
 class DashboardController extends Controller
 {
@@ -702,7 +703,55 @@ class DashboardController extends Controller
       $msg    = '';
       $status = '';
       if ($request->isMethod('post')) {
-          
+        $data = $request->all();
+        $request->validate([
+            'site_bg'        => 'required',
+            'button_bg'      => 'required',
+            'logo_image'     => 'required|mimes:JPEG,JPG,jpeg,jpg|max:2048',
+            'banner_bg'      => 'required',
+            'banner_content' => 'required'
+        ], $this->getErrorMessages());
+        if (!empty($data)) {
+            // Store the uploaded file
+            $file     = $request->file('logo_image');
+            $fileName = $file->getClientOriginalName();
+            $file->move(public_path('uploads'), $fileName);
+
+            $value = [
+                'site_bg'        => $request->site_bg,
+                'button_bg'      => $request->button_bg,
+                'logo_image'     => $fileName,
+                'banner_bg'      => $request->banner_bg,
+                'banner_content' => $request->banner_content,
+            ];
+
+            $datatoUpdate = [
+                'ui_settings' => json_encode($value),
+                'logo' => $fileName,
+            ];
+            $criteria = [
+                'logo' => $fileName,
+            ];
+            $siteSettingsDBData = SiteSettings::find($criteria['logo']);
+            $response = SiteSettings::where('id','=', 1)->update($datatoUpdate);
+            // Check if the record was updated
+            if ($siteSettingsDBData && $response->wasChanged()) {
+                $msg    = 'Site setting mapping successfully updated.';
+                $status = 'success';
+                return view('admin.settings',compact( 'msg', 'status'));
+            } else {
+                $msg    = 'Site setting mapping successfully updated.';
+                $status = 'success';
+                return view('admin.settings',compact( 'msg', 'status'));
+            }
+            $msg    = 'Something went wrong during colour mapping.';
+            $status = 'danger';
+            return view('admin.settings',compact( 'msg', 'status'));
+        }else{
+            $msg    = 'Site settings data mapping not received.';
+            $status = 'danger';
+            return view('admin.settings',compact( 'msg', 'status'));
+        }
       }
       return view('admin.settings',compact( 'msg', 'status'));
     }
