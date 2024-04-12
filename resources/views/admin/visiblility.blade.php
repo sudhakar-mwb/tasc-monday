@@ -3,87 +3,88 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <main class="px-3 pt-5 ">
     @include('admin.headtitle')
-    <nav class="my-2" style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-      <ol class="breadcrumb">
-          <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
-                  href="users"><u> {{ ucwords('users list') }}&nbsp; <i class="bi bi-box-arrow-up-right"></i></u></a></li>
-          {{-- <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
-                  href=""> {{ ucwords('Request Tracking') }}</a></li> --}}
-
-      </ol>
-  </nav>
+    @include('includes.links', ['active' => 'board-visiblilty'])
     <div class="d-flex w-100 justify-content-center" style="gap:20px">
 
         <div title="coloumn visibility form" style="max-width:550px;width:100%;">
-            <div class="bg-success text-white">
-                <p class="p-2 m-0 fs-5"><strong>Board Wise Manage Columns </strong></p>
+            <div class="bg-success text-white site-bg">
+                <p class="p-2 m-0 fs-5"><strong>Manage Boards settings</strong></p>
             </div>
             <div class="form_wrapper border border-success p-4 primary-shadow">
                 <form id="column_view_form" class="text-start ">
                     <div class="mb-3" id="form-step-1">
                         <label for="exampleInputEmail1" class="form-label">Select Board</label>
                         <select id="input-board-select" class="form-select" id="exampleInputEmail1"
-                            aria-label="Default select example"  >
-                            <option value="">-- Select  Board --</option>
+                            aria-label="Default select example">
+                            <option value="">-- Select Board --</option>
                             @for ($j = 0; $j < count($boards); $j++)
-                            <option value="{{ $boards[$j]['id'] }}">{{ $boards[$j]['name'] }}</option>
-                        @endfor
+                                <option value="{{ $boards[$j]['id'] }}">{{ $boards[$j]['name'] }}</option>
+                            @endfor
                         </select>
                     </div>
                     <div class="hiddenstep" class="" id="form-step-2">
-                      <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Paste Chart Embed Code</label><br>
-                        <input type="text" id="chart_embed_code"  class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1">
- </div>
-                      <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">User Subheadings</label>
-                        <select id="sub_headings" class="js-example-basic-multiple w-100"
-                            name="subHeadings[]" multiple="multiple" style="max-width:500px" >
+                        <div class="mb-3">
+                            <label for="form_embed_code" class="form-label">Form Embed Code &nbsp;<i class="bi bi-clipboard-fill"></i></label><br>
+                            <input type="text" id="form_embed_code" class="form-control" placeholder=""
+                                aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="chart_embed_code" class="form-label">Chart Embed Code&nbsp;<i class="bi bi-clipboard-fill"></i></label><br>
+                            <input type="text" id="chart_embed_code" class="form-control" placeholder=""
+                                aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">User Subheadings Columns</label>
+                            <select id="sub_headings" class="js-example-basic-multiple w-100" name="subHeadings[]"
+                                multiple="multiple" style="max-width:500px">
 
-                        </select>
- </div>
-                        <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Onboarding Status</label>
-                            <select id="onboarding_columns" class="js-example-basic-multiple w-100"
-                                name="onboarding_coulumns[]" multiple="multiple" style="max-width:500px" >
                             </select>
-                       </div>
-                       <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Document Columns</label>
-                        <select id="documents_columns" class="js-example-basic-multiple w-100"
-                            name="documents_columns[]" multiple="multiple" style="max-width:500px" >
-                        </select>
-                   </div>
+                        </div>
                         <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Candidate Information</label>
+                            <label for="exampleInputEmail1" class="form-label">Onboarding Status Columns</label>
+                            <select id="onboarding_columns" class="js-example-basic-multiple w-100"
+                                name="onboarding_coulumns[]" multiple="multiple" style="max-width:500px">
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Document Columns</label>
+                            <select id="documents_columns" class="js-example-basic-multiple w-100"
+                                name="documents_columns[]" multiple="multiple" style="max-width:500px">
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">Candidate Information Columns</label>
                             <select id="candidate_columns" class="js-example-basic-multiple w-100"
-                                name="candidate_columns[]" multiple="multiple" style="max-width:500px" >
+                                name="candidate_columns[]" multiple="multiple" style="max-width:500px">
                             </select>
                         </div>
                         <div class="mb-3" id="icon_inputs-wrapper">
-                            <label for="exampleInputPassword1" class="form-label">Provide candidate column details : </label>
-                          
-                            <a href="https://icons.getbootstrap.com/" target="_blank">Go to icons librery&nbsp;<i class="bi bi-box-arrow-up-right"></i></a>  
-                             <ol id="icon_inputs">
-                             </ol>
+                            <label for="exampleInputPassword1" class="form-label">Provide candidate column details :
+                            </label>
+
+                            <a href="https://icons.getbootstrap.com/" target="_blank">Go to icons librery&nbsp;<i
+                                    class="bi bi-box-arrow-up-right"></i></a>
+                            <ol id="icon_inputs">
+                            </ol>
                         </div>
-                     
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Onboarding Updates</label>
-                        <select id="onboarding-updates-option" class="form-select" aria-label="Default select example"  >
-                        </select>
-                    </div>
-                    <h5 class="text-secondary mt-5 mb-3 pb-2 border-bottom">Card Columns:</h5>
-                    <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Top Details column</label>
-                      <select id="card-column-1" class="form-select" aria-label="Default select example"  >
-                      </select>
-                  </div>
-                  <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Mid Heading column</label>
-                    <select id="card-column-2" class="form-select" aria-label="Default select example"  >
-                    </select>
-                </div>
+
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Onboarding Updates</label>
+                            <select id="onboarding-updates-option" class="form-select"
+                                aria-label="Default select example">
+                            </select>
+                        </div>
+                        <h5 class="text-secondary mt-5 mb-3 pb-2 border-bottom">Card Columns:</h5>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Top Details column</label>
+                            <select id="card-column-1" class="form-select" aria-label="Default select example">
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Mid Heading column</label>
+                            <select id="card-column-2" class="form-select" aria-label="Default select example">
+                            </select>
+                        </div>
                     </div>
 
                     <div class="d-grid gap-2 mt-5"> <button id="columns_details_submit" type="submit"
@@ -93,32 +94,40 @@
                 </form>
             </div>
         </div>
+        <?php
+        if(auth()->user()->role==1)
+        {
+        ?>
         <div title="status visibility manage" style="max-width:550px;width:100%;">
-          <div class="bg-success text-white">
-              <p class="p-2 m-0 fs-5"><strong>Manage Status Background</strong></p>
-          </div>
-          <div class="form_wrapper border border-success p-4 primary-shadow">
-              <form id="status_view_form" class="text-start">
-                   @foreach($coloursData as $key => $value)
-                   <?php $val= implode(", ",$value['val']);?>
-                   <div class="mb-3" >
-                    <h5 class="p-2 " style="border-radius:20%;border-left:10px solid {{ $value['rgb_code']}};">Color: {{ $key}}</h3>
-                    <ul style="list-style: none" class="color-section">
-                      <li>
-                        <div class="form-floating">
-                        <textarea name="{{ $key }}" current_color="{{ $key  }}" class="form-control color-input" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px">{{ $val }}</textarea>
-                        <label for="floatingTextarea2">Write Status</label>
-                      </div>
-                    </li>
-                    </ul>
-                  </div>
-                   @endforeach
-                  <div class="d-grid gap-2 mt-5"> <button id="columns_details_submit" type="submit"
-                          class="btn btn-success btn-lg">Submit</button>
-                  </div>
-              </form>
-          </div>
-      </div>
+            <div class="bg-success text-white site-bg">
+                <p class="p-2 m-0 fs-5"><strong>Manage Status Background</strong></p>
+            </div>
+            <div class="form_wrapper border border-success p-4 primary-shadow">
+                <form id="status_view_form" class="text-start">
+                    @foreach ($coloursData as $key => $value)
+                        <?php $val = implode(', ', $value['val']); ?>
+                        <div class="mb-3">
+                            <h5 class="p-2 "
+                                style="border-radius:20%;border-left:10px solid {{ $value['rgb_code'] }};">Color:
+                                {{ $key }}</h3>
+                                <ul style="list-style: none" class="color-section">
+                                    <li>
+                                        <div class="form-floating">
+                                            <textarea name="{{ $key }}" current_color="{{ $key }}" class="form-control color-input"
+                                                placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px">{{ $val }}</textarea>
+                                            <label for="floatingTextarea2">Write Status</label>
+                                        </div>
+                                    </li>
+                                </ul>
+                        </div>
+                    @endforeach
+                    <div class="d-grid gap-2 mt-5"> <button id="columns_details_submit" type="submit"
+                            class="btn btn-success btn-lg">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+       <?php } ?>
     </div>
 
 
@@ -154,9 +163,8 @@
 </script>
 
 <style>
-
-  .color-block>li>ul{
-    margin-bottom: 15px
-  }
+    .color-block>li>ul {
+        margin-bottom: 15px
+    }
 </style>
 @include('includes.footer')

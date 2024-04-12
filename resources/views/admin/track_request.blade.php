@@ -1,5 +1,6 @@
 @include('includes.header')
 <?php
+
 $trackdata = $response['data']['boards'][0]['items_page']['items'];
 $cs = $response['data']['boards'][0]['items_page']['cursor'];
 $columns = $response['data']['boards'][0]['columns'];
@@ -46,8 +47,12 @@ function dateFormater($dateString)
     $formattedDate = $date->format('F j, Y');
     return $formattedDate;
 }
+$column1="";
+$column2="";
+if($data['column1']&&$data['column2']){
 $column1=getValueById($trackdata[0]['column_values'],$data['column1'],'text');
 $column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
+}
 ?>
 
 

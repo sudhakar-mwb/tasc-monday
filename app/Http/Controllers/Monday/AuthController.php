@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use DB;
+use App\Models\SiteSettings;
+use PhpParser\Node\Expr\YieldFrom;
+
 class AuthController extends Controller
 {
     use MondayApis;
@@ -25,6 +28,12 @@ class AuthController extends Controller
         $status     = '';
         $heading    = "Log In";
         $subheading = "TASC Outsourcing KSA";
+        $get_data = SiteSettings::where('id', '=', 1)->first()->toArray()['ui_settings'];
+
+    // Store data in the session
+    session(['settings' => json_decode($get_data)]);
+
+
         if ($request->isMethod('post')) {
             $input = $request->all();
             $this->validate($request, [
@@ -79,6 +88,7 @@ class AuthController extends Controller
                 if ($insertUserInDB['status'] == "success") {
                     $msg    = "User Created Successfully.";
                     $status = "success";
+                    return $this->thankssignup();
                 } elseif ($insertUserInDB['status'] == "already") {
                     $msg    = "User Already Exists.";
                     $status = "danger";
@@ -115,7 +125,7 @@ class AuthController extends Controller
                 );
 
                 $linkHash        = Crypt::encrypt(json_encode($dataToEncrypt));
-                $verificationURL = 'http://localhost:8000/monday/create-password/'.$linkHash;
+                $verificationURL = url('/').'/monday/create-password/'.$linkHash;
                 $verificationData = array(
                     'emailType'  => 'forget_password_verification',
                     'name'       => $getUser->name,
@@ -343,5 +353,9 @@ class AuthController extends Controller
             }
             return view('auth.login', compact('heading', 'subheading', 'msg', 'status', 'token'));
         }
+    }
+
+    public function test(){
+      return $this->getSiteSettings();
     }
 }

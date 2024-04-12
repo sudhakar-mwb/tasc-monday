@@ -21,6 +21,7 @@ const initial_state = {
 		key: "",
 		time_stamp: "",
 		chart_embed_code: "",
+		form_embed_code: "",
 	},
 };
 let status_group = {};
@@ -281,7 +282,9 @@ $(document).ready(function () {
 	$(document).on("input", "#chart_embed_code", function (e) {
 		data.extra_details.chart_embed_code = this.value;
 	});
-
+	$(document).on("input", "#form_embed_code", function (e) {
+		data.extra_details.form_embed_code = this.value;
+	});
 	$(document).on("input", "#icon_inputs>li>input.column_title", function (e) {
 		const index = $(this).attr("index");
 		data.candidate_coulmns[index].custom_title = this.value;
@@ -297,6 +300,7 @@ $(document).ready(function () {
 		$("#card-column-2").val("");
 		$("#icon_inputs-wrapper").hide();
 		$("#chart_embed_code").val("");
+		$("#form_embed_code").val("");
 	}
 	function setValuesFromData() {
 		populateColumnDetails();
@@ -316,6 +320,7 @@ $(document).ready(function () {
 		$("#documents_columns").trigger("change");
 		$("#onboarding-updates-option").val(data.extra_details.key);
 		$("#chart_embed_code").val(data.extra_details?.chart_embed_code ?? "");
+		$("#form_embed_code").val(data.extra_details?.form_embed_code ?? "");
 
 		$("#card-column-1").val(data.card_section.column1);
 		$("#card-column-2").val(data.card_section.column2);
@@ -399,7 +404,11 @@ $(document).ready(function () {
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify(formData),
+						body: JSON.stringify({
+							Yellow: ["approved", "dispatched"],
+							Green: ["approvals", " arrived"],
+							Grey: ["pending", "  onboarded"],
+						}),
 					}
 				);
 
