@@ -185,98 +185,35 @@ class DashboardController extends Controller
              }";
       $response = $this->_get($query)['response'];
 
-      // Set headers for CSV download
-      header('Content-Type: text/csv');
-      header('Content-Disposition: attachment; filename="monday_com_data.csv"');
-
-      // Open file pointer
-      $output = fopen('php://output', 'w');
-
-      // Write headers
-      // $headers = ['Name', 'Overall Status', 'Updates', 'Degree Attestation', 'Police Clearance', 'Medical Test', 'Visa Issuance', 'Visa / E-wakala', 'Nationality', 'Country of Residency', 'Profession', 'Hiring Type', 'Docs Group 1', 'Docs Group 2', 'Docs Group 3', 'Candidate Email Address', 'Is there specified joining date', 'Joining Date', 'Candidate Contact Number (Whatsapp Number)'];
-
-      $headers = ['Name', 'Overall Status', 'Updates', 'Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance', 'Medical Test', 'Nationality', 'Country of Residency', 'Profession', 'Hiring Type', 'Docs Group 1', 'Docs Group 2', 'Docs Group 3', 'Is there specified joining date', 'Joining Date', 'Candidate Contact Number (Whatsapp Number)', 'Candidate Email Address', 'Qiwa Request', 'Muqeem Generated', 'People'];
-
-      fputcsv($output, $headers);
-
       // Loop through items and write data
-      if (!empty($response['data']['boards'][0]['items_page']['items'])) {
+      if (!empty($response['data']['boards'][0]['items_page']['items']) && !empty($response['data']['boards'][0]['columns'])) {
+        // Set headers for CSV download
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="monday_com_data.csv"');
+
+        // // Open file pointer
+        $output = fopen('php://output', 'w');
+
+        $headers      = [];
+        foreach ($response['data']['boards'][0]['columns'] as $key => $value) {
+          $headers[$value['id']] = $value['title'];
+        }
+
+        fputcsv($output, $headers);
         foreach ($response['data']['boards'][0]['items_page']['items'] as $item) {
-
-          $docLinkPrepare = 'https://tascksa.monday.com/boards/1352607400/pulses/' . $item['id'] . '?asset_id=';
-
-          if (!empty(json_decode($item['column_values'][11]['value'], true))) {
-            $docGroupAssetIds1 = array_column(json_decode($item['column_values'][11]['value'], true)['files'], 'assetId');
-
-            $docGroupResult1 = array();
-            foreach ($docGroupAssetIds1 as $id) {
-              $docGroupResult1[] = $docLinkPrepare . $id;
+          $rows = [];
+          if (!empty($item['column_values']) ) {
+            $rowData = [];
+            if (!empty($item['name'])) {
+              $rowData[$headers['name']] = $item['name'];
             }
-
-            $docGroupResultString1 = implode(', ', $docGroupResult1);
-          }
-
-          if (!empty(json_decode($item['column_values'][12]['value'], true))) {
-            $docGroupAssetIds2 = array_column(json_decode($item['column_values'][12]['value'], true)['files'], 'assetId');
-
-            $docGroupResult2 = array();
-            foreach ($docGroupAssetIds2 as $id) {
-              $docGroupResult2[] = $docLinkPrepare . $id;
+            foreach ($item['column_values'] as $itemValue) {
+              if ( array_key_exists($itemValue['id'], $headers)) {
+                $rowData[$headers[$itemValue['id']]] =  $itemValue['text'];
+              }
             }
-
-            $docGroupResultString2 = implode(', ', $docGroupResult2);
+            $rows[] = $rowData;
           }
-
-          if (!empty(json_decode($item['column_values'][13]['value'], true))) {
-            $docGroupAssetIds3 = array_column(json_decode($item['column_values'][13]['value'], true)['files'], 'assetId');
-
-            $docGroupResult3 = array();
-            foreach ($docGroupAssetIds3 as $id) {
-              $docGroupResult3[] = $docLinkPrepare . $id;
-            }
-
-            $docGroupResultString3 = implode(', ', $docGroupResult3);
-          }
-
-          if (!empty($item['column_values'][20]['value'])) {
-            $value_decoded   =  json_decode($item['column_values'][20]['value'], true);
-            $personsAndTeams = $value_decoded['personsAndTeams'];
-
-            $peopleIds = array();
-            foreach ($personsAndTeams as $personOrTeam) {
-              $peopleIds[] = $personOrTeam['id'];
-            }
-
-            // Join the IDs with semicolon
-            $peopleIdSeparated = implode(';', $peopleIds);
-          }
-
-          $rowData = [
-            $item['name'],   // Name
-            $item['column_values'][0]['label'], // Overall Status
-            !empty($item['column_values'][1]['value']) ? json_decode($item['column_values'][1]['value'], true)['text'] : '', // Updates
-            $item['column_values'][2]['label'], // Visa Issuance
-            $item['column_values'][3]['label'], // Visa / E-wakala
-            $item['column_values'][4]['label'], // Degree Attestation
-            $item['column_values'][5]['label'], // Police Clearance
-            $item['column_values'][6]['label'], // Medical Test
-            !empty($item['column_values'][7]['value']) ? json_decode($item['column_values'][7]['value'], true)['countryName'] : '', // Nationality
-            !empty($item['column_values'][8]['value']) ? json_decode($item['column_values'][8]['value'], true)['countryName'] : '', // Country of Residency
-            $item['column_values'][9]['value'], // Profession
-            $item['column_values'][10]['label'], // Hiring Type
-            $docGroupResultString1 ?? '', // Docs Group 1
-            $docGroupResultString2 ?? '', // Docs Group 2
-            $docGroupResultString3 ?? '', // Docs Group 3
-            $item['column_values'][14]['label'], // Is there specified joining date
-            !empty($item['column_values'][15]['value']) ? json_decode($item['column_values'][15]['value'], true)['date'] : '', // Joining Date
-            !empty($item['column_values'][16]['value']) ? json_decode($item['column_values'][16]['value'], true)['phone'] : '', // Candidate Contact Number (Whatsapp Number)
-            !empty($item['column_values'][17]['value']) ? json_decode($item['column_values'][17]['value'], true)['email'] : '', // Candidate Email Address
-            $item['column_values'][18]['label'], // Qiwa Request
-            $item['column_values'][19]['label'], // Muqeem Generated
-            !empty($peopleIdSeparated) ? $peopleIdSeparated : '', // People
-
-          ];
-
           fputcsv($output, $rowData);
         }
 
@@ -387,6 +324,12 @@ class DashboardController extends Controller
     $heading = "Mobility Service Request";
     $subheading = "Provide essential details to ensure a smooth and efficient onboarding experience for your new team members. Let's get started on building your workforce seamlessly";
     $boardId  = auth()->user()->board_id;
+    if (empty($boardId)) {
+      $heading = "Pending";
+      $subheading = "Currently Board not Assigned!";
+      $status = false;
+      return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
+    }
     $data = $this->getBoardColumnsEmbedById($boardId);
     $embed_code="";
 
@@ -404,6 +347,12 @@ class DashboardController extends Controller
     $heading = "Overall Status";
     $subheading = "Stay informed and in control of the overall status of your onboarding requests";
     $boardId  = auth()->user()->board_id;
+    if (empty($boardId)) {
+      $heading = "Pending";
+      $subheading = "Currently Board not Assigned!";
+      $status = false;
+      return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
+    }
     $data = $this->getBoardColumnsEmbedById($boardId);
     $embed_code="";
 
