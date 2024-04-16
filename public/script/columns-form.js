@@ -12,7 +12,7 @@ const initial_state = {
 	onboarding_columns: [],
 	candidate_coulmns: [],
 	sub_headings_column: [],
-	documents_columns: [],
+	// documents_columns: [],
 	card_section: {
 		column1: "",
 		column2: "",
@@ -140,26 +140,26 @@ $(document).ready(function () {
 		});
 	//
 
-	$("#documents_columns")
-		.on("select2:select", function (e) {
-			const el = e.params.data;
-			data.documents_columns.push({
-				id: el.id,
-				name: el.text,
-				icon: "",
-				custom_title: "",
-			});
-			updateSelectedInOrder("#documents_columns", "documents_columns");
-		})
-		.on("select2:unselect", function (e) {
-			var index = data.documents_columns.findIndex(function (item) {
-				return item.id === e.params.data.id;
-			});
-			if (index !== -1) {
-				data.documents_columns.splice(index, 1); // Remove unselected value
-				updateSelectedInOrder("#documents_columns", "documents_columns");
-			}
-		});
+	// $("#documents_columns")
+	// 	.on("select2:select", function (e) {
+	// 		const el = e.params.data;
+	// 		data.documents_columns.push({
+	// 			id: el.id,
+	// 			name: el.text,
+	// 			icon: "",
+	// 			custom_title: "",
+	// 		});
+	// 		updateSelectedInOrder("#documents_columns", "documents_columns");
+	// 	})
+	// 	.on("select2:unselect", function (e) {
+	// 		var index = data.documents_columns.findIndex(function (item) {
+	// 			return item.id === e.params.data.id;
+	// 		});
+	// 		if (index !== -1) {
+	// 			data.documents_columns.splice(index, 1); // Remove unselected value
+	// 			updateSelectedInOrder("#documents_columns", "documents_columns");
+	// 		}
+	// 	});
 	/**
 	 * on select candidate columns
 	 */
@@ -260,7 +260,7 @@ $(document).ready(function () {
 
 		$("#candidate_columns").html(options);
 		$("#onboarding_columns").html(options);
-		$("#documents_columns").html(options);
+		// $("#documents_columns").html(options);
 		$("#sub_headings").html(options);
 		const single_select_options =
 			'<option value="">-- Select Column --</option>' + options;
@@ -293,7 +293,7 @@ $(document).ready(function () {
 	function resetFields() {
 		$("#candidate_columns").val(null).trigger("change");
 		$("#onboarding_columns").val(null).trigger("change");
-		$("#documents_columns").val(null).trigger("change");
+		// $("#documents_columns").val(null).trigger("change");
 		$("#sub_headings").val(null).trigger("change");
 		$("#onboarding-updates-option").val("");
 		$("#card-column-1").val("");
@@ -307,7 +307,7 @@ $(document).ready(function () {
 		setTimeout(() => {
 			updateSelectedInOrder("#onboarding_columns", "onboarding_columns");
 			updateSelectedInOrder("#candidate_columns", "candidate_coulmns");
-			updateSelectedInOrder("#documents_columns", "documents_columns");
+			// updateSelectedInOrder("#documents_columns", "documents_columns");
 			updateSelectedInOrder("#sub_headings", "sub_headings_column");
 		}, 100);
 		$("#candidate_columns").val(data.candidate_coulmns.map((el) => el.id));
@@ -316,8 +316,8 @@ $(document).ready(function () {
 		$("#onboarding_columns").trigger("change");
 		$("#sub_headings").val(data.sub_headings_column.map((el) => el.id));
 		$("#sub_headings").trigger("change");
-		$("#documents_columns").val(data?.documents_columns.map((el) => el.id));
-		$("#documents_columns").trigger("change");
+		// $("#documents_columns").val(data?.documents_columns.map((el) => el.id));
+		// $("#documents_columns").trigger("change");
 		$("#onboarding-updates-option").val(data.extra_details.key);
 		$("#chart_embed_code").val(data.extra_details?.chart_embed_code ?? "");
 		$("#form_embed_code").val(data.extra_details?.form_embed_code ?? "");
@@ -379,6 +379,7 @@ $(document).ready(function () {
 		let val = this.value.split(",").filter((el) => el);
 		this.value = val.join(", ");
 		const color = $(this).attr("current_color");
+		console.log(first);
 		status_group[color] = val;
 	});
 
@@ -391,7 +392,8 @@ $(document).ready(function () {
 				.each(function () {
 					formData[$(this).attr("name")] = $(this)
 						.val()
-						.split(", ")
+						.split(",")
+						.map((el) => el.trim())
 						.filter((el) => el !== "");
 				});
 
@@ -404,11 +406,7 @@ $(document).ready(function () {
 						headers: {
 							"Content-Type": "application/json",
 						},
-						body: JSON.stringify({
-							Yellow: ["approved", "dispatched"],
-							Green: ["approvals", " arrived"],
-							Grey: ["pending", "  onboarded"],
-						}),
+						body: JSON.stringify(formData),
 					}
 				);
 

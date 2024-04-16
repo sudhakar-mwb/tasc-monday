@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use DB;
 use App\Models\SiteSettings;
+use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Expr\YieldFrom;
 
 class AuthController extends Controller
@@ -223,7 +224,8 @@ class AuthController extends Controller
     {
         $heading = "Thanks";
         $subheading = "Our team will be in touch within the next 48 hours to activate your account.";
-        return view('auth.thankssignup', compact('heading', 'subheading'));
+        $status=true;
+        return view('auth.thankssignup', compact('heading', 'subheading','status'));
     }
 
     function getErrorMessages() {
@@ -297,7 +299,6 @@ class AuthController extends Controller
     // }
 
     public function createNewPassword (Request $request){
-
         $heading       = "Enter New Password";
         $decryptedData = Crypt::decrypt($request->token);
         $decryptedData = json_decode($decryptedData, true);
@@ -345,13 +346,20 @@ class AuthController extends Controller
             );
             $updatePassword = MondayUsers::setUser( array( 'id' => $getUser->id ), $dataToUpdate );
             if ($updatePassword) {
-                $heading       = "Enter New Password";
+                $heading       = "Login";
                 $subheading    = 'for '.$decryptedData['email'];
                 $msg           = 'Password updated successfully. Now you can login with new password';
                 $status        = 'success';
-                return view('auth.login', compact('heading', 'subheading', 'msg', 'status'));
+                return redirect('/monday/login');
+            }else{
+              $heading       = "Enter New Password";
+              $subheading    = 'for '.$decryptedData['email'];
+              $msg           = 'Current password not updated. Please try again.';
+              $status        = 'danger';
+              $token         =  $request->token;
+              return redirect('monday/create-password'.$request->token,compact('heading', 'subheading', 'msg', 'status', 'token'));
             }
-            return view('auth.login', compact('heading', 'subheading', 'msg', 'status', 'token'));
+            // return view('auth.login', compact('heading', 'subheading', 'msg', 'status', 'token'));
         }
     }
 

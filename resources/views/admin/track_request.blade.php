@@ -2,6 +2,7 @@
 <?php
 
 $trackdata = $response['data']['boards'][0]['items_page']['items'];
+$status_color=$data['status_color'];
 $cs = $response['data']['boards'][0]['items_page']['cursor'];
 $columns = $response['data']['boards'][0]['columns'];
 
@@ -28,8 +29,30 @@ function findElementByTitle($name, $data, $trackdata, $key = 'value')
     } // Return null if element not found
     return null;
 }
-function getClass($input)
+function matchStatus($inputString, $statusArray) {
+    // Convert input string to uppercase
+    $inputString = strtoupper($inputString);
+
+    // Loop through the status array
+    foreach ($statusArray as $statusObject) {
+        foreach ($statusObject as $statusName => $statusValues) {
+            // Check if any of the status values match the input string
+            foreach ($statusValues as $statusValue) {
+                if (strtoupper($statusValue) === $inputString) {
+                    // Return the name of the array if a match is found
+                    return $statusName;
+                }
+            }
+        }
+    }
+
+    // If no match is found, return false
+    return false;
+}
+function getClass($str,$status_color)
 {
+  $input = matchStatus($str, $status_color);
+
     switch ($input) {
         case 'IN PROGRESS':
             return 'bg-light-progress';
@@ -38,9 +61,11 @@ function getClass($input)
         case 'STUCK':
             return 'bg-light-danger';
         default:
-            return 'bg-light-progress';
+            return 'bg-light-default';
     }
 }
+
+
 function dateFormater($dateString)
 {
     $date = new DateTime($dateString);
@@ -198,12 +223,14 @@ $column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
             </div>
         </form>
 
-       
+       <?php 
+      //  dd(matchStatus(strtoupper(getValueById($trackdata[0]['column_values'],'status8','label')), $status_color));
+       ?>
         @for ($x = 0; $x < count($trackdata); $x++)
             <div class="track-card-container animation-container mb-3" style="min-height:280px">
                 <div class="animation-content" style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
                     <div
-                        class="track-card h-100 p-4  @php echo getClass(strtoupper(getValueById($trackdata[$x]['column_values'],'status8','label'))) @endphp rounded-3">
+                        class="track-card h-100 p-4  @php echo getClass(strtoupper(getValueById($trackdata[$x]['column_values'],'status8','text')),$status_color) @endphp rounded-3">
                         <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item text-secondary"><a
@@ -218,7 +245,7 @@ $column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
                         </nav>
                         <h4 class="text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h4>
                         <h5 class="text-start mt-4">{{ $column2 }}</h5>
-                        <h6 class="text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'label')); @endphp</h6>
+                        <h6 class="text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'text')); @endphp</h6>
                         <a class="text-decoration-none"
                             href="/monday/form/track-request/{{ $trackdata[$x]['id'] }}/{{ str_replace(' ', '_', $trackdata[$x]['name']) }}">
                             <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"

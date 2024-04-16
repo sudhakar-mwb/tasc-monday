@@ -1,6 +1,8 @@
 
 @include('auth.header')
-
+<?php 
+// dd($token);
+?>
         <main class="px-3 pt-5">
             @include('admin.headtitle')
             @if($status!="")
@@ -8,7 +10,7 @@
                     <div class="alert alert-{{$status}}" style="max-width:400px">    {{$msg}}</div>
                 </div>
             @endif
-            <form action="{{route('monday.createNewPasswordPost')}}" method="POST" class="form-auth">
+            <form action="{{route('monday.createNewPasswordPost',['token'=>$token])}}" method="POST" class="form-auth">
                 {{-- <input type="email" disabled placeholder="Email" name="email" value="{{ old('email') }}"> --}}
                 {{-- @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror --}}
                 <input type="text" name="token" hidden value="{{$token}}">

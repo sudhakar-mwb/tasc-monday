@@ -148,9 +148,7 @@ class DashboardController extends Controller
             }
          }";
     $response = $this->_get($query)['response'];
-    // dd($response);
-    // if ($request->isMethod('post'))
-    // dd($query);
+
     $heading = 'Request Tracking';
     $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
     if ($request->export == true) {
@@ -231,10 +229,12 @@ class DashboardController extends Controller
     $data = $data['card_section'];
     if (!$response['data']['boards'][0]['items_page']['items'] || count($response['data']['boards'][0]['items_page']['items']) == 0) {
       $heading = "No Data Found";
-      $subheading = "Board have unsufficient data.";
+      $subheading = "The board lacks sufficient data.";
       $status = false;
       return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
     }
+    $colors_status = json_decode($this->getColourMapping());
+    $data['status_color'] = $colors_status;
     return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data'));
   }
 

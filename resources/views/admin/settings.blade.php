@@ -50,7 +50,7 @@
 
                     <div class="col-12">
                         <label for="banner_content" class="form-label">Banner <span class="text-muted">(Text)</span></label>
-                        <textarea type="text" class="form-control" name="banner_content" id="banner_content" placeholder="Caution: Receiving this notification may result in sudden smiles, unexpected giggles, and temporary distractions from your to-do list. Proceed with laughter!"
+                        <textarea type="text" class="form-control" name="banner_content" id="banner_content" placeholder="Enter the banner text content ."
                >{{  $settings->banner_content }}</textarea>
                         @error('banner_content')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
                     </div>
