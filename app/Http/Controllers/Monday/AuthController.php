@@ -23,18 +23,18 @@ class AuthController extends Controller
 {
     use MondayApis;
 
+    public function setSetting(){
+      $get_data = SiteSettings::where('id', '=', 1)->first()->toArray()['ui_settings'];
+      // Store data in the session
+      session(['settings' => json_decode($get_data)]);
+    }
     public function login(Request $request)
     {
         $msg        = '';
         $status     = '';
         $heading    = "Log In";
         $subheading = "TASC Outsourcing KSA";
-        $get_data = SiteSettings::where('id', '=', 1)->first()->toArray()['ui_settings'];
-
-    // Store data in the session
-    session(['settings' => json_decode($get_data)]);
-
-
+        $this->setSetting();
         if ($request->isMethod('post')) {
             $input = $request->all();
             $this->validate($request, [
@@ -62,6 +62,7 @@ class AuthController extends Controller
 
         $msg    = '';
         $status = '';
+        $this->setSetting();
         if ($request->isMethod('post')) {
             $input = $request->all();
 
@@ -110,7 +111,7 @@ class AuthController extends Controller
         $status     = '';
         $heading    = "Forgot Password";
         $subheading = "Please provide the email associated with your account.";
-
+        $this->setSetting();
         if ($request->isMethod('post')) {
             $input = $request->all();
             $this->validate($request, [
@@ -225,6 +226,7 @@ class AuthController extends Controller
         $heading = "Thanks";
         $subheading = "Our team will be in touch within the next 48 hours to activate your account.";
         $status=true;
+        $this->setSetting();
         return view('auth.thankssignup', compact('heading', 'subheading','status'));
     }
 
@@ -302,6 +304,7 @@ class AuthController extends Controller
         $heading       = "Enter New Password";
         $decryptedData = Crypt::decrypt($request->token);
         $decryptedData = json_decode($decryptedData, true);
+        $this->setSetting();
         if (!empty($decryptedData)) {
             $getUser = MondayUsers::getUser( array( 'email' => trim($decryptedData['email']) ) );
 
@@ -324,6 +327,7 @@ class AuthController extends Controller
     }
 
     public function createNewPasswordPost (Request $request){
+      $this->setSetting();
         $this->validate($request, [
             'password' => 'required|min:6|max:100',
             'conf_password' => 'required|min:6|max:100',
