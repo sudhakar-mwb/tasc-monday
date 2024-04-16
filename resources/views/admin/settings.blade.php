@@ -31,7 +31,7 @@
                     <div class="col-sm-6 ">
                         <div class="">
                             <label for="logo_image" class="form-label">Choose Logo Image&nbsp;<i class="bi bi-pen"></i></label>
-                            <input class="form-control" name="logo_image"  type="file" id="logo_image" value="{{ old('logo_image') }}" required>
+                            <input class="form-control" name="logo_image"  type="file" id="logo_image" value="{{ old('logo_image') }}">
                             @error('logo_image')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
                             <div id="imageContainer" class="card  mt-2"
                             style="max-width:200px;max-height:200px;width:150px;min-height:90px">
