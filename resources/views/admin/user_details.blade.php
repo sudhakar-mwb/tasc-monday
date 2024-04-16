@@ -198,7 +198,7 @@ $countryInfo = [
     'ZM' => ['flag' => '🇿🇲', 'calling_code' => '+260'],
     'ZW' => ['flag' => '🇿🇼', 'calling_code' => '+263'],
 ];
-$status_color=$data['status_color'];
+$status_color = $data['status_color'];
 // print_r($status_color);
 $candidate_coulmns = $data['candidate_coulmns'];
 $onboarding_columns = $data['onboarding_columns'];
@@ -233,7 +233,8 @@ function findElementByTitle($name, $data, $trackdata, $key = 'value')
     } // Return null if element not found
     return null;
 }
-function matchStatus($inputString, $statusArray) {
+function matchStatus($inputString, $statusArray)
+{
     // Convert input string to uppercase
     $inputString = strtoupper($inputString);
 
@@ -253,9 +254,10 @@ function matchStatus($inputString, $statusArray) {
     // If no match is found, return false
     return false;
 }
-function getClass($str,$status_color)
+function getClass($str, $status_color)
 {
-  $input = matchStatus($str, $status_color);
+    $input = matchStatus($str, $status_color);
+
     switch ($input) {
         case 'IN PROGRESS':
             return 'warning';
@@ -302,10 +304,14 @@ $VisaIssuancestatus = findElementByTitle('Visa Issuance', $columns, $trackdata, 
 $joiningDate = findElementByTitle('Joining Date', $columns, $trackdata, 'value');
 if ($joiningDate !== null) {
     $joiningDate = dateFormater(json_decode($joiningDate, true)['date']);
-}else{
-  $joiningDate="NA";
+} else {
+    $joiningDate = 'NA';
 }
+
+// dd($profileStatus);
+// dd($status_color);
 // $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance'];
+
 ?>
 <main class="px-3 pt-5">
     <div class="w-100 mt-3">
@@ -327,7 +333,7 @@ if ($joiningDate !== null) {
         <div class="d-flex mt-5 w-100" style="gap:20px">
             <div class="col-6 d-flex flex-column" style="gap:30px">
                 <div class="d-flex mb-2" style="gap:16px">
-                    <div class="rounded-circle bg-{{ getClass($profileStatus,$status_color) }} p-4">
+                    <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4">
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
                             <svg xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
                                 xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"
@@ -371,7 +377,7 @@ if ($joiningDate !== null) {
 
                             {{ implode(' ', $str) }}
                         </p>
-                        <h6 class="status m-0 text-start text-{{ getClass($profileStatus,$status_color) }} fw-bold">
+                        <h6 class="status m-0 text-start text-{{ getClass($profileStatus, $status_color) }} fw-bold">
                             {{ $profileStatus }}</h6>
                     </div>
                 </div>
@@ -382,14 +388,25 @@ if ($joiningDate !== null) {
                             @foreach ($candidate_coulmns as $col)
                                 <?php 
                             $text=getValueById($columns_val, $col['id'], 'text')??"NA";
+                            // dd($columns_val);
+                            $flag="";
+                     
+                            if(str_contains( $col['id'],'country')||str_contains( $col['id'],'national')){
+                              $flag = getValueById($columns_val, $col['id'], 'value');
+                              $flag = json_decode($flag);
+                              $flag = $flag->countryCode ?? null;
+                           
+                              $flag = $flag ? ($countryInfo[$flag]['flag']?? null) : null;
+                            
+                            }
                             if($text!=="NA")
                            {
                             ?>
                                 <li class="list-group-item d-flex align-items-center border-0 text-start"
                                     style="background: inherit;gap:16px"><span>
-                                        <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-asterisk' }}"></i>
+                                        <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-info-circle' }}"></i>
                                     </span><span>
-                                        {{ $col['custom_title'] ? $col['custom_title'] . ' : ' : '' }}{{ $text }}</span>
+                                        {{ $col['custom_title'] ? $col['custom_title'] . ' : ' : '' }}{{ $text }}</span><span>{{ $flag }}</span>
                                 </li>
                                 <?php }?>
                             @endforeach
@@ -411,7 +428,7 @@ if ($joiningDate !== null) {
                                 <li class="list-group-item d-flex align-items-start border-0 text-start mb-1"
                                     style="background: inherit;gap:10px">
                                     <span style="width: 20px;height:20px"
-                                        class="text-{{ getClass(Str::upper($status),$status_color) }} mt-1">
+                                        class="text-{{ getClass(Str::upper($status), $status_color) }} mt-1">
                                         <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg"
                                             style="max-width:100%" height="100%">
                                             <path

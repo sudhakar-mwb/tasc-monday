@@ -17,11 +17,11 @@
         @error('name')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
         <input type="text" placeholder="Company name*" name="company_name" value="{{ old('company_name') }}">
         @error('company_name')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
-        <input type="text" placeholder="Phone*" name="phone" value="{{ old('phone') }}">
+        <input type="number" placeholder="Phone*" name="phone" value="{{ old('phone') }}">
         @error('phone')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
         <input type="text" placeholder="Email*" name="email" value="{{ old('email') }}">
         @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
-        <input type="text" placeholder="Password*" name="password" value="{{ old('password') }}">
+        <input type="password" placeholder="Password*" name="password" value="{{ old('password') }}">
         @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
 
         <div class="w-100 d-flex justify-content-center">

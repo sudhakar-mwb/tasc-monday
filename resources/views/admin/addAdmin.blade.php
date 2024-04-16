@@ -19,7 +19,7 @@
             method="POST">
             <div class="mb-3">
                 <label for="fullname-input" class="form-label">Full name</label>
-                <input type="text" class="form-control" id="fullname-input" aria-describedby="emailHelp" required
+                <input type="text" class="form-control" placeholder="write full name" id="fullname-input" aria-describedby="emailHelp" required
                     name="name" value="{{ old('name') }}">
                 @error('name')
                     <small class="text-danger text-start ms-2">{{ $message }}</small>
@@ -27,7 +27,7 @@
             </div>
             <div class="mb-3">
                 <label for="email-input" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email-input" aria-describedby="emailHelp" required
+                <input type="email" class="form-control" placeholder="demo@gmail.com" id="email-input" aria-describedby="emailHelp" required
                     name="email" value="{{ old('email') }}">
                 @error('email')
                     <small class="text-danger text-start ms-2">{{ $message }}</small>
@@ -35,7 +35,7 @@
             </div>
             <div class="mb-3">
                 <label for="password-input" class="form-label">Create Password</label>
-                <input type="password" class="form-control" id="password-input" required name="password">
+                <input type="password" placeholder="****" class="form-control" id="password-input" required name="password">
                 @error('password')
                     <small class="text-danger text-start ms-2">{{ $message }}</small>
                 @enderror

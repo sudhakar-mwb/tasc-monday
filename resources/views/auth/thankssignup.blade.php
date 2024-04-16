@@ -3,7 +3,7 @@
 <main class="px-3 pt-5">
     <h2 class="align-center text-success ">
         <?php 
-        if(false){
+        if(!empty($status)&&$status){
         ?>
         <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="bi bi-check2-circle"
             viewBox="0 0 16 16">

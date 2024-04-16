@@ -15,8 +15,9 @@
     <style>
         #iframe-signup>iframe {
             height: 100%;
-            width: 800px !important;
+            width: 1000px !important;
             border: 0px !important;
+            box-shadow: none !important
         }
     </style>
 </main>

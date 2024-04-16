@@ -148,9 +148,7 @@ class DashboardController extends Controller
             }
          }";
     $response = $this->_get($query)['response'];
-    // dd($response);
-    // if ($request->isMethod('post'))
-    // dd($query);
+
     $heading = 'Request Tracking';
     $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
     if ($request->export == true) {
@@ -202,13 +200,13 @@ class DashboardController extends Controller
         fputcsv($output, $headers);
         foreach ($response['data']['boards'][0]['items_page']['items'] as $item) {
           $rows = [];
-          if (!empty($item['column_values']) ) {
+          if (!empty($item['column_values'])) {
             $rowData = [];
             if (!empty($item['name'])) {
               $rowData[$headers['name']] = $item['name'];
             }
             foreach ($item['column_values'] as $itemValue) {
-              if ( array_key_exists($itemValue['id'], $headers)) {
+              if (array_key_exists($itemValue['id'], $headers)) {
                 $rowData[$headers[$itemValue['id']]] =  $itemValue['text'];
               }
             }
@@ -231,10 +229,12 @@ class DashboardController extends Controller
     $data = $data['card_section'];
     if (!$response['data']['boards'][0]['items_page']['items'] || count($response['data']['boards'][0]['items_page']['items']) == 0) {
       $heading = "No Data Found";
-      $subheading = "Board have unsufficient data.";
+      $subheading = "The board lacks sufficient data.";
       $status = false;
       return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
     }
+    $colors_status = json_decode($this->getColourMapping());
+    $data['status_color'] = $colors_status;
     return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data'));
   }
 
@@ -331,14 +331,14 @@ class DashboardController extends Controller
       return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
     }
     $data = $this->getBoardColumnsEmbedById($boardId);
-    $embed_code="";
+    $embed_code = "";
 
     if ($data)
       $embed_code = (array)$data;
 
-      if($data[0]['columns']['extra_details'])
-    $embed_code = $data[0]['columns']['extra_details']['form_embed_code'] ?? "";
-// dd($embed_code);
+    if ($data[0]['columns']['extra_details'])
+      $embed_code = $data[0]['columns']['extra_details']['form_embed_code'] ?? "";
+    // dd($embed_code);
     return view('admin.mobilityform', compact('heading', 'subheading', 'embed_code'));
     // return view('admin.mobilityform');
   }
@@ -354,14 +354,14 @@ class DashboardController extends Controller
       return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
     }
     $data = $this->getBoardColumnsEmbedById($boardId);
-    $embed_code="";
+    $embed_code = "";
 
     if ($data)
       $embed_code = (array)$data;
 
-      if($data[0]['columns']['extra_details'])
-    $embed_code = $data[0]['columns']['extra_details']['chart_embed_code'] ?? "";
-    return view('admin.stats', compact('heading', 'subheading','embed_code'));
+    if ($data[0]['columns']['extra_details'])
+      $embed_code = $data[0]['columns']['extra_details']['chart_embed_code'] ?? "";
+    return view('admin.stats', compact('heading', 'subheading', 'embed_code'));
   }
   public function columnAllowed()
   {
@@ -721,32 +721,42 @@ class DashboardController extends Controller
       $request->validate([
         'site_bg'        => 'required',
         'button_bg'      => 'required',
-        'logo_image'     => 'required|mimes:JPEG,JPG,jpeg,jpg,PNG,png|max:2048',
+        'logo_image'     => 'mimes:JPEG,JPG,jpeg,jpg,PNG,png|max:2048',
         'banner_bg'      => 'required',
       ], $this->getErrorMessages());
 
       if (!empty($data)) {
+        $siteSettings = SiteSettings::find([
+          'id' => 1,
+        ]);
+  
         // Store the uploaded file
-        $file     = $request->file('logo_image');
-        $fileName = $file->getClientOriginalName();
-        $file->move(public_path('uploads'), $fileName);
-
         $value = [
           'site_bg'        => $request->site_bg,
           'button_bg'      => $request->button_bg,
-          'logo_image'     => $fileName,
           'banner_bg'      => $request->banner_bg,
           'banner_content' => $request->banner_content,
+          'logo_image' =>!empty($request->file('logo_image'))?'':json_decode($siteSettings[0]['ui_settings'])->logo_image
         ];
+
+        if (!empty($request->file('logo_image'))) {
+          $file     = $request->file('logo_image');
+          $fileName = $file->getClientOriginalName();
+          $file->move(public_path('uploads'), $fileName);
+          $value['logo_image'] = $fileName;
+        }
+
+
 
         $datatoUpdate = [
           'ui_settings' => json_encode($value),
-          'logo' => $fileName,
+          'status' => 0,
+          'logo' => !empty($value['logo_image']) ? $value['logo_image'] : "",
         ];
         $criteria = [
-          'logo' => $fileName,
+          'status' => 0,
         ];
-        $siteSettingsDBData = SiteSettings::find($criteria['logo']);
+        $siteSettingsDBData = SiteSettings::find($criteria['status']);
         $response = SiteSettings::where('id', '=', 1)->update($datatoUpdate);
         // Check if the record was updated
         if ($siteSettingsDBData && $response->wasChanged()) {

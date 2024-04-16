@@ -46,12 +46,12 @@
                                 name="onboarding_coulumns[]" multiple="multiple" style="max-width:500px">
                             </select>
                         </div>
-                        <div class="mb-3">
+                        {{-- <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Document Columns</label>
                             <select id="documents_columns" class="js-example-basic-multiple w-100"
                                 name="documents_columns[]" multiple="multiple" style="max-width:500px">
                             </select>
-                        </div>
+                        </div> --}}
                         <div class="mb-3">
                             <label for="exampleInputPassword1" class="form-label">Candidate Information Columns</label>
                             <select id="candidate_columns" class="js-example-basic-multiple w-100"
