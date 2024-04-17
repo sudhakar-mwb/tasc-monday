@@ -806,6 +806,8 @@ class DashboardController extends Controller
         'button_bg'      => 'required',
         'logo_image'     => 'mimes:JPEG,JPG,jpeg,jpg,PNG,png|max:2048',
         'banner_bg'      => 'required',
+        'head_title_color'=>'required',
+        'header_bg'      => 'required'
       ], $this->getErrorMessages());
 
       if (!empty($data)) {
@@ -819,7 +821,9 @@ class DashboardController extends Controller
           'button_bg'      => $request->button_bg,
           'banner_bg'      => $request->banner_bg,
           'banner_content' => $request->banner_content,
-          'logo_image' =>!empty($request->file('logo_image'))?'':json_decode($siteSettings[0]['ui_settings'])->logo_image
+          'head_title_color'=>$request->head_title_color,
+          'logo_image'     =>!empty($request->file('logo_image'))?'':json_decode($siteSettings[0]['ui_settings'])->logo_image,
+          'header_bg'      =>$request->header_bg
         ];
 
         if (!empty($request->file('logo_image'))) {

@@ -1,12 +1,14 @@
 
         @include('includes.header')
-
+        <?php
+        $settings = Session::get('settings');
+        ?>
         <main class="px-3 pt-5">
             <p class="lead mt-3">
                 <a href="#" class="btn btn-lg btn-light fs-4 text-dark fw-bold border-white bg-white">Welcome
                     to</a>
             </p>
-            <h1 class="header-heading1 mt-2 mb-5 fw-bold " style="color:rgb(3,96,132)">{{ $heading }}</h1>
+            <h1 class="header-heading1 mt-2 mb-5 fw-bold " style="color:{{ $settings->head_title_color??null}}">{{ $heading }}</h1>
             <p class="lead">
             <div class="row">
             

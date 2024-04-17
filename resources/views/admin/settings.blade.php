@@ -41,13 +41,24 @@
                     </div>
 
                     <div class="col-12 row mt-3">
-                        <div class="col-sm-12">
+                        <div class="col-sm-6">
                             <label for="banner_bg" class="form-label">Banner background color&nbsp;<i class="bi bi-pen"></i></label><br>
                             <input type="color" class="w-100" id="banner_bg" name="banner_bg"  value="{{ $settings->banner_bg }}" required/>
                             @error('banner_bg')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
                         </div>
+                        <div class="col-sm-6">
+                          <label for="header_bg" class="form-label">Header Backlground Color&nbsp;<i class="bi bi-pen"></i></label><br>
+                          <input type="color" class="w-100" id=header_bg" name="header_bg"  value="{{ $settings->header_bg??null }}" required/>
+                          @error('header_bg')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+                      </div>
                     </div>
-
+<div class="col-12">
+  <div class="col-sm-12">
+    <label for="head_title_color" class="form-label">Heading Title Color&nbsp;<i class="bi bi-pen"></i></label><br>
+    <input type="color" class="w-100" id=head_title_color" name="head_title_color"  value="{{ $settings->head_title_color??null }}" required/>
+    @error('head_title_color')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+</div>
+</div>
                     <div class="col-12">
                         <label for="banner_content" class="form-label">Banner <span class="text-muted">(Text)</span></label>
                         <textarea type="text" class="form-control" name="banner_content" id="banner_content" placeholder="Enter the banner text content ."
