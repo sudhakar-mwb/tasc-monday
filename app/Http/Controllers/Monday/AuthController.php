@@ -18,7 +18,7 @@ use DB;
 use App\Models\SiteSettings;
 use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Expr\YieldFrom;
-
+use \Mailjet\Resources;
 class AuthController extends Controller
 {
     use MondayApis;
@@ -195,16 +195,50 @@ class AuthController extends Controller
                 </html>';
                 try
                 {
-                    $a = Mail::html( $mail_body, function( $mailMsg ) use ($admin_email,$verificationData) {
-                        $mailMsg->to( trim($verificationData['email']) );
-                        $mailMsg->from( $admin_email );
-                        $mailMsg->subject("Reset Password" );
-                    });
+                    // $a = Mail::html( $mail_body, function( $mailMsg ) use ($admin_email,$verificationData) {
+                    //     $mailMsg->to( trim($verificationData['email']) );
+                    //     $mailMsg->from( $admin_email );
+                    //     $mailMsg->subject("Reset Password" );
+                    // });
 
-                    $response = DB::table('monday_users')->where('id', $getUser->id)->update(['email_exp' => $dataToEncrypt['email_exp']]);
-                    $msg    = 'Success, Verification Mail Sent.';
-                    $status = 'success';
-                    return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
+                    // $response = DB::table('monday_users')->where('id', $getUser->id)->update(['email_exp' => $dataToEncrypt['email_exp']]);
+                    // $msg    = 'Success, Verification Mail Sent.';
+                    // $status = 'success';
+                    // return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
+
+                    $mj = new \Mailjet\Client(getenv('MJ_APIKEY_PUBLIC'), getenv('MJ_APIKEY_PRIVATE'),true,['version' => 'v3.1']);
+                    $body = [
+                        'Messages' => [
+                            [
+                                'From' => [
+                                    'Email' => "noreply@tasc360.com",
+                                    'Name'  => "TASC"
+                                ],
+                                'To' => [
+                                    [
+                                        'Email' => $verificationData['email'],
+                                        'Name'  => $verificationData['name'],
+                                    ]
+                                ],
+                                'Subject'  => "Reset Password",
+                                'TextPart' => "Greetings from Mailjet!",
+                                'HTMLPart' => $mail_body
+                            ]
+                        ]
+                    ];
+
+                    $response = $mj->post(Resources::$Email, ['body' => $body]);
+
+                    if ($response->getData()['StatusCode'] == 200) {
+                        $response = DB::table('monday_users')->where('id', $getUser->id)->update(['email_exp' => $dataToEncrypt['email_exp']]);
+                        $msg    = 'Success, Verification Mail Sent.';
+                        $status = 'success';
+                        return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
+                    }else{
+                        $msg    = 'Forgot Password mail not send. Sinch mailjet response -> '.$response->getData()['ErrorMessage'];
+                        $status = 'danger';
+                        return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
+                    }
     
                 }
                 catch(\Exception $e)

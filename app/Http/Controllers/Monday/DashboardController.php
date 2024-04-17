@@ -181,10 +181,87 @@ class DashboardController extends Controller
                   }
                 }
              }";
-      $response = $this->_get($query)['response'];
+      $exportResponse = $this->_get($query)['response'];
 
       // Loop through items and write data
-      if (!empty($response['data']['boards'][0]['items_page']['items']) && !empty($response['data']['boards'][0]['columns'])) {
+      if (!empty($exportResponse['data']['boards'][0]['items_page']['items']) && !empty($exportResponse['data']['boards'][0]['columns'])) {
+        $boardId                     = auth()->user()->board_id;
+        $BoardColumnMappingsResponse = BoardColumnMappings::where('board_id', '=', $boardId)->get();
+        $BoardColumnMappingsResponse = json_decode($BoardColumnMappingsResponse, true);
+        if (!empty($BoardColumnMappingsResponse['0']['columns'])) {
+          $columnMappingsData = json_decode($BoardColumnMappingsResponse['0']['columns'], true);
+
+          if (!empty($columnMappingsData['onboarding_columns']) && !empty($columnMappingsData['candidate_coulmns']) && !empty($columnMappingsData['sub_headings_column'])) {
+            $requiredCSVColumns = array_merge($columnMappingsData['onboarding_columns'] , $columnMappingsData['candidate_coulmns'], $columnMappingsData['sub_headings_column']);
+
+            // Remove duplicate arrays based on their values
+            $uniqueData = array_map("unserialize", array_unique(array_map("serialize", $requiredCSVColumns)));
+
+            // Reindex the array to reset keys
+            // $uniqueData   = array_values($uniqueData);
+            // $unique_names = array_column($uniqueData, 'name');
+
+            // Set headers for CSV download
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="monday_com_data.csv"');
+            // Open file pointer
+            $output = fopen('php://output', 'w');
+
+            $new_array  = array();
+            foreach ($uniqueData as $item) {
+                $new_array[$item['id']] = $item['name'];
+            }
+
+            // fputcsv($output, $new_array);
+
+            $csvHeader = [];
+            foreach ($exportResponse['data']['boards'][0]['items_page']['items'] as $item) {
+              if (!empty($item['column_values'])) {
+                if (!empty($item['name'])) {
+                  $csvHeader[$new_array['name']] = $item['name'];
+                }
+                foreach ($item['column_values'] as $itemValue) {
+                  if (array_key_exists($itemValue['id'], $new_array)) {
+                    $csvHeader[$new_array[$itemValue['id']]] =  $itemValue['text'];
+                  }
+                }
+              }
+            }
+            fputcsv($output, array_keys($csvHeader));
+
+            $rows    = [];
+            $rowData = [];
+            foreach ($exportResponse['data']['boards'][0]['items_page']['items'] as $item) {
+              if (!empty($item['column_values'])) {
+                if (!empty($item['name'])) {
+                  $rowData[$new_array['name']] = $item['name'];
+                }
+                foreach ($item['column_values'] as $itemValue) {
+                  if (array_key_exists($itemValue['id'], $new_array)) {
+                    $rowData[$new_array[$itemValue['id']]] =  $itemValue['text'];
+                  }
+                }
+                $rows[] = $rowData;
+              }
+              // fputcsv($output, array_keys($rowData));
+              fputcsv($output, $rowData);
+            }
+            // Close file pointer
+            fclose($output);
+            return true;
+          }else{
+            $heading    = "No Data Found";
+            $subheading = "Board column data mapping not found for onboarding_columns or candidate_coulmns or sub_headings_column.";
+            $status     = false;
+            return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
+          }
+        }else {
+          $heading    = "No Data Found";
+          $subheading = "Board column data mapping not found.";
+          $status     = false;
+          return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
+        }
+        /* All data export from monday.com commented
         // Set headers for CSV download
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="monday_com_data.csv"');
@@ -193,12 +270,12 @@ class DashboardController extends Controller
         $output = fopen('php://output', 'w');
 
         $headers      = [];
-        foreach ($response['data']['boards'][0]['columns'] as $key => $value) {
+        foreach ($exportResponse['data']['boards'][0]['columns'] as $key => $value) {
           $headers[$value['id']] = $value['title'];
         }
 
         fputcsv($output, $headers);
-        foreach ($response['data']['boards'][0]['items_page']['items'] as $item) {
+        foreach ($exportResponse['data']['boards'][0]['items_page']['items'] as $item) {
           $rows = [];
           if (!empty($item['column_values'])) {
             $rowData = [];
@@ -222,7 +299,13 @@ class DashboardController extends Controller
 
         // Save the CSV file to a local storage folder
         // $filePath = storage_path('app/monday_com_data.csv');
-        // file_put_contents($filePath, file_get_contents('php://output'));  
+        // file_put_contents($filePath, file_get_contents('php://output'));
+      */
+      }else{
+        $heading    = "No Data Found";
+        $subheading = "Something went wrong. Data not found from board.";
+        $status     = false;
+        return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
       }
     }
     $data = json_decode($boardColumnMappingDbData, true);
