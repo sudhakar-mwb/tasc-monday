@@ -764,7 +764,8 @@ class DashboardController extends Controller
     $request->validate([
       'name'         => 'required',
       'email'        => 'required|email|unique:monday_users',
-      'password'     => 'required|min:6|max:100'
+      'password'     => 'required|min:6|max:100',
+      'role'         => 'required'
     ], $this->getErrorMessages());
 
     $dataToSave = array(
@@ -772,7 +773,7 @@ class DashboardController extends Controller
       'email'        => trim($request['email']),
       'phone'        => '',
       'company_name' => '',
-      'role'         => 2,
+      'role'         => trim($request['role']),
       'created_at'   => date("Y-m-d H:i:s"),
       'updated_at'   => date("Y-m-d H:i:s"),
       // 'password'     => trim($request['password']),
