@@ -68,7 +68,7 @@ class DashboardController extends Controller
     $operation_query = "";
     $searchquery = "";
     $boardColumnMappingDbData = "";
-    $sortbyname = request()->input('sort_by_name') ?? '';
+    $sortbyname = request()->input('sort_by_date') ?? '';
     $status_filter = request()->input('status_filter') ?? '';
     if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
       $boardId  = auth()->user()->board_id;
@@ -88,8 +88,8 @@ class DashboardController extends Controller
     if ($request->isMethod('post')) {
       $searchAvailable = (request()->has('search') && trim(request()->input('search')) !== "");
       $statusfilterAvailable = (request()->has('status_filter') && trim(request()->input('status_filter') !== ''));
-      $sortAvailable = request()->has('sort_by_name') && trim(request()->input('sort_by_name') !== '');
-      if ($sortAvailable || $searchAvailable || $statusfilterAvailable)
+      $sortAvailable = request()->has('sort_by_date') && trim(request()->input('sort_by_date') !== '');
+      if ($searchAvailable || $statusfilterAvailable)
         $operation_query = ', query_params: {';
       // dd(strlen($operation_query));
       if (request()->has('cursor')) {
@@ -110,12 +110,12 @@ class DashboardController extends Controller
         }
         $operation_query .= ']';
       }
-      if (request()->has('sort_by_name') && trim(request()->input('sort_by_name') !== '')) {
-        if (strlen($operation_query) > 17)
-          $operation_query .= ', ';
-        $operation_query .= 'order_by:[{direction: ' . request()->input('sort_by_name') . ', column_id:"name"}]';
-      }
-      if ($sortAvailable || $searchAvailable || $statusfilterAvailable)
+      // if (request()->has('sort_by_date') && trim(request()->input('sort_by_date') !== '')) {
+      //   if (strlen($operation_query) > 17)
+      //     $operation_query .= ', ';
+      //   $operation_query .= 'order_by:[{direction: ' . request()->input('sort_by_date') . ', column_id:"name"}]';
+      // }
+      if ($searchAvailable || $statusfilterAvailable)
         $operation_query .= ', operator: and}';
     };
     $query = "query {
@@ -192,7 +192,7 @@ class DashboardController extends Controller
           $columnMappingsData = json_decode($BoardColumnMappingsResponse['0']['columns'], true);
 
           if (!empty($columnMappingsData['onboarding_columns']) && !empty($columnMappingsData['candidate_coulmns']) && !empty($columnMappingsData['sub_headings_column'])) {
-            $requiredCSVColumns = array_merge($columnMappingsData['onboarding_columns'] , $columnMappingsData['candidate_coulmns'], $columnMappingsData['sub_headings_column']);
+            $requiredCSVColumns = array_merge($columnMappingsData['onboarding_columns'], $columnMappingsData['candidate_coulmns'], $columnMappingsData['sub_headings_column']);
 
             // Remove duplicate arrays based on their values
             $uniqueData = array_map("unserialize", array_unique(array_map("serialize", $requiredCSVColumns)));
@@ -209,7 +209,7 @@ class DashboardController extends Controller
 
             $new_array  = array();
             foreach ($uniqueData as $item) {
-                $new_array[$item['id']] = $item['name'];
+              $new_array[$item['id']] = $item['name'];
             }
 
             // fputcsv($output, $new_array);
@@ -249,13 +249,13 @@ class DashboardController extends Controller
             // Close file pointer
             fclose($output);
             return true;
-          }else{
+          } else {
             $heading    = "No Data Found";
             $subheading = "Board column data mapping not found for onboarding_columns or candidate_coulmns or sub_headings_column.";
             $status     = false;
             return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
           }
-        }else {
+        } else {
           $heading    = "No Data Found";
           $subheading = "Board column data mapping not found.";
           $status     = false;
@@ -301,15 +301,30 @@ class DashboardController extends Controller
         // $filePath = storage_path('app/monday_com_data.csv');
         // file_put_contents($filePath, file_get_contents('php://output'));
       */
-      }else{
+      } else {
         $heading    = "No Data Found";
         $subheading = "Something went wrong. Data not found from board.";
         $status     = false;
         return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
       }
     }
+    if ($request->isMethod('post') && $sortAvailable) {
+      if ($sortbyname == "asc"){
+        usort($response['data']['boards'][0]['items_page']['items'], function ($a, $b) {
+          return strtotime($a['created_at']) - strtotime($b['created_at']);
+        });}
+
+      if ($sortbyname == "desc"){
+       usort($response['data']['boards'][0]['items_page']['items'], function ($a, $b) {
+          return strtotime($b['created_at']) - strtotime($a['created_at']);
+        });}
+        // dd($response['data']['boards'][0]['items_page']['items']);
+    }
+
+
     $data = json_decode($boardColumnMappingDbData, true);
     $data = $data['card_section'];
+
     if (!$response['data']['boards'][0]['items_page']['items'] || count($response['data']['boards'][0]['items_page']['items']) == 0) {
       $heading = "No Data Found";
       $subheading = "The board lacks sufficient data.";
@@ -807,7 +822,7 @@ class DashboardController extends Controller
         'button_bg'      => 'required',
         'logo_image'     => 'mimes:JPEG,JPG,jpeg,jpg,PNG,png|max:2048',
         'banner_bg'      => 'required',
-        'head_title_color'=>'required',
+        'head_title_color' => 'required',
         'header_bg'      => 'required'
       ], $this->getErrorMessages());
 
@@ -815,16 +830,16 @@ class DashboardController extends Controller
         $siteSettings = SiteSettings::find([
           'id' => 1,
         ]);
-  
+
         // Store the uploaded file
         $value = [
           'site_bg'        => $request->site_bg,
           'button_bg'      => $request->button_bg,
           'banner_bg'      => $request->banner_bg,
           'banner_content' => $request->banner_content,
-          'head_title_color'=>$request->head_title_color,
-          'logo_image'     =>!empty($request->file('logo_image'))?'':json_decode($siteSettings[0]['ui_settings'])->logo_image,
-          'header_bg'      =>$request->header_bg
+          'head_title_color' => $request->head_title_color,
+          'logo_image'     => !empty($request->file('logo_image')) ? '' : json_decode($siteSettings[0]['ui_settings'])->logo_image,
+          'header_bg'      => $request->header_bg
         ];
 
         if (!empty($request->file('logo_image'))) {

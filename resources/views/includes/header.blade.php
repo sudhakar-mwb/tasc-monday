@@ -19,26 +19,33 @@
     <?php
     $settings = Session::get('settings');
     echo " <style>
-              .btn-gradiant,.btn-custom {
-                    background: {$settings->button_bg} !important;
-                }
-              .custom-banner {
-                background: {$settings->banner_bg} !important;
-              }
-              .site-bg{
-                background: {$settings->site_bg} !important;
-              }
-                </style>";
+                  .btn-gradiant,.btn-custom {
+                        background: {$settings->button_bg} !important;
+                    }
+                  .custom-banner {
+                    background: {$settings->banner_bg} !important;
+                  }
+                  .site-bg{
+                    background: {$settings->site_bg} !important;
+                  }
+                    </style>";
     ?>
 
     <?php 
     if($settings->banner_content ){?>
-    <div class="custom-banner banner w-100 bg-success  text-center p-2"
+    <div id="notification-banner" style="display:none" class="position-relative custom-banner banner w-100 bg-success  text-center p-2"
         style="background-color:{{ $settings->banner_bg }} !important">
-        <div class="h5 text-light m-1">{{ $settings->banner_content }} </div>
+        <div class="h5 text-light m-1" style="padding-right:50px;padding-left:50px">{{ $settings->banner_content }} </div>
+        <button id="remove-n-btn"
+        style="position:absolute;right:0;margin:8px;height: calc(100% - 16px);"
+        class="remove-notification text-light p-0 top-0 mx-2 fs-5 px-2 outline-0 bg-transparent border-0">
+        <i
+            class="bi bi-x-circle"></i></button>
+
     </div>
+   
     <?php } ?>
-    <header class="mb-auto mb-3  w-100" style="background-color:{{ $settings->header_bg??null }}"> 
+    <header class="mb-auto mb-3  w-100" style="background-color:{{ $settings->header_bg ?? null }}">
         <div class="container  h-100 p-3 mx-auto d-flex align-items-center justify-content-between">
             <a href="/monday/form" class="text-decoration-none">
                 <span class="header-logo float-md-start">
@@ -113,6 +120,20 @@
             </nav>
         </div>
     </header>
+    <script>
+        $(document).ready(function() {
+            $isHide = localStorage.getItem('hide-banner');
+
+            if (!$isHide) {
+              $('#notification-banner').slideDown();
+     
+            }
+            $('#remove-n-btn').on('click', function() {
+                $('#notification-banner').slideUp();
+                localStorage.setItem('hide-banner', true);
+            })
+        })
+    </script>
     <div class=" container d-flex flex-column h-100 text-center">
 
 

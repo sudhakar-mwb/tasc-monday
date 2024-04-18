@@ -2,7 +2,7 @@
 <?php
 
 $trackdata = $response['data']['boards'][0]['items_page']['items'];
-$status_color=$data['status_color'];
+$status_color= $data['status_color'];
 $cs = $response['data']['boards'][0]['items_page']['cursor'];
 $columns = $response['data']['boards'][0]['columns'];
 
@@ -123,14 +123,14 @@ $column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown" onclick="event.stopPropagation();">
 
-                        <li><span class="dropdown-item">Sort By Name</span></li>
+                        <li><span class="dropdown-item">Sort By Date</span></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
                             <span class="dropdown-item">
                                 <label class="form-check "  for="flexCheckDefault_asc">
-                                    <input class="form-check-input" name="sort_by_name"  {{$sortbyname=='asc'?'checked':''}} type="radio" value="asc"
+                                    <input class="form-check-input" name="sort_by_date"  {{$sortbyname=='asc'?'checked':''}} type="radio" value="asc"
                                         id="flexCheckDefault_asc">
                                     <label class="form-check-label" for="flexCheckDefault_asc">
                                         &#65516;<span class=" ms-2 ps-auto pe-auto">Asc</span>
@@ -141,7 +141,7 @@ $column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
                         <li>
                             <span class="dropdown-item">
                                 <label class="form-check"  for="flexCheckDefault_desc">
-                                    <input class="form-check-input" name="sort_by_name" {{$sortbyname=='desc'?'checked':''}} type="radio"  value="desc"
+                                    <input class="form-check-input" name="sort_by_date" {{$sortbyname=='desc'?'checked':''}} type="radio"  value="desc"
                                         id="flexCheckDefault_desc">
                                     <label class="form-check-label" for="flexCheckDefault_desc">
                                         &#65514;<span class=" ms-2">Desc</span>
@@ -222,10 +222,6 @@ $column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
                 </a>
             </div>
         </form>
-
-       <?php 
-      //  dd(matchStatus(strtoupper(getValueById($trackdata[0]['column_values'],'status8','label')), $status_color));
-       ?>
         @for ($x = 0; $x < count($trackdata); $x++)
             <div class="track-card-container animation-container mb-3" style="min-height:280px">
                 <div class="animation-content" style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
@@ -263,7 +259,6 @@ $column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
                 </div>
             </div>
         @endfor
-
     </div>
     @if ($cs == null && count($trackdata) > 2)
         <small class="mt-3 text-secondary">No More Data Available.</small>
