@@ -57,15 +57,15 @@
                             </div>
                         </td>
 
-                        <td class="m-0 p-0"><select 
-                          user_id="{{ $user->id }}"
-                          email_id="{{  $user->email }}"
+                        <td class="m-0 p-0"><select user_id="{{ $user->id }}" email_id="{{ $user->email }}"
                                 class="board_change form-select m-0 rounded-0 h-100 "
                                 aria-label="Default select example">
-                                <option class=" fs-5" >Not Assigned</option>
+                                <option class=" fs-5">Not Assigned</option>
                                 @if (count($boardsData['boards']) > 0)
                                     @foreach ($boardsData['boards'] as $board)
-                                        <option class=" fs-5" value="{{ $board['id'] }}" {{$board['id'] == $user->board_id ? 'selected' : ''}}>{{ $board['name'] }}</option>
+                                        <option class=" fs-5" value="{{ $board['id'] }}"
+                                            {{ $board['id'] == $user->board_id ? 'selected' : '' }}>{{ $board['name'] }}
+                                        </option>
                                     @endforeach
                                 @endif
                             </select></td>
@@ -88,7 +88,7 @@
                         </td>
                         <td>{{ $user->created_at }}</td>
                         <td class="text-info p-0 btn-primary">
-                            <a href="{{url('/')}}/monday/forgot?email={{ $user->email }}" target="_blank"
+                            <a href="{{ url('/') }}/monday/forgot?email={{ $user->email }}" target="_blank"
                                 class="btn m-0 fs-5 rounded-0" style="display: block !important">
                                 <i class="bi bi-send-arrow-up-fill"></i>
 
@@ -106,6 +106,19 @@
                 </div> --}}
         </tbody>
     </table>
+    <div>
+        <div class="card-footer clearfix">
+            {{ $mondayUsers->links() }}
+        </div>
+    </div>
+    <style>
+      .card-footer svg{
+          height: 40px;
+      }
+      .clearfix>nav>div:first-child{
+        visibility: hidden;
+      }
+    </style>
 </main>
 <script>
     const base_url = "{{ url('/') }}/";
@@ -118,27 +131,27 @@
         showLoader();
 
         if (user_id && board_id) {
-        try {
-            const response = await fetch(
-                base_url + "monday/admin/users/", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        user_id,
-                        board_id,
-                        email_id
-                    }),
-                }
-            );
+            try {
+                const response = await fetch(
+                    base_url + "monday/admin/users/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            user_id,
+                            board_id,
+                            email_id
+                        }),
+                    }
+                );
 
-            if (!response.ok) throw new Error("HTTP status " + response.status);
-            alert("Board assigned successfully.");
-        } catch (error) {
-            console.log("Api error", error);
-            alert("Something wents wrong.");
-          }
+                if (!response.ok) throw new Error("HTTP status " + response.status);
+                alert("Board assigned successfully.");
+            } catch (error) {
+                console.log("Api error", error);
+                alert("Something wents wrong.");
+            }
 
         }
         hideLoader();

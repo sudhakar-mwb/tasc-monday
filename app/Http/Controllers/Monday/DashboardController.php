@@ -70,6 +70,7 @@ class DashboardController extends Controller
     $boardColumnMappingDbData = "";
     $sortbyname = request()->input('sort_by_date') ?? '';
     $status_filter = request()->input('status_filter') ?? '';
+    $limit = (int)(request()->input('limit') ?? '3');
     if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
       $boardId  = auth()->user()->board_id;
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
@@ -110,6 +111,7 @@ class DashboardController extends Controller
         }
         $operation_query .= ']';
       }
+
       // if (request()->has('sort_by_date') && trim(request()->input('sort_by_date') !== '')) {
       //   if (strlen($operation_query) > 17)
       //     $operation_query .= ', ';
@@ -124,7 +126,7 @@ class DashboardController extends Controller
                   title
                   id
                }
-               items_page (limit: 3, cursor:" . $cs . " {$operation_query}) {
+               items_page (limit: $limit, cursor:" . $cs . " {$operation_query}) {
                   cursor
                   items {
                       id
@@ -147,10 +149,12 @@ class DashboardController extends Controller
               }
             }
          }";
-    $response = $this->_get($query)['response'];
+   
+         $response = $this->_get($query)['response'];
 
     $heading = 'Request Tracking';
     $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
+
     if ($request->export == true) {
       $query = "query {
             boards(ids: " . auth()->user()->board_id . ") {
@@ -324,7 +328,7 @@ class DashboardController extends Controller
 
     $data = json_decode($boardColumnMappingDbData, true);
     $data = $data['card_section'];
-
+//  dd($query);
     if (!$response['data']['boards'][0]['items_page']['items'] || count($response['data']['boards'][0]['items_page']['items']) == 0) {
       $heading = "No Data Found";
       $subheading = "The board lacks sufficient data.";
@@ -333,7 +337,7 @@ class DashboardController extends Controller
     }
     $colors_status = json_decode($this->getColourMapping());
     $data['status_color'] = $colors_status;
-    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data'));
+    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data','limit'));
   }
 
 
@@ -515,7 +519,7 @@ class DashboardController extends Controller
     $status     = '';
     $heading    = "Registerd users";
     $subheading = "Stay informed and in control of the overall status of your onboarding requests";
-    $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->paginate(10);
+    $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->paginate(3);
     $query = 'query {
             #   boards (limit: 2, page: 1){
               boards {
