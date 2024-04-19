@@ -62,7 +62,7 @@ class DashboardController extends Controller
     ];
     return view('admin.dashboard', compact('heading', 'cards'));
   }
-  
+
   public function trackRequest(Request $request)
   {
     $cs = 'null';
@@ -150,8 +150,8 @@ class DashboardController extends Controller
               }
             }
          }";
-   
-         $response = $this->_get($query)['response'];
+
+    $response = $this->_get($query)['response'];
 
     $heading = 'Request Tracking';
     $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
@@ -314,16 +314,18 @@ class DashboardController extends Controller
       }
     }
     if ($request->isMethod('post') && $sortAvailable) {
-      if ($sortbyname == "asc"){
+      if ($sortbyname == "asc") {
         usort($response['data']['boards'][0]['items_page']['items'], function ($a, $b) {
           return strtotime($a['created_at']) - strtotime($b['created_at']);
-        });}
+        });
+      }
 
-      if ($sortbyname == "desc"){
-       usort($response['data']['boards'][0]['items_page']['items'], function ($a, $b) {
+      if ($sortbyname == "desc") {
+        usort($response['data']['boards'][0]['items_page']['items'], function ($a, $b) {
           return strtotime($b['created_at']) - strtotime($a['created_at']);
-        });}
-        // dd($response['data']['boards'][0]['items_page']['items']);
+        });
+      }
+      // dd($response['data']['boards'][0]['items_page']['items']);
     }
     $data = json_decode($boardColumnMappingDbData, true);
     $data = $data['card_section'];
@@ -336,7 +338,7 @@ class DashboardController extends Controller
     }
     $colors_status = json_decode($this->getColourMapping());
     $data['status_color'] = $colors_status;
-    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data','limit'));
+    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data', 'limit'));
   }
 
   public function manageById(Request $request)
@@ -804,7 +806,10 @@ class DashboardController extends Controller
     $insertUserInDB = MondayUsers::createUser($dataToSave);
 
     if ($insertUserInDB['status'] == "success") {
+
       $msg    = "Admin Created Successfully.";
+      if ($request['role'] == 1)
+      $msg    = "Super admin Created Successfully.";
       $status = "success";
       return view('admin.addAdmin', compact('heading', 'subheading',  'msg', 'status'));
     } elseif ($insertUserInDB['status'] == "already") {
