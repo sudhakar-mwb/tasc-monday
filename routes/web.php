@@ -23,21 +23,21 @@ use App\Http\Controllers\Monday\AuthController;
 //     return $router->app->version();
 // });
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
 
-
+Route::get('/', [AuthController::class, 'login'])->name('monday.get.login');
 //Monday.com
 
 Route::group(['prefix' => "monday"], function () {
@@ -92,7 +92,7 @@ Route::group(['prefix' => "monday"], function () {
     Route::get('/info', [AuthController::class, 'thankssignup'])->name('monday.thankssignup');
 
 
-    Route::get('/test', [AuthController::class, 'test'])->name('monday.forgot');
+    // Route::get('/test', [AuthController::class, 'test'])->name('monday.forgot');
 
     Route::post('/track-onboarding', [TrackOnboardingController::class, 'trackOnboarding'])->name('monday.trackOnboarding');
 

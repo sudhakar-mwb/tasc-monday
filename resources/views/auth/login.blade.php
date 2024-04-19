@@ -27,8 +27,8 @@
                     </span>
                 </button>
                 <div class="d-flex justify-content-between align-items-start w-100 mt-2">
-                    <a href="forgot">Forgot Password?</a>
-                    <a href="signup">Create New Account?</a>
+                    <a href={{route('monday.forgot')}}>Forgot Password?</a>
+                    <a href={{route('monday.get.signup')}}>Create New Account?</a>
                    </div>
             </form>
    
