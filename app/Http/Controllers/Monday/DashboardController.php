@@ -62,6 +62,7 @@ class DashboardController extends Controller
     ];
     return view('admin.dashboard', compact('heading', 'cards'));
   }
+  
   public function trackRequest(Request $request)
   {
     $cs = 'null';
@@ -70,6 +71,7 @@ class DashboardController extends Controller
     $boardColumnMappingDbData = "";
     $sortbyname = request()->input('sort_by_date') ?? '';
     $status_filter = request()->input('status_filter') ?? '';
+    $limit = (int)(request()->input('limit') ?? '3');
     if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
       $boardId  = auth()->user()->board_id;
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
@@ -110,6 +112,7 @@ class DashboardController extends Controller
         }
         $operation_query .= ']';
       }
+
       // if (request()->has('sort_by_date') && trim(request()->input('sort_by_date') !== '')) {
       //   if (strlen($operation_query) > 17)
       //     $operation_query .= ', ';
@@ -124,7 +127,7 @@ class DashboardController extends Controller
                   title
                   id
                }
-               items_page (limit: 3, cursor:" . $cs . " {$operation_query}) {
+               items_page (limit: $limit, cursor:" . $cs . " {$operation_query}) {
                   cursor
                   items {
                       id
@@ -147,10 +150,12 @@ class DashboardController extends Controller
               }
             }
          }";
-    $response = $this->_get($query)['response'];
+   
+         $response = $this->_get($query)['response'];
 
     $heading = 'Request Tracking';
     $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
+
     if ($request->export == true) {
       $query = "query {
             boards(ids: " . auth()->user()->board_id . ") {
@@ -320,11 +325,9 @@ class DashboardController extends Controller
         });}
         // dd($response['data']['boards'][0]['items_page']['items']);
     }
-
-
     $data = json_decode($boardColumnMappingDbData, true);
     $data = $data['card_section'];
-
+//  dd($query);
     if (!$response['data']['boards'][0]['items_page']['items'] || count($response['data']['boards'][0]['items_page']['items']) == 0) {
       $heading = "No Data Found";
       $subheading = "The board lacks sufficient data.";
@@ -333,9 +336,8 @@ class DashboardController extends Controller
     }
     $colors_status = json_decode($this->getColourMapping());
     $data['status_color'] = $colors_status;
-    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data'));
+    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data','limit'));
   }
-
 
   public function manageById(Request $request)
   {
@@ -417,6 +419,7 @@ class DashboardController extends Controller
 
     return view('admin.user_details', compact('response', 'data', 'boardColumnMappingDbData'));
   }
+
   public function mobilityform()
   {
     $heading = "Mobility Service Request";
@@ -440,6 +443,7 @@ class DashboardController extends Controller
     return view('admin.mobilityform', compact('heading', 'subheading', 'embed_code'));
     // return view('admin.mobilityform');
   }
+
   public function stats()
   {
     $heading = "Overall Status";
@@ -461,6 +465,7 @@ class DashboardController extends Controller
       $embed_code = $data[0]['columns']['extra_details']['chart_embed_code'] ?? "";
     return view('admin.stats', compact('heading', 'subheading', 'embed_code'));
   }
+
   public function columnAllowed()
   {
     $query = 'query
@@ -509,6 +514,7 @@ class DashboardController extends Controller
     $subheading = "Column restrictions can be set per board by selecting respective column boards.";
     return view('admin.visiblility', compact('heading', 'subheading', 'boards', 'coloursData'));
   }
+
   public function userslist(Request $request)
   {
     $msg        = '';
@@ -732,6 +738,7 @@ class DashboardController extends Controller
     }
     Session::flash('error', 'Something went wrong during fetch board column mapping data.');
   }
+
   public function getBoardColumnsEmbedById($boardId)
   {
     $BoardColumnMappingData = BoardColumnMappings::where('board_id', $boardId)->get();
@@ -811,6 +818,7 @@ class DashboardController extends Controller
     }
     return view('admin.addAdmin', compact('heading', 'subheading',  'msg', 'status'));
   }
+
   public function settings(Request $request)
   {
     $msg    = '';
@@ -884,6 +892,7 @@ class DashboardController extends Controller
       session(['settings' => json_decode($get_data['ui_settings'])]);
     return view('admin.settings', compact('msg', 'status'));
   }
+
   public function getColourMapping()
   {
     $colourMappingsData = ColourMappings::get();
