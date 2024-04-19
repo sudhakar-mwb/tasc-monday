@@ -327,8 +327,8 @@ class DashboardController extends Controller
     }
     $data = json_decode($boardColumnMappingDbData, true);
     $data = $data['card_section'];
-//  dd($query);
-    if (!$response['data']['boards'][0]['items_page']['items'] || count($response['data']['boards'][0]['items_page']['items']) == 0) {
+
+    if ($request->isMethod('get') && (!$response['data']['boards'][0]['items_page']['items'] || count($response['data']['boards'][0]['items_page']['items']) == 0)) {
       $heading = "No Data Found";
       $subheading = "The board lacks sufficient data.";
       $status = false;

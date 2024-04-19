@@ -74,7 +74,7 @@ function dateFormater($dateString)
 }
 $column1="";
 $column2="";
-if($data['column1']&&$data['column2']){
+if($trackdata&&$data['column1']&&$data['column2']){
 $column1=getValueById($trackdata[0]['column_values'],$data['column1'],'text');
 $column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
 }
