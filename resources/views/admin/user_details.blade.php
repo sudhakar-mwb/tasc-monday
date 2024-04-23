@@ -361,18 +361,21 @@ if ($joiningDate !== null) {
                         <h5 class="text-start m-0">{{ $name }}</h5>
                         <p class="profession m-0 text-start text-secondary" style="font-weight: 400">
                             <?php
+                            
                             $str = [];
                             for ($cnt = 0; $cnt < count($sub_headings_column); $cnt++) {
                                 $el = $sub_headings_column[$cnt];
-                            }
-                            $txt = getValueById($columns_val, $el['id'], 'text');
-                            echo $txt;
-                            if ($txt) {
-                                if ($cnt > 0 && $cnt !== count($sub_headings_column) - 1 && $txt !== '') {
-                                    array_push($str, '|');
+                                $txt = getValueById($columns_val, $el['id'], 'text');
+                                // echo $txt;
+                            
+                                if ($txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available') {
+                                    if (count($str) > 0 && $cnt < count($sub_headings_column) && $txt !== '') {
+                                        array_push($str, '|');
+                                    }
+                                    array_push($str, $txt);
                                 }
-                                array_push($str, $txt);
                             }
+                            
                             ?>
 
                             {{ implode(' ', $str) }}
