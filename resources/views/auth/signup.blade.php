@@ -26,8 +26,8 @@
 
         <div class="w-100 d-flex justify-content-center">
             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-            {{-- secret key:  6LchU6gpAAAAAAgx4pH2xz9R0VYoDn-c-T4RQri7 --}}
-            <div class="g-recaptcha" data-sitekey="6LchU6gpAAAAAPFn3HHkKDNlOJ_rn7CdX7y6b2XR"></div>
+            {{-- secret key:  6LdmFMQpAAAAAJAlWcuFRebEfGgkMs6JsoisI2Lb --}}
+            <div class="g-recaptcha" data-sitekey="6LdmFMQpAAAAAGwLfYZopzckKXOu0obCtpHW0obV"></div>
 
         </div>
         <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="submit"

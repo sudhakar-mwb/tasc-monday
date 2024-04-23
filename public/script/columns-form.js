@@ -399,16 +399,13 @@ $(document).ready(function () {
 
 			showLoader();
 			try {
-				const response = await fetch(
-					base_url + "monday/admin/colour-mapping/",
-					{
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify(formData),
-					}
-				);
+				const response = await fetch(base_url + "monday/admin/colour-mapping", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(formData),
+				});
 
 				if (!response.ok) throw new Error("HTTP status " + response.status);
 				alert("status group saved");
