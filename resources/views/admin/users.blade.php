@@ -45,7 +45,7 @@
                         <td>{{ $user->phone }}</td>
                         <td class="p-0">
                             <div class="d-flex align-items-center btn btn-outline-info border-0 rounded-0 text-dark"
-                                style="gap:10px" onclick="copyToBoard('jaikroishnaverma@gmail.com')">
+                                style="gap:10px" onclick="copyToBoard('{{ $user->email }}' )">
                                 <span class="btn-copy" style="cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg"
                                         width="16" height="16" fill="currentColor" class="bi bi-copy"
                                         viewBox="0 0 16 16">
@@ -71,7 +71,7 @@
                             </select></td>
                         <td class="p-0">
                             <div class="d-flex align-items-center btn btn-outline-info border-0 rounded-0 text-dark"
-                                style="gap:10px" {{-- onclick="copyToBoard('#21$5{{ $i }}6&3tryrtyr*')" --}}>
+                                style="gap:10px" onclick="copyToBoard('{{ $user->password  }}')">
                                 <span class="btn-copy" style="cursor:pointer;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                         fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
