@@ -133,7 +133,7 @@
         if (user_id && board_id) {
             try {
                 const response = await fetch(
-                    base_url + "monday/admin/users/", {
+                    base_url + "monday/admin/users", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",

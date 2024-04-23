@@ -549,6 +549,7 @@ class DashboardController extends Controller
                 }
               }
             }';
+            // dd($this->_get($query)['response']);
     $boardsData = $this->_get($query)['response']['data'];
     if ($request->isMethod('post')) {
       if (!empty(auth()->user()) && (auth()->user()->role == 2 || auth()->user()->role == 1)) {
