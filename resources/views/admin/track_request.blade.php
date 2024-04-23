@@ -72,12 +72,7 @@ function dateFormater($dateString)
     $formattedDate = $date->format('F j, Y');
     return $formattedDate;
 }
-$column1="";
-$column2="";
-if($trackdata&&$data['column1']&&$data['column2']){
-$column1=getValueById($trackdata[0]['column_values'],$data['column1'],'text');
-$column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
-}
+
 ?>
 
 
@@ -259,6 +254,14 @@ $column2=getValueById($trackdata[0]['column_values'],$data['column2'],'text');
             
         </form>
         @for ($x = 0; $x < count($trackdata); $x++)
+        <?php 
+$column1="";
+$column2="";
+if($trackdata&&$data['column1']&&$data['column2']){
+$column1=getValueById($trackdata[$x]['column_values'],$data['column1'],'text');
+$column2=getValueById($trackdata[$x]['column_values'],$data['column2'],'text');
+}
+        ?>
             <div class="track-card-container animation-container mb-3" style="min-height:280px">
                 <div class="animation-content" style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
                     <div
