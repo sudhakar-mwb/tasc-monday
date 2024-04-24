@@ -106,7 +106,7 @@ cursor: pointer;
 // 			// showLoader();
 // 			try {
 // 				const response = await fetch(
-// 					base_url + "monday/admin/colour-mapping/",
+// 					base_url + "onboardify/admin/colour-mapping/",
 // 					{
 // 						method: "POST",
 // 						headers: {

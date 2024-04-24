@@ -20,6 +20,6 @@ class SuperAdminAuthentication
             return $next($request);
         }
         Auth::logout();
-        return redirect('/monday/login');
+        return redirect('/onboardify/login');
     }
 }

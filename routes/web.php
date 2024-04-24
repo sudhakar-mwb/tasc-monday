@@ -40,7 +40,7 @@ use App\Http\Controllers\Monday\AuthController;
 Route::get('/', [AuthController::class, 'login'])->name('monday.get.login');
 //Monday.com
 
-Route::group(['prefix' => "monday"], function () {
+Route::group(['prefix' => "onboardify"], function () {
     // Route::middleware('monday.auth')->group(function () {
     // Route::group(['middleware' => 'monday.auth'], function(){
     // Track Onboarding
