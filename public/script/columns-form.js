@@ -229,7 +229,7 @@ $(document).ready(function () {
 	 */
 	async function fetchSavedData(url, id) {
 		try {
-			return fetch(base_url + `monday/admin/${url}/` + id);
+			return fetch(base_url + `onboardify/admin/${url}/` + id);
 		} catch (error) {
 			console.log("Api error", error);
 			return false;
@@ -345,7 +345,7 @@ $(document).ready(function () {
 			try {
 				const response = await fetch(
 					// "https://dummyjson.com/products/search?q=" + val
-					base_url + "monday/admin/board-visiblilty",
+					base_url + "onboardify/admin/board-visiblilty",
 					{
 						method: "POST",
 						headers: {
@@ -399,7 +399,7 @@ $(document).ready(function () {
 
 			showLoader();
 			try {
-				const response = await fetch(base_url + "monday/admin/colour-mapping", {
+				const response = await fetch(base_url + "onboardify/admin/colour-mapping", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",

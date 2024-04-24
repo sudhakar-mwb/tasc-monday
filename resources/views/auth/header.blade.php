@@ -34,7 +34,7 @@
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
         <header class="mb-auto pb-3 pt-3">
             <div>
-                <a href="/monday/form" class="text-decoration-none">
+                <a href="/onboardify/form" class="text-decoration-none">
                     <span class="header-logo float-md-start">
                         <img height="80" src="{{ asset('uploads/' . $settings->logo_image) }}" alt="TASC logo">
                     </span>
@@ -51,7 +51,7 @@
                     @endphp
 
                     @if (in_array('form', $segments) && count($segments) > array_search('form', $segments) + 1)
-                        <a href="/monday/form" class="text-decoration-none">
+                        <a href="/onboardify/form" class="text-decoration-none">
                             <button class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center"
                                 type="button">
                                 <span>
