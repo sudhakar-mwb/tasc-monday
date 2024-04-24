@@ -83,7 +83,6 @@
 
 
                                 <span>{{ $user->password }}</span>
-                                {{-- <input type="password" disabled value="{{ $user->password }}"></input> --}}
                             </div>
                         </td>
                         <td>{{ $user->created_at }}</td>

@@ -45,8 +45,7 @@
 
                 <div class="mb-3">
                     <label for="password-input" class="form-label">Create Password</label>
-                    <input type="password" placeholder="****" class="form-control" id="password-input" required
-                        name="password">
+                    @include('includes.passwordinput')
                     @error('password')
                         <small class="text-danger text-start ms-2">{{ $message }}</small>
                     @enderror

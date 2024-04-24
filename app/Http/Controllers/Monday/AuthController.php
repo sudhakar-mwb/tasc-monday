@@ -278,7 +278,7 @@ class AuthController extends Controller
 
         // Super Admin
         if(Auth::user() && Auth::user()->role == 1){
-            $redirect = 'monday/admin/create-admin';
+            $redirect = 'monday/admin/users';
         }
         // Admin
         else if(Auth::user() && Auth::user()->role == 2){

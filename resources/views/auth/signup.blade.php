@@ -4,25 +4,35 @@
 <main class="px-3 pt-5">
     @include('admin.headtitle')
 
-    @if($status!="")
-<div class="d-flex justify-content-center">
-    <div class="alert alert-{{$status}}" style="max-width:400px">    {{$msg}}</div>
-</div>
+    @if ($status != '')
+        <div class="d-flex justify-content-center">
+            <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }}</div>
+        </div>
     @endif
-    
 
-    <form class="form-auth" id="registration-custom-form" action="{{route('monday.post.signup')}}" method="POST">
+
+    <form class="form-auth" id="registration-custom-form" action="{{ route('monday.post.signup') }}" method="POST">
         {{-- @csrf --}}
         <input type="text" placeholder="Name*" name="name" value="{{ old('name') }}">
-        @error('name')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+        @error('name')
+            <small class="text-danger text-start ms-2">{{ $message }}</small>
+        @enderror
         <input type="text" placeholder="Company name*" name="company_name" value="{{ old('company_name') }}">
-        @error('company_name')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+        @error('company_name')
+            <small class="text-danger text-start ms-2">{{ $message }}</small>
+        @enderror
         <input type="number" placeholder="Phone*" name="phone" value="{{ old('phone') }}">
-        @error('phone')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+        @error('phone')
+            <small class="text-danger text-start ms-2">{{ $message }}</small>
+        @enderror
         <input type="text" placeholder="Email*" name="email" value="{{ old('email') }}">
-        @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
-        <input type="password" placeholder="Password*" name="password" value="{{ old('password') }}">
-        @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
+        @error('email')
+            <small class="text-danger text-start ms-2">{{ $message }}</small>
+        @enderror
+        @include('includes.passwordinput')
+        @error('password')
+            <small class="text-danger text-start ms-2">{{ $message }}</small>
+        @enderror
 
         <div class="w-100 d-flex justify-content-center">
             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
