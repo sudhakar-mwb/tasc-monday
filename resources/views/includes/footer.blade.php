@@ -1,4 +1,7 @@
 <footer class="mt-auto text-white-50">
+  <div class="w-100 mt-5 mb-5 align-center text-secondary fs-6">
+    <small>Powered by TASC Outsourcing®</small>
+</div>
   <div  id="full-loader" style="display: none">
     <div  class="full-loader d-flex align-items-center justify-content-center" >
       <img src="{{ asset('asset/loading5.gif') }}" alt="" >

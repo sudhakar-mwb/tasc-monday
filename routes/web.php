@@ -40,7 +40,8 @@ use App\Http\Controllers\Monday\AuthController;
 Route::get('/', [AuthController::class, 'login'])->name('monday.get.login');
 //Monday.com
 
-Route::group(['prefix' => "onboardify"], function () {
+Route::post('/', [AuthController::class, 'login'])->name('monday.post.login');
+Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], function () {
     // Route::middleware('monday.auth')->group(function () {
     // Route::group(['middleware' => 'monday.auth'], function(){
     // Track Onboarding
@@ -79,8 +80,8 @@ Route::group(['prefix' => "onboardify"], function () {
         Route::post('/settings', [DashboardController::class, 'settings'])->name('admin.post.settings');
 
     });
-    Route::get('/login', [AuthController::class, 'login'])->name('monday.get.login');
-    Route::post('/login', [AuthController::class, 'login'])->name('monday.post.login');
+//     Route::get('/login', [AuthController::class, 'login'])->name('monday.get.login');
+//     Route::post('/login', [AuthController::class, 'login'])->name('monday.post.login');
     Route::get('/signup', [AuthController::class, 'signup'])->name('monday.get.signup');
     Route::post('/signup', [AuthController::class, 'signup'])->name('monday.post.signup');
     Route::get('/logout', [AuthController::class, 'logout'])->name('monday.get.logout');
@@ -100,6 +101,7 @@ Route::group(['prefix' => "onboardify"], function () {
 
     Route::post('/status-onboarding-hiring-type', [StatusOnboardingController::class, 'statusOnboardingHiringType'])->name('monday.statusOnboardingHiringType');
     // });
+
 });
 
 require __DIR__ . '/auth.php';

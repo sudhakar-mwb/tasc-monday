@@ -219,6 +219,12 @@ function getValueById($columnValues, $id, $key = 'value')
     }
     return null; // Return null if no matching id found
 }
+
+function validText($txt)
+{
+    return $txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available' && strtolower($txt) != 'not-applicable';
+}
+
 function findElementByTitle($name, $data, $trackdata, $key = 'value')
 {
     $columnsid = null;
@@ -361,18 +367,19 @@ if ($joiningDate !== null) {
                         <h5 class="text-start m-0">{{ $name }}</h5>
                         <p class="profession m-0 text-start text-secondary" style="font-weight: 400">
                             <?php
+                            
                             $str = [];
                             for ($cnt = 0; $cnt < count($sub_headings_column); $cnt++) {
                                 $el = $sub_headings_column[$cnt];
-                            }
-                            $txt = getValueById($columns_val, $el['id'], 'text');
-                            echo $txt;
-                            if ($txt) {
-                                if ($cnt > 0 && $cnt !== count($sub_headings_column) - 1 && $txt !== '') {
-                                    array_push($str, '|');
+                                $txt = getValueById($columns_val, $el['id'], 'text');
+                                if (validText($txt)) {
+                                    if (count($str) > 0 && $cnt < count($sub_headings_column) && $txt !== '') {
+                                        array_push($str, '|');
+                                    }
+                                    array_push($str, $txt);
                                 }
-                                array_push($str, $txt);
                             }
+                            
                             ?>
 
                             {{ implode(' ', $str) }}
@@ -399,7 +406,7 @@ if ($joiningDate !== null) {
                               $flag = $flag ? ($countryInfo[$flag]['flag']?? null) : null;
                             
                             }
-                            if($text!=="NA")
+                            if(validText($text))
                            {
                             ?>
                                 <li class="list-group-item d-flex align-items-center border-0 text-start"
@@ -422,7 +429,7 @@ if ($joiningDate !== null) {
                                 $valued = json_decode(getValueById($columns_val, $step['id'], 'value'), true);
                                 $status = getValueById($columns_val, $step['id'], 'text');
                                  
-                                if($status !=='NA'&&$joiningDate!=="NA")
+                                if(validText($status)&&validText($joiningDate))
 {
                                 ?>
                                 <li class="list-group-item d-flex align-items-start border-0 text-start mb-1"
@@ -470,9 +477,14 @@ if ($joiningDate !== null) {
                     <h5 class="text-start head-color fw-bold pb-4 border-bottom">Onboarding Updates</h5>
                     <h6 class="text-start mt-2 mb-4 fw-bold text-secondary">
                         {{ dateFormater($created_at) ?? '' }}</h6>
+                    <?php 
+                        $desc= getValueById($columns_val, $onboarding_updates_columns, 'text');
+                        if(validText($desc)){
+                        ?>
                     <p class="text-start text-secondary">
-                        {{ getValueById($columns_val, $onboarding_updates_columns, 'text') ?? '' }}</p>
-
+                        {{$desc?? '' }}
+                    </p>
+                    <?php } ?>
                 </div>
 
                 {{-- <div class="card border-0 border-1 p-4">

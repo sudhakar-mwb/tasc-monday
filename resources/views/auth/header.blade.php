@@ -10,31 +10,33 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 
 <body class=" container d-flex h-100 text-center">
 
-  <?php
-  $settings=Session::get('settings');
-  // dd($settings);
-  echo " <style>
-        .btn-gradiant,.btn-custom {
-              background: {$settings->button_bg} !important;
-          }
-        .custom-banner {
-          background: {$settings->banner_bg} !important;
-        }
-        .site-bg{
-          background: {$settings->site_bg} !important;
-        }
-          </style>";
-  ?>
+    <?php
+    $settings = Session::get('settings');
+    // dd($settings);
+    echo " <style>
+                        .btn-gradiant,.btn-custom {
+                              background: {$settings->button_bg} !important;
+                          }
+                        .custom-banner {
+                          background: {$settings->banner_bg} !important;
+                        }
+                        .site-bg{
+                          background: {$settings->site_bg} !important;
+                        }
+                          </style>";
+    ?>
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
         <header class="mb-auto pb-3 pt-3">
             <div>
                 <a href="/onboardify/form" class="text-decoration-none">
                     <span class="header-logo float-md-start">
-                      <img height="80" src="{{ asset('uploads/' . $settings->logo_image) }}" alt="TASC logo">
+                        <img height="80" src="{{ asset('uploads/' . $settings->logo_image) }}" alt="TASC logo">
                     </span>
                 </a>
                 <nav class="nav nav-masthead justify-content-center align-items-center float-md-end">

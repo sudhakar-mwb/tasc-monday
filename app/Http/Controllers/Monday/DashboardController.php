@@ -65,13 +65,15 @@ class DashboardController extends Controller
 
   public function trackRequest(Request $request)
   {
+    $prev_cursor=null;
+    // dd(request()->input('limit'));
     $cs = 'null';
     $operation_query = "";
     $searchquery = "";
     $boardColumnMappingDbData = "";
     $sortbyname = request()->input('sort_by_date') ?? '';
     $status_filter = request()->input('status_filter') ?? '';
-    $limit = (int)(request()->input('limit') ?? '3');
+    $limit = (int)(request()->input('limit') ?? '25');
     if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
       $boardId  = auth()->user()->board_id;
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
@@ -96,6 +98,7 @@ class DashboardController extends Controller
       // dd(strlen($operation_query));
       if (request()->has('cursor')) {
         $cs = "\"" . $request->input('cursor') . "\"";
+        $prev_cursor=$request->input('cursor') ;
       }
       if ($searchAvailable || $statusfilterAvailable) {
 
@@ -330,15 +333,21 @@ class DashboardController extends Controller
     $data = json_decode($boardColumnMappingDbData, true);
     $data = $data['card_section'];
 
-    if ($request->isMethod('get') && (!$response['data']['boards'][0]['items_page']['items'] || count($response['data']['boards'][0]['items_page']['items']) == 0)) {
+    $items=$response['data']['boards'][0]['items_page']['items'];
+
+
+
+    if ($request->isMethod('get') && (!$items || count($items) == 0)) {
       $heading = "No Data Found";
       $subheading = "The board lacks sufficient data.";
       $status = false;
       return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
     }
+
     $colors_status = json_decode($this->getColourMapping());
     $data['status_color'] = $colors_status;
-    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data', 'limit'));
+
+    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data', 'limit','prev_cursor'));
   }
 
   public function manageById(Request $request)
