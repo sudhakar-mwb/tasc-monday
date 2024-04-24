@@ -82,7 +82,7 @@ function dateFormater($dateString)
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
-                        href="/monday/form"><u> {{ ucwords('Command Center') }}</u></a></li>
+                        href="/onboardify/form"><u> {{ ucwords('Command Center') }}</u></a></li>
                 <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
                         href=""> {{ ucwords('Request Tracking') }}</a></li>
 
@@ -282,7 +282,7 @@ $column2=getValueById($trackdata[$x]['column_values'],$data['column2'],'text');
                         <h5 class="text-start mt-4">{{ $column2 }}</h5>
                         <h6 class="text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'text')); @endphp</h6>
                         <a class="text-decoration-none"
-                            href="/monday/form/track-request/{{ $trackdata[$x]['id'] }}/{{ str_replace(' ', '_', $trackdata[$x]['name']) }}">
+                            href="/onboardify/form/track-request/{{ $trackdata[$x]['id'] }}/{{ str_replace(' ', '_', $trackdata[$x]['name']) }}">
                             <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
                                 type="button">
                                 <span>

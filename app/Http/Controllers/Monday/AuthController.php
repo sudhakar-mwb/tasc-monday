@@ -84,7 +84,8 @@ class AuthController extends Controller
                     // 'password'     => trim($input['password']),
                     'created_at'   => date("Y-m-d H:i:s"),
                     'updated_at'   => date("Y-m-d H:i:s"),
-                    'password'     => Hash::make(trim($input['password']))
+                    'password'     => Hash::make(trim($input['password'])),
+                    'board_id'     => 1472085729,
                 );
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
                 if ($insertUserInDB['status'] == "success") {
@@ -107,6 +108,7 @@ class AuthController extends Controller
     }
     public function forgot(Request $request)
     {
+        $userDetails = auth()->user();
         $msg        = '';
         $status     = '';
         $heading    = "Forgot Password";
@@ -127,7 +129,7 @@ class AuthController extends Controller
                 );
 
                 $linkHash        = Crypt::encrypt(json_encode($dataToEncrypt));
-                $verificationURL = url('/').'/monday/create-password/'.$linkHash;
+                $verificationURL = url('/').'/onboardify/create-password/'.$linkHash;
                 $verificationData = array(
                     'emailType'  => 'forget_password_verification',
                     'name'       => $getUser->name,
@@ -237,6 +239,9 @@ class AuthController extends Controller
                     }else{
                         $msg    = 'Forgot Password mail not send. Sinch mailjet response -> '.$response->getData()['ErrorMessage'];
                         $status = 'danger';
+                        if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2) ) {
+                            return view('auth.forgotForAdmin', compact('heading', 'subheading', 'msg', 'status'), );
+                        }
                         return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
                     }
     
@@ -252,6 +257,9 @@ class AuthController extends Controller
                 $status = 'danger';
                 return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
             }
+        }
+        if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2) ) {
+            return view('auth.forgotForAdmin', compact('heading', 'subheading', 'msg', 'status'), );
         }
         return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
     }
@@ -278,14 +286,14 @@ class AuthController extends Controller
 
         // Super Admin
         if(Auth::user() && Auth::user()->role == 1){
-            $redirect = 'monday/admin/create-admin';
+            $redirect = 'onboardify/admin/create-admin';
         }
         // Admin
         else if(Auth::user() && Auth::user()->role == 2){
-            $redirect = 'monday/admin/board-visiblilty';
+            $redirect = 'onboardify/admin/board-visiblilty';
         }// User
         else{
-            $redirect = '/monday/form';
+            $redirect = '/onboardify/form';
         }
 
         return $redirect;
@@ -298,7 +306,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         Auth::guard('web')->logout();
-        return redirect('/monday/login');
+        return redirect('/onboardify/login');
     }
 
     // public function createNewPassword (Request $request){
@@ -388,14 +396,14 @@ class AuthController extends Controller
                 $subheading    = 'for '.$decryptedData['email'];
                 $msg           = 'Password updated successfully. Now you can login with new password';
                 $status        = 'success';
-                return redirect('/monday/login');
+                return redirect('/onboardify/login');
             }else{
               $heading       = "Enter New Password";
               $subheading    = 'for '.$decryptedData['email'];
               $msg           = 'Current password not updated. Please try again.';
               $status        = 'danger';
               $token         =  $request->token;
-              return redirect('monday/create-password'.$request->token,compact('heading', 'subheading', 'msg', 'status', 'token'));
+              return redirect('onboardify/create-password'.$request->token,compact('heading', 'subheading', 'msg', 'status', 'token'));
             }
             // return view('auth.login', compact('heading', 'subheading', 'msg', 'status', 'token'));
         }
