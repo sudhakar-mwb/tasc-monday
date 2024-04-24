@@ -336,7 +336,8 @@ function dateFormater($dateString)
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                     @foreach ([25, 50, 75, 100] as $item)
-                        <li class="item-per-page {{ $limit == $item ? 'bg-primary' : '' }}" count="{{ $item }}">
+                        <li class="item-per-page {{ $limit == $item ? 'bg-primary' : '' }}"
+                            count="{{ $item }}">
                             <span
                                 class="dropdown-item px-3 py-2 {{ $limit == $item ? 'text-light' : '' }}">{{ $item }}</span>
                         </li>
@@ -352,10 +353,10 @@ function dateFormater($dateString)
             <p class="p-0 m-0">1-25 of 100</p>
 
             <div class="buttons d-flex justify-content-end align-items-center">
-                <button type="button" class="{{ $cs==null?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $prev_cursor }}"><i
-                        class="bi bi-arrow-left-circle"></i></button>
-                <button type="button" class="{{ $cs==null?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs }}"><i
-                        class="bi bi-arrow-right-circle"></i></button>
+                <button type="button" class="{{ $cs == null ? 'disabled-btn' : '' }} fs-2 navigation-buttons"
+                    cursor="{{ $prev_cursor }}"><i class="bi bi-arrow-left-circle"></i></button>
+                <button type="button" class="{{ $cs == null ? 'disabled-btn' : '' }} fs-2 navigation-buttons"
+                    cursor="{{ $cs }}"><i class="bi bi-arrow-right-circle"></i></button>
             </div>
 
 
@@ -411,6 +412,16 @@ function dateFormater($dateString)
         display: none !important;
     }
 
+    .item-per-page.bg-primary>.dropdown-item:hover {
+        color: black !important;
+        cursor: pointer !important;
+
+    }
+
+    .item-per-page>span.dropdown-item {
+        cursor: pointer !important;
+    }
+
     .dropdown-menu {
         min-width: 80px
     }
@@ -424,9 +435,9 @@ function dateFormater($dateString)
     }
 
 
-    .disabled-btn{
-      color: grey;
-      cursor: not-allowed
+    .disabled-btn {
+        color: grey;
+        cursor: not-allowed
     }
 </style>
 <script>
