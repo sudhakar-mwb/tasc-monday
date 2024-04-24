@@ -87,7 +87,7 @@
                         </td>
                         <td>{{ $user->created_at }}</td>
                         <td class="text-info p-0 btn-primary">
-                            <a href="{{ url('/') }}/monday/forgot?email={{ $user->email }}" target="_blank"
+                            <a href="{{ url('/') }}/onboardify/forgot?email={{ $user->email }}" target="_blank"
                                 class="btn m-0 fs-5 rounded-0" style="display: block !important">
                                 <i class="bi bi-send-arrow-up-fill"></i>
 
@@ -132,7 +132,7 @@
         if (user_id && board_id) {
             try {
                 const response = await fetch(
-                    base_url + "monday/admin/users", {
+                    base_url + "onboardify/admin/users", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
