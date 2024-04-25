@@ -87,7 +87,7 @@
                         </td>
                         <td>{{ $user->created_at }}</td>
                         <td class="text-info p-0 btn-primary">
-                            <a href="{{ url('/') }}/onboardify/forgot?email={{ $user->email }}" target="_blank"
+                            <a href="{{ url('/') }}/onboardify/forgot?email={{ $user->email }}" 
                                 class="btn m-0 fs-5 rounded-0" style="display: block !important">
                                 <i class="bi bi-send-arrow-up-fill"></i>
 

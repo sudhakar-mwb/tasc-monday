@@ -20,6 +20,6 @@ class AdminAuthentication
             return $next($request);
         }
         Auth::logout();
-        return redirect('/onboardify/login');
+        return redirect('/');
     }
 }

@@ -260,6 +260,7 @@ function matchStatus($inputString, $statusArray)
     // If no match is found, return false
     return false;
 }
+
 function getClass($str, $status_color)
 {
     $input = matchStatus($str, $status_color);
@@ -275,6 +276,7 @@ function getClass($str, $status_color)
             return 'secondary';
     }
 }
+
 function dateFormater($dateString)
 {
     if ($dateString == null) {
@@ -308,7 +310,8 @@ $VisaIssuanceValue = json_decode(findElementByTitle('Visa Issuance', $columns, $
 $VisaIssuancestatus = findElementByTitle('Visa Issuance', $columns, $trackdata, 'label');
 
 $joiningDate = findElementByTitle('Joining Date', $columns, $trackdata, 'value');
-if ($joiningDate !== null) {
+if ($joiningDate !== null && validText($joiningDate)) {
+    // dd($joiningDate);
     $joiningDate = dateFormater(json_decode($joiningDate, true)['date']);
 } else {
     $joiningDate = 'NA';
@@ -364,8 +367,8 @@ if ($joiningDate !== null) {
                         </div>
                     </div>
                     <div class="d-flex flex-column justify-content-around">
-                        <h5 class="text-start m-0">{{ $name }}</h5>
-                        <p class="profession m-0 text-start text-secondary" style="font-weight: 400">
+                        <h5 class="text-start m-0 card-user-name">{{ $name }}</h5>
+                        <p class="profession m-0 text-start user-candidate-column" style="font-weight: 400">
                             <?php
                             
                             $str = [];
@@ -384,7 +387,7 @@ if ($joiningDate !== null) {
 
                             {{ implode(' ', $str) }}
                         </p>
-                        <h6 class="status m-0 text-start text-{{ getClass($profileStatus, $status_color) }} fw-bold">
+                        <h6 class="fs-17 status m-0 text-start text-{{ getClass($profileStatus, $status_color) }} fw-bold">
                             {{ $profileStatus }}</h6>
                     </div>
                 </div>
@@ -409,11 +412,11 @@ if ($joiningDate !== null) {
                             if(validText($text))
                            {
                             ?>
-                                <li class="list-group-item d-flex align-items-center border-0 text-start"
-                                    style="background: inherit;gap:16px"><span>
+                                <li class="user-candidate-column list-group-item d-flex align-items-center border-0 text-start "
+                                    style="background: inherit;gap:12px"><span>
                                         <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-info-circle' }}"></i>
                                     </span><span>
-                                        {{ $col['custom_title'] ? $col['custom_title'] . ' : ' : '' }}{{ $text }}</span><span>{{ $flag }}</span>
+                                        {{ $col['custom_title'] ? $col['custom_title'] . ': ' : '' }}{{ $text }}</span><span>{{ $flag }}</span>
                                 </li>
                                 <?php }?>
                             @endforeach
@@ -482,7 +485,7 @@ if ($joiningDate !== null) {
                         if(validText($desc)){
                         ?>
                     <p class="text-start text-secondary">
-                        {{$desc?? '' }}
+                        {{ $desc ?? '' }}
                     </p>
                     <?php } ?>
                 </div>
@@ -528,6 +531,17 @@ if ($joiningDate !== null) {
     .zoom:hover {
         transform: scale(1.5);
         /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+    }
+ .fs-17{
+  font-size: 17px
+ }
+    .user-candidate-column {
+        font-size: 17px;
+        color: #928F8F;
+    }
+    .card-user-name{
+      color:#434343;
+      font-size: 36px
     }
 </style>
 @include('includes.footer')

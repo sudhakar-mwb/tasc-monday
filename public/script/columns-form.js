@@ -343,7 +343,7 @@ $(document).ready(function () {
 
 			showLoader();
 			try {
-				const response = await fetch(
+				let response = await fetch(
 					// "https://dummyjson.com/products/search?q=" + val
 					base_url + "onboardify/admin/board-visiblilty",
 					{
@@ -356,8 +356,15 @@ $(document).ready(function () {
 				);
 
 				if (!response.ok) throw new Error("HTTP status " + response.status);
-				alert("columns details updated successfully.");
-				hideLoader();
+				else {
+					response = await response.json();
+					if (response?.status) {
+						alert(response?.message);
+						hideLoader();
+					} else {
+						throw new Error("HTTP status " + response.status);
+					}
+				}
 			} catch (error) {
 				console.log("Api error", error);
 				alert("Something wents wrong.");
@@ -399,16 +406,27 @@ $(document).ready(function () {
 
 			showLoader();
 			try {
-				const response = await fetch(base_url + "onboardify/admin/colour-mapping", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(formData),
-				});
+				let response = await fetch(
+					base_url + "onboardify/admin/colour-mapping",
+					{
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(formData),
+					}
+				);
 
 				if (!response.ok) throw new Error("HTTP status " + response.status);
-				alert("status group saved");
+				else {
+          response= await response.json()
+					if (response?.status) {
+						alert(response?.message);
+						hideLoader();
+					} else {
+						throw new Error("HTTP status " + response.status);
+					}
+				}
 			} catch (error) {
 				console.log("Api error", error);
 				alert("Something wents wrong.");

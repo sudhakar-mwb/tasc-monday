@@ -286,11 +286,11 @@ class AuthController extends Controller
 
         // Super Admin
         if(Auth::user() && Auth::user()->role == 1){
-            $redirect = 'onboardify/admin/create-admin';
+            $redirect = 'onboardify/admin/users';
         }
         // Admin
         else if(Auth::user() && Auth::user()->role == 2){
-            $redirect = 'onboardify/admin/board-visiblilty';
+            $redirect = 'onboardify/admin/users';
         }// User
         else{
             $redirect = '/onboardify/form';
@@ -306,7 +306,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         Auth::guard('web')->logout();
-        return redirect('/onboardify/login');
+        return redirect('/');
     }
 
     // public function createNewPassword (Request $request){
@@ -396,7 +396,7 @@ class AuthController extends Controller
                 $subheading    = 'for '.$decryptedData['email'];
                 $msg           = 'Password updated successfully. Now you can login with new password';
                 $status        = 'success';
-                return redirect('/onboardify/login');
+                return redirect('/');
             }else{
               $heading       = "Enter New Password";
               $subheading    = 'for '.$decryptedData['email'];

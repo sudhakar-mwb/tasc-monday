@@ -7,7 +7,7 @@
             <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }}</div>
         </div>
     @endif
-    <form action="{{ route('monday.post.login') }}" method="POST" class="form-auth">
+    <form action="{{ route('monday.post.login') }}" id="loginform" method="POST" class="form-auth">
         <input type="text" placeholder="Email" name="email" value="{{ old('email') }}">
         @error('email')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
@@ -23,7 +23,7 @@
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
 
-        <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="submit">
+        <button id="login-button" class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="button">
             <span>
                 Log In
             </span>
@@ -40,7 +40,13 @@
             <a href={{ route('monday.get.signup') }}>Create New Account?</a>
         </div>
     </form>
+<script>
+  $("#login-button").on('click',function(){
+    localStorage.removeItem('hide-banner');
+    $("#loginform").submit()
+  })
 
+</script>
 </main>
 
 
