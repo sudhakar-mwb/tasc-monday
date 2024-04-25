@@ -67,6 +67,7 @@ class DashboardController extends Controller
   {
     $prev_cursor=null;
     // dd(request()->input('limit'));
+
     $cs = 1;
     $operation_query = "";
     $searchquery = "";
@@ -164,7 +165,6 @@ class DashboardController extends Controller
                 }
              }";
       $exportResponse = $this->_get($query)['response'];
-
       // Loop through items and write data
       if (!empty($exportResponse['data']['boards'][0]['items_page']['items']) && !empty($exportResponse['data']['boards'][0]['columns'])) {
         $boardId                     = auth()->user()->board_id;
@@ -923,13 +923,19 @@ class DashboardController extends Controller
 
       // Check if the record was updated
       if ($colourMappingDBData && $response->wasChanged()) {
-        Session::flash('message', 'Colour mapping successfully updated.');
+        return response( json_encode( array( 'response' => true, 'status' => true, 'message' => "Colour mapping successfully updated." ) ) );
+    
+        // Session::flash('message', 'Colour mapping successfully updated.');
       } else {
-        Session::flash('message', 'Colour mapping successfully updated.');
+        return response( json_encode( array( 'response' => true, 'status' => true, 'message' => "Colour mapping successfully updated." ) ) );
+        // Session::flash('message', 'Colour mapping successfully updated.');
       }
-      Session::flash('error', 'something went wrong during colour mapping.');
+      return response( json_encode( array( 'response' => true, 'status' => false, 'message' => "something went wrong during colour mapping." ) ) );
+      // Session::flash('error', 'something went wrong during colour mapping.');
     } else {
-      Session::flash('error', 'Colour mapping data not received.');
+      return response( json_encode( array( 'response' => true, 'status' => false, 'message' => "Colour mapping data not received." ) ) );
+
+      // Session::flash('error', 'Colour mapping data not received.');
     }
   }
 

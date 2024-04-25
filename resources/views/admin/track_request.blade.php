@@ -83,26 +83,24 @@ function dateFormater($dateString)
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
-
                         href="/onboardify/form"><u> {{ ucwords('Command Center') }}</u></a></li>
-                <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
-                        href=""> {{ ucwords('Request Tracking') }}</a></li>
+                <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none" href="">
+                        {{ ucwords('Request Tracking') }}</a></li>
 
 
             </ol>
         </nav>
 
-        <form class="input-group mb-3" method="POST" action="">
-            <input type="text" class="header-search-input form-control border-end-0 fs-6" name="search"
-                value="{{ $searchquery }}" placeholder="Start typing to search products..."
+        <form class="input-group mb-3" id="search-form" method="POST" action="">
+            <input type="text" id="search-input" class="header-search-input form-control border-end-0 fs-6"
+                name="search" value="{{ $searchquery }}" placeholder="Search by name or profession"
                 aria-label="Recipient's username" aria-describedby="basic-addon2">
 
-            <button type="button" class="input-group-text border-start-0" id="basic-addon2"><svg
-                    xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-search" viewBox="0 0 16 16">
-                    <path
-                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                </svg></button>
+
+
+            <button type="button" id="search-button" type="button" class="input-group-text border-start-0">
+                <i class="bi bi-search"></i>
+            </button>
 
 
             <div class="w-100 d-flex align-items-center mb-3" id="topbar">
@@ -222,6 +220,15 @@ function dateFormater($dateString)
                         <span class="ms-2 text-secondary">Export</span>
                     </div>
                 </a>
+                <?php
+                $disable=$_SERVER['REQUEST_METHOD'] === 'GET';
+                ?>
+                <a href="{{ $disable?'#':'' }}" class="{{ $disable?'text-decoration-none':'' }} ">
+               
+                    <div class="p-2 d-flex align-items-center {{ $disable?'text-secondary':'' }}">
+                        <span class="ms-2">Clear Filter</span>
+                    </div>
+                </a>
                 {{-- <div class="p-2 d-flex align-items-center nav-item dropdown">
 
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -273,7 +280,7 @@ function dateFormater($dateString)
             }
             ?>
             <div class="track-card-container animation-container mb-3" style="min-height:280px">
-                <div class="animation-content" style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
+                <div class="animation-content card-card-details" style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
                     <div
                         class="track-card h-100 p-4  @php echo getClass(strtoupper(getValueById($trackdata[$x]['column_values'],'status8','text')),$status_color) @endphp rounded-3">
                         <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
@@ -288,9 +295,9 @@ function dateFormater($dateString)
                                     </span></li>
                             </ol>
                         </nav>
-                        <h4 class="text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h4>
-                        <h5 class="text-start mt-4">{{ $column2 }}</h5>
-                        <h6 class="text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'text')); @endphp</h6>
+                        <h4 class="card-name text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h4>
+                        <h5 class="card-column2 text-start mt-4">{{ $column2 }}</h5>
+                        <h6 class="card-status text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'text')); @endphp</h6>
                         <a class="text-decoration-none"
                             href="/onboardify/form/track-request/{{ $trackdata[$x]['id'] }}/{{ str_replace(' ', '_', $trackdata[$x]['name']) }}">
                             <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
@@ -318,74 +325,28 @@ function dateFormater($dateString)
             </div>
         @endfor
     </div>
+    <style>
+.card-card-details .card-name{
+color:#434343 !important;
+font-size:26px;
+}
+.card-card-details .card-column2{
+  color:#434343 !important;
+font-size:21px;
+}
+.card-card-details .card-status{
+  font-size: 17px;
+}
+.card-card-details .breadcrumb li *{
+font-size: 15px;
+color: #928F8F;
+}
+    </style>
     @if ($cs == null && count($trackdata) > 2)
         <small class="mt-3 text-secondary">No More Data Available.</small>
     @endif
 
-    <div class="d-flex align-items-center justify-content-center mt-3" style="gap:20px">
-        {{-- @if (!$ispageone)
-            <a href="{{ URL::previous() }}" class="btn btn-link mt-3  btn-lg" >BACK</a>
-            @endif --}}
-        {{-- @if ($cs !== null) --}}
 
-        <form action="" id="bottom-form" class="d-flex justify-content-end align-items-center w-100"
-            style="gap:20px" method="POST">
-            <div class="dropdown" style="margin: auto 0;">
-                Rows Per Page: &nbsp;
-                <button class="btn-count dropdown-toggle" style="min-width: 80px" type="button"
-                    id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ $limit }}&nbsp;
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                    @foreach ([3, 5, 75, 100] as $item)
-                        <li class="item-per-page {{ $limit == $item ? 'bg-primary' : '' }}" count="{{ $item }}">
-                            <span
-                                class="dropdown-item px-3 py-2 {{ $limit == $item ? 'text-light' : '' }}">{{ $item }}</span>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-            @csrf
-
-
-            <input type="hidden" id="per-page-limit" name="limit" value="{{ $limit }}">
-            <input type="hidden" id="cs-input" name="cursor" value="{{ $cs }}">
-
-            <p class="p-0 m-0">1-25 of 100</p>
-
-            <div class="buttons d-flex justify-content-end align-items-center">
-                <button type="button" class="{{ $cs== 1?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs-1 }}"><i
-                        class="bi bi-arrow-left-circle"></i></button>
-                <button type="button" class="{{ $cs== null?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs+1 }}"><i
-                        class="bi bi-arrow-right-circle"></i></button>
-            </div>
-
-
-
-            {{-- <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-end">
-                  <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                  </li>
-                  <li class="page-item">
-                    {{-- <a class="page-link" href="#">Next</a> --}}
-            {{-- @csrf --}}
-            {{-- <input type="hidden" name="limit" value="{{ $limit }}">
-                    <input type="hidden" name="cursor" value="{{ $cs }}">
-                    <button class="page-link" type="submit">
-                        NEXT
-                    </button>
-                  </li>
-                </ul>
-              </nav>  --}}
-
-
-
-
-        </form>
-        {{-- @endif --}}
-
-    </div>
 
     @if (count($trackdata) == 0 && trim($searchquery) !== '')
         <div class="d-flex flex-column align-items-center justify-content-center text-secondary">
@@ -406,19 +367,89 @@ function dateFormater($dateString)
             <h3 class="mt-3 text-secondary ">No Request Available.</h3>
         </div>
     @endif
+    <div class="d-flex align-items-center justify-content-center mt-3" style="gap:20px">
+        {{-- @if (!$ispageone)
+          <a href="{{ URL::previous() }}" class="btn btn-link mt-3  btn-lg" >BACK</a>
+          @endif --}}
+        {{-- @if ($cs !== null) --}}
 
+        <form action="" id="bottom-form" class="d-flex justify-content-end align-items-center w-100"
+            style="gap:20px" method="POST">
+            <div class="dropdown" style="margin: auto 0;">
+                Rows Per Page: &nbsp;
+                <button class="btn-count dropdown-toggle" style="min-width: 80px" type="button"
+                    id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ $limit }}&nbsp;
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+
+                    @foreach ([3, 5, 75, 100] as $item)
+                        <li class="item-per-page {{ $limit == $item ? 'bg-primary' : '' }}" count="{{ $item }}">
+
+                            <span
+                                class="dropdown-item px-3 py-2 {{ $limit == $item ? 'text-light' : '' }}">{{ $item }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+            @csrf
+
+
+            <input type="hidden" id="per-page-limit" name="limit" value="{{ $limit }}">
+            <input type="hidden" id="cs-input" name="cursor" value="{{ $cs }}">
+
+            <p class="p-0 m-0">1-25 of 100</p>
+
+            <div class="buttons d-flex justify-content-end align-items-center">
+
+                <button type="button" class="{{ $cs== 1?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs-1 }}"><i
+                        class="bi bi-arrow-left-circle"></i></button>
+                <button type="button" class="{{ $cs== null?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs+1 }}"><i
+                        class="bi bi-arrow-right-circle"></i></button>
+
+            </div>
+
+
+
+            {{-- <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-end">
+                <li class="page-item disabled">
+                  <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                <li class="page-item">
+                  {{-- <a class="page-link" href="#">Next</a> --}}
+            {{-- @csrf --}}
+            {{-- <input type="hidden" name="limit" value="{{ $limit }}">
+                  <input type="hidden" name="cursor" value="{{ $cs }}">
+                  <button class="page-link" type="submit">
+                      NEXT
+                  </button>
+                </li>
+              </ul>
+            </nav>  --}}
+
+
+
+
+        </form>
+        {{-- @endif --}}
+
+    </div>
 </main>
 <style>
     #topbar .dropdown-toggle::after {
         display: none !important;
     }
+
     .item-per-page.bg-primary>.dropdown-item:hover {
         color: black !important;
         cursor: pointer !important;
     }
+
     .item-per-page>span.dropdown-item {
         cursor: pointer !important;
     }
+
     .dropdown-menu {
         min-width: 80px
     }
@@ -432,9 +463,9 @@ function dateFormater($dateString)
     }
 
 
-    .disabled-btn{
-      color: grey;
-      cursor: not-allowed
+    .disabled-btn {
+        color: grey;
+        cursor: not-allowed
     }
 </style>
 <script>
@@ -454,6 +485,34 @@ function dateFormater($dateString)
             $('#cs-input').remove()
             $("#bottom-form").submit();
         })
+
+        $("#search-input").on('input', function() {
+            $txt = $(this).val();
+            if ($txt) {
+                $("#search-button").html('<i class="bi fs-5 bi-file-x-fill text-primary"></i>');
+            } else {
+                $("#search-button").html('<i class="bi bi-search"></i>');
+            }
+        })
+
+        $txt = $('#search-input').val()
+        if ($txt) {
+            $("#search-button").html('<i class="bi fs-5 bi-file-x-fill text-primary"></i>');
+        } else {
+            $("#search-button").html('<i class="bi bi-search"></i>');
+        }
+
+        $("#search-button").on('click', function() {
+            $txt = $('#search-input').val()
+            if ($txt) {
+                $("#search-input").val('');
+                $("#search-button").html('<i class="bi bi-search"></i>');
+                $('#search-form').submit()
+            } else {
+                $('#search-form').submit()
+            }
+        })
     })
 </script>
+
 @include('includes.footer')
