@@ -10,12 +10,14 @@
         </div>
     @endif
     <form action="{{ route('monday.post.forgot') }}" method="POST" class="form-auth">
-        <input type="text" placeholder="Email" name="email" value="{{ old('email') ?? ($_GET['email'] ?? '') }}"
-            required /><br />
-        @error('email')
-            <small class="text-danger text-start ms-2">{{ $message }}</small>
-        @enderror
-        <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="submit">
+       <div class="w-100">
+        <input class="w-100" type="text" placeholder="Email" name="email" value="{{ old('email') ?? ($_GET['email'] ?? '') }}"
+        required />
+    @error('email')
+        <p class="text-danger text-start pt-1 my-0 ms-2 " style="font-size: .875em">{{ $message }}</small>
+    @enderror
+       </div>
+        <button class="btn btn-to-link btn-secondary btn-gradiant  d-flex align-items-center" type="submit">
             <span>
                 Send Link to Email
             </span>

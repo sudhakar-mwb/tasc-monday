@@ -35,20 +35,20 @@
 }
 
 .track-card.bg-light-success {
-	background: rgb(190, 237, 207);
+	background: #D5F9E2;
 }
 .track-card.bg-light-success > .track-profession {
 	color: rgb(31, 192, 91);
 }
 
 .track-card.bg-light-progress {
-	background: rgb(238 218 40 / 36%);
+	background: #FDECE9
 }
 .track-card.bg-light-progress > .track-profession {
 	color: rgb(244, 152, 31);
 }
 .track-card.bg-light-danger {
-	background: rgba(225, 24, 24, 0.29);
+	background: #F4BAB6;
 }
 .track-card.bg-light-danger > .track-profession {
 	color: rgb(225, 64, 20);
@@ -59,7 +59,9 @@
 .track-card.bg-light-default > .track-profession {
 	color: grey;
 }
-
+.secondry-heading{
+  font-size: 19px;
+}
 .btn-to-link {
 	gap: 6px;
 }
