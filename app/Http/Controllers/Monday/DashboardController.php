@@ -703,7 +703,7 @@ class DashboardController extends Controller
 
       $response = BoardColumnMappings::updateOrCreate($criteria, $datatoUpdate);
 
-      // Check if the record was updated
+      // Check if the record was update
       if ($user && $response->wasChanged()) {
         // Session::flash('message', 'Board column mapping successfully updated.');
         return response( json_encode( array( 'response' => true, 'status' => true, 'message' => "Board column mapping successfully updated." ) ) );
