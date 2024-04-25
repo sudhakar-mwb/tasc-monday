@@ -820,7 +820,6 @@ class DashboardController extends Controller
     $insertUserInDB = MondayUsers::createUser($dataToSave);
 
     if ($insertUserInDB['status'] == "success") {
-
       $msg    = "Admin Created Successfully.";
       if ($request['role'] == 1)
       $msg    = "Super admin Created Successfully.";
