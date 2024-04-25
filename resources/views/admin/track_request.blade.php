@@ -3,7 +3,7 @@
 
 $trackdata = $response['data']['boards'][0]['items_page']['items'];
 $status_color = $data['status_color'];
-$cs = $response['data']['boards'][0]['items_page']['cursor'];
+// $cs = $response['data']['boards'][0]['items_page']['cursor'];
 
 $columns = $response['data']['boards'][0]['columns'];
 
@@ -337,7 +337,7 @@ function dateFormater($dateString)
                     {{ $limit }}&nbsp;
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                    @foreach ([25, 50, 75, 100] as $item)
+                    @foreach ([3, 5, 75, 100] as $item)
                         <li class="item-per-page {{ $limit == $item ? 'bg-primary' : '' }}" count="{{ $item }}">
                             <span
                                 class="dropdown-item px-3 py-2 {{ $limit == $item ? 'text-light' : '' }}">{{ $item }}</span>
@@ -354,9 +354,9 @@ function dateFormater($dateString)
             <p class="p-0 m-0">1-25 of 100</p>
 
             <div class="buttons d-flex justify-content-end align-items-center">
-                <button type="button" class="{{ $cs==null?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $prev_cursor }}"><i
+                <button type="button" class="{{ $cs== 1?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs-1 }}"><i
                         class="bi bi-arrow-left-circle"></i></button>
-                <button type="button" class="{{ $cs==null?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs }}"><i
+                <button type="button" class="{{ $cs== null?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs+1 }}"><i
                         class="bi bi-arrow-right-circle"></i></button>
             </div>
 
@@ -441,8 +441,9 @@ function dateFormater($dateString)
     $(document).ready(function(e) {
         $('.navigation-buttons').on('click', function() {
             $cur = $(this).attr('cursor')
+            console.log({$cur})
             if ($cur) {
-                $('#cs-input').val();
+                $('#cs-input').val($cur);
                 $("#bottom-form").submit();
             }
         })

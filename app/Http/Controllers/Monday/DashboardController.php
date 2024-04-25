@@ -67,13 +67,13 @@ class DashboardController extends Controller
   {
     $prev_cursor=null;
     // dd(request()->input('limit'));
-    $cs = 'null';
+    $cs = 1;
     $operation_query = "";
     $searchquery = "";
     $boardColumnMappingDbData = "";
     $sortbyname = request()->input('sort_by_date') ?? '';
     $status_filter = request()->input('status_filter') ?? '';
-    $limit = (int)(request()->input('limit') ?? '25');
+    $limit = (int)(request()->input('limit') ?? '3');
     if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
       $boardId  = auth()->user()->board_id;
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
@@ -97,8 +97,8 @@ class DashboardController extends Controller
         $operation_query = ', query_params: {';
       // dd(strlen($operation_query));
       if (request()->has('cursor')) {
-        $cs = "\"" . $request->input('cursor') . "\"";
-        $prev_cursor=$request->input('cursor') ;
+        $cs = (int)$request->input('cursor');
+        // $prev_cursor=$request->input('cursor') ;
       }
       if ($searchAvailable || $statusfilterAvailable) {
 
@@ -124,38 +124,12 @@ class DashboardController extends Controller
       if ($searchAvailable || $statusfilterAvailable)
         $operation_query .= ', operator: and}';
     };
-    $query = "query {
-            boards(ids: " . auth()->user()->board_id . ") {
-               columns {
-                  title
-                  id
-               }
-               items_page (limit: $limit, cursor:" . $cs . " {$operation_query}) {
-                  cursor
-                  items {
-                      id
-                      name
-                      email
-                      created_at
-                      column_values {
-                         id
-                         value
-                         type
-                         text
-                         ... on StatusValue  {
-                            label
-                            update_id
-                            index
-                            value
-                         }
-                     }
-                  }
-              }
-            }
-         }";
+    $response = $this->fetchMondayData($limit, $cs, $operation_query);
 
-    $response = $this->_get($query)['response'];
 
+    // if (!empty($response['data']) && !empty($response['data']['boards'])&& !empty($response['data']['boards'][0]['items_page']['items'])) {
+    //   $response['data']['boards'][0]['items_page']['items'] = array_slice($response['data']['boards'][0]['items_page']['items'], ($limit * ($cs-1)), $limit * $cs);
+    // }
     $heading = 'Request Tracking';
     $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
 
@@ -211,7 +185,7 @@ class DashboardController extends Controller
 
             // Set headers for CSV download
             header('Content-Type: text/csv');
-            header('Content-Disposition: attachment; filename="monday_com_data.csv"');
+            header('Content-Disposition: attachment; filename="onboardify_data.csv"');
             // Open file pointer
             $output = fopen('php://output', 'w');
 
@@ -347,7 +321,7 @@ class DashboardController extends Controller
     $colors_status = json_decode($this->getColourMapping());
     $data['status_color'] = $colors_status;
 
-    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data', 'limit','prev_cursor'));
+    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data', 'limit','prev_cursor', 'cs'));
   }
 
   public function manageById(Request $request)
@@ -957,5 +931,67 @@ class DashboardController extends Controller
     } else {
       Session::flash('error', 'Colour mapping data not received.');
     }
+  }
+
+  public function fetchMondayData ($limit, $cs, $operation_query){
+    // $tolalData = $limit * $cs;
+    $tolalData  = 3;
+    $cursor     = 'null';
+    $mondayData = [];
+    $after      = 'ddd';
+    do {
+        $query = "query {
+          boards(ids: " . auth()->user()->board_id . ") {
+              columns {
+                title
+                id
+              }
+              items_page (limit: $tolalData, cursor:" . $cursor . " {$operation_query}) {
+                cursor
+                items {
+                    id
+                    name
+                    email
+                    created_at
+                    column_values {
+                        id
+                        value
+                        type
+                        text
+                        ... on StatusValue  {
+                          label
+                          update_id
+                          index
+                          value
+                        }
+                    }
+                }
+            }
+          }
+        }";
+
+        $response = $this->_get($query)['response'];
+        // $tolalData += $tolalData;
+        if (!empty($response['data']['boards'][0]['items_page']['cursor']) ) {
+          $cursor =  "\"". $response['data']['boards'][0]['items_page']['cursor']. "\"";
+        }else{
+          $after = '';
+        }
+        $curr_data=$response['data']['boards'][0]['items_page']['items'];
+        if (!empty($curr_data)) {
+          if(count($curr_data))
+          foreach($curr_data as $item){
+            $mondayData[] = $item;
+          }
+        }
+        $newResponse = $response;
+      } while (!empty($after));
+      $totalMondayData = count($mondayData);
+      unset($newResponse['data']['boards'][0]['items_page']['items']);
+      $newResponse['data']['boards'][0]['items_page']['items'] = $mondayData;
+
+      $newResponse['data']['boards'][0]['items_page']['items'] = array_slice($newResponse['data']['boards'][0]['items_page']['items'], ($limit * ($cs-1)), $limit );
+      $newResponse['data']['boards']['totalMondayData'] = $totalMondayData;
+      return $newResponse;
   }
 }
