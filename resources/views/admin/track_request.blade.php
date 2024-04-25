@@ -412,7 +412,13 @@ function dateFormater($dateString)
     #topbar .dropdown-toggle::after {
         display: none !important;
     }
-
+    .item-per-page.bg-primary>.dropdown-item:hover {
+        color: black !important;
+        cursor: pointer !important;
+    }
+    .item-per-page>span.dropdown-item {
+        cursor: pointer !important;
+    }
     .dropdown-menu {
         min-width: 80px
     }
