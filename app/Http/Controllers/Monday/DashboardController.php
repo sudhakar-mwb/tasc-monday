@@ -200,7 +200,7 @@ class DashboardController extends Controller
             foreach ($exportResponse['data']['boards'][0]['items_page']['items'] as $item) {
               if (!empty($item['column_values'])) {
                 if (!empty($item['name'])) {
-                  $csvHeader[$new_array['name']] = $item['name'];
+                  $csvHeader['name'] = $item['name'];
                 }
                 foreach ($item['column_values'] as $itemValue) {
                   if (array_key_exists($itemValue['id'], $new_array)) {
@@ -216,7 +216,7 @@ class DashboardController extends Controller
             foreach ($exportResponse['data']['boards'][0]['items_page']['items'] as $item) {
               if (!empty($item['column_values'])) {
                 if (!empty($item['name'])) {
-                  $rowData[$new_array['name']] = $item['name'];
+                  $rowData['name'] = $item['name'];
                 }
                 foreach ($item['column_values'] as $itemValue) {
                   if (array_key_exists($itemValue['id'], $new_array)) {
