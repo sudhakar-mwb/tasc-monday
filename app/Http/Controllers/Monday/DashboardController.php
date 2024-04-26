@@ -29,7 +29,7 @@ class DashboardController extends Controller
 
   public function dashboard()
   {
-    $heading = 'Onboardify Command Center';
+    $heading = 'Onboardify';
     $cards = [
       [
         'title' => 'Request Onboarding ',

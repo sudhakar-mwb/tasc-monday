@@ -78,7 +78,7 @@
                         <button class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center"
                             type="button">
                             <span>
-                                Command Center
+                                Onboardify
                             </span>
 
                             <span class="icon-btn_track" style="height: 22px;width: 22px">
