@@ -983,7 +983,8 @@ class DashboardController extends Controller
         }else{
           $after = '';
         }
-        $curr_data=$response['data']['boards'][0]['items_page']['items'];
+        // dd($response);
+        $curr_data=isset($response['data']['boards'][0]['items_page']['items'])?$response['data']['boards'][0]['items_page']['items']:[];
         if (!empty($curr_data)) {
           if(count($curr_data))
           foreach($curr_data as $item){
