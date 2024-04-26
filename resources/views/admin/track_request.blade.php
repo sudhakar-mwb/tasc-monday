@@ -5,7 +5,8 @@ $trackdata = $response['data']['boards'][0]['items_page']['items'];
 $total_data = $response['data']['boards']['totalMondayData'];
 $status_color = $data['status_color'];
 // $cs = $response['data']['boards'][0]['items_page']['cursor'];
-
+$disable = $_SERVER['REQUEST_METHOD'] === 'GET';
+           
 $columns = $response['data']['boards'][0]['columns'];
 
 function getValueById($columnValues, $id, $key = 'value')
@@ -149,6 +150,13 @@ function dateFormater($dateString)
                             </span>
                         </li>
                         <li>
+                          <a href="{{ $disable ? '#' : '' }}" class="btn btn-link w-100 d-flex justify-content-center {{ $disable ? 'text-decoration-none' : '' }} ">
+                            <div class="d-flex align-items-center {{ $disable ? 'text-secondary' : '' }}">
+                                <span class="">Clear Filter</span>
+                            </div>
+                        </a>
+                         </li>
+                        <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li><button class="w-100 rounded-0 btn btn-primary">APPLY</button></li>
@@ -198,6 +206,15 @@ function dateFormater($dateString)
                                 </label>
                             </span>
                         </li>
+                       
+                     <li>
+                      <a href="{{ $disable ? '#' : '' }}" class="btn btn-link w-100 d-flex justify-content-center {{ $disable ? 'text-decoration-none' : '' }} ">
+                        <div class="d-flex align-items-center {{ $disable ? 'text-secondary' : '' }}">
+                            <span class="">Clear Filter</span>
+                        </div>
+                    </a>
+                     </li>
+                  
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -221,15 +238,8 @@ function dateFormater($dateString)
                         <span class="ms-2 text-secondary">Export</span>
                     </div>
                 </a>
-                <?php
-                $disable = $_SERVER['REQUEST_METHOD'] === 'GET';
-                ?>
-                <a href="{{ $disable ? '#' : '' }}" class="{{ $disable ? 'text-decoration-none' : '' }} ">
-
-                    <div class="p-2 d-flex align-items-center {{ $disable ? 'text-secondary' : '' }}">
-                        <span class="ms-2">Clear Filter</span>
-                    </div>
-                </a>
+             
+                
                 {{-- <div class="p-2 d-flex align-items-center nav-item dropdown">
 
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
