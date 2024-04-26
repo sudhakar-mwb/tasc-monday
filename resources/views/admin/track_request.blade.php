@@ -297,7 +297,7 @@ function dateFormater($dateString)
                                     </span></li>
                             </ol>
                         </nav>
-                        <h4 class="card-name text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h4>
+                        <h4 class="card-name ff-hind text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h4>
                         <h5 class="card-column2 text-start mt-4">{{ $column2 }}</h5>
                         <h6 class="card-status text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'text')); @endphp</h6>
                         <a class="text-decoration-none"

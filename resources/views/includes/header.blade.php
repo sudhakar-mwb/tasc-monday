@@ -10,6 +10,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
@@ -19,31 +25,30 @@
     <?php
     $settings = Session::get('settings');
     echo " <style>
-                  .btn-gradiant,.btn-custom {
-                        background: {$settings->button_bg} !important;
-                    }
-                  .custom-banner {
-                    background: {$settings->banner_bg} !important;
-                  }
-                  .site-bg{
-                    background: {$settings->site_bg} !important;
-                  }
-                    </style>";
+                      .btn-gradiant,.btn-custom {
+                            background: {$settings->button_bg} !important;
+                        }
+                      .custom-banner {
+                        background: {$settings->banner_bg} !important;
+                      }
+                      .site-bg{
+                        background: {$settings->site_bg} !important;
+                      }
+                        </style>";
     ?>
 
     <?php 
     if($settings->banner_content ){?>
-    <div id="notification-banner" style="display:none" class="position-relative custom-banner banner w-100 bg-success  text-center p-2"
+    <div id="notification-banner" style="display:none"
+        class="position-relative custom-banner banner w-100 bg-success  text-center p-2"
         style="background-color:{{ $settings->banner_bg }} !important">
-        <div class=" text-light" style="padding-right:50px;padding-left:50px">{{ $settings->banner_content }} </div>
-        <button id="remove-n-btn"
-        style="position:absolute;right:0;margin:8px;height: calc(100% - 16px);"
-        class="remove-notification text-light p-0 top-0 mx-2 fs-6 px-2 outline-0 bg-transparent border-0">
-        <i
-            class="bi bi-x-circle"></i></button>
+        <div class="banner-content text-light" style="padding-right:50px;padding-left:50px">{{ $settings->banner_content }} </div>
+        <button id="remove-n-btn" style="position:absolute;right:0;margin:8px;height: calc(100% - 16px);"
+            class="remove-notification text-light p-0 top-0 mx-2 fs-6 px-2 outline-0 bg-transparent border-0">
+            <i class="bi bi-x-circle"></i></button>
 
     </div>
-   
+
     <?php } ?>
     <header class="mb-auto mb-3  w-100" style="background-color:{{ $settings->header_bg ?? null }}">
         <div class="container  h-100 p-3 mx-auto d-flex align-items-center justify-content-between">
@@ -58,7 +63,7 @@
 
   ">
                     @if (auth()->check())
-                       Welcome <strong> {{ auth()->user()->name }}</strong>
+                        Welcome <strong> {{ auth()->user()->name }}</strong>
                     @else
                         Welcome
                     @endif
@@ -125,8 +130,8 @@
             $isHide = localStorage.getItem('hide-banner');
 
             if (!$isHide) {
-              $('#notification-banner').slideDown();
-     
+                $('#notification-banner').slideDown();
+
             }
             $('#remove-n-btn').on('click', function() {
                 $('#notification-banner').slideUp();
@@ -134,6 +139,15 @@
             })
         })
     </script>
+    <style>
+   .remove-notification{
+    rotate: 180deg;
+   }
+.banner-content{
+  font-weight: 600
+}
+
+    </style>
     <div class=" container d-flex flex-column h-100 text-center">
 
 

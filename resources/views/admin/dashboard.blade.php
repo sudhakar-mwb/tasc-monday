@@ -4,7 +4,7 @@ $settings = Session::get('settings');
 ?>
 <main class="px-3 pt-5">
     <p class="lead mt-3">
-        <a href="#" class="btn btn-lg btn-light fs-4 text-dark fw-bold border-white bg-white">Welcome
+        <a href="#" class="btn btn-lg btn-light text-dark fw-bold border-white bg-white" style="font-size: 26px;font-weight:700;color:#434343">Welcome
             to</a>
     </p>
     <h1 class="header-heading1 mt-2 mb-5 fw-bold " style="color:{{ $settings->head_title_color ?? null }}">

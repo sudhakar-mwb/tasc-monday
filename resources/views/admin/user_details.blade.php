@@ -393,7 +393,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                 </div>
                 <div class="w-100">
                     <div class="card border-0 border-1 p-4">
-                        <h4 class="text-start head-color fw-bold pb-4 border-bottom">Candidate Information</h4>
+                        <p class="column-head text-start head-color fw-bold pb-4 border-bottom">Candidate Information</h4>
                         <ul class="list-group list-group-flush">
                             @foreach ($candidate_coulmns as $col)
                                 <?php 
@@ -412,8 +412,8 @@ if ($joiningDate !== null && validText($joiningDate)) {
                             if(validText($text))
                            {
                             ?>
-                                <li class="user-candidate-column list-group-item d-flex align-items-center border-0 text-start "
-                                    style="background: inherit;gap:12px"><span>
+                                <li class="user-candidate-column list-group-item d-flex pb-0 align-items-center border-0 text-start "
+                                    style="background: inherit;gap:12px"><span class="mb-2">
                                         <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-info-circle' }}"></i>
                                     </span><span>
                                         {{ $col['custom_title'] ? $col['custom_title'] . ': ' : '' }}{{ $text }}</span><span>{{ $flag }}</span>
@@ -477,7 +477,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
             </div>
             <div class="col-6 d-flex flex-column" style="gap:30px">
                 <div class="card border-0 border-1 p-4" style="background: rgba(111, 116, 144, 0.06)">
-                    <h5 class="text-start head-color fw-bold pb-4 border-bottom">Onboarding Updates</h5>
+                    <p class="second-heading text-start head-color fw-bold pb-4 border-bottom">Onboarding Updates</h5>
                     <h6 class="text-start mt-2 mb-4 fw-bold text-secondary">
                         {{ dateFormater($created_at) ?? '' }}</h6>
                     <?php 
@@ -532,16 +532,22 @@ if ($joiningDate !== null && validText($joiningDate)) {
         transform: scale(1.5);
         /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
     }
- .fs-17{
-  font-size: 17px
- }
+
     .user-candidate-column {
         font-size: 17px;
         color: #928F8F;
     }
     .card-user-name{
       color:#434343;
-      font-size: 36px
+      font-size: 26px;
+      font-weight: 700
+    }
+    .column-head{
+      font-weight: 700;
+      font-size: 26px;
+    }
+    .second-heading{
+      font-size: 19px
     }
 </style>
 @include('includes.footer')

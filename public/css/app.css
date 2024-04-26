@@ -1,3 +1,7 @@
+body,
+* {
+	font-family: "Hind", sans-serif;
+}
 .header-icons {
 	height: 100px;
 	width: 100px;
@@ -155,8 +159,8 @@
 	overflow: hidden;
 	/* text-overflow: ellipsis; */
 }
-.dt-length>label{
-  margin-left: 15px;
+.dt-length > label {
+	margin-left: 15px;
 }
 /* .btn-gradiant */
 @media (max-width: 480px) {
@@ -200,3 +204,22 @@
 	outline: none;
 	color: #016cff;
 }
+.ff-hind {
+	font-family: "Hind", sans-serif;
+}
+.ff-ws {
+	font-family: "Work Sans", sans-serif;
+}
+.ff-mont {
+	font-family: "Montserrat";
+}
+button * {
+
+}
+.btn-to-link *{
+  font-size: 12px;
+  font-family: "Montserrat" !important;
+}
+.fs-17{
+  font-size: 17px
+ }
