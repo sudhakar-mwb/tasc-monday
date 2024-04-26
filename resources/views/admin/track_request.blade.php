@@ -150,13 +150,6 @@ function dateFormater($dateString)
                             </span>
                         </li>
                         <li>
-                          <a href="{{ $disable ? '#' : '' }}" class="btn btn-link w-100 d-flex justify-content-center {{ $disable ? 'text-decoration-none' : '' }} ">
-                            <div class="d-flex align-items-center {{ $disable ? 'text-secondary' : '' }}">
-                                <span class="">Clear Filter</span>
-                            </div>
-                        </a>
-                         </li>
-                        <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li><button class="w-100 rounded-0 btn btn-primary">APPLY</button></li>
