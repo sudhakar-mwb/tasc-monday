@@ -280,7 +280,7 @@ function dateFormater($dateString)
                 $column2 = getValueById($trackdata[$x]['column_values'], $data['column2'], 'text');
             }
             ?>
-            <div class="track-card-container animation-container mb-3" style="min-height:280px">
+            <div class="track-card-container animation-container mb-4" style="min-height:280px">
                 <div class="animation-content card-card-details"
                     style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
                     <div
