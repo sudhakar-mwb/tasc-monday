@@ -74,7 +74,7 @@ class DashboardController extends Controller
     $boardColumnMappingDbData = "";
     $sortbyname = request()->input('sort_by_date') ?? '';
     $status_filter = request()->input('status_filter') ?? '';
-    $limit = (int)(request()->input('limit') ?? '3');
+    $limit = (int)(request()->input('limit') ?? '25');
     if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
       $boardId  = auth()->user()->board_id;
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
@@ -941,7 +941,7 @@ class DashboardController extends Controller
 
   public function fetchMondayData ($limit, $cs, $operation_query){
     // $tolalData = $limit * $cs;
-    $tolalData  = 3;
+    $tolalData  = 500;
     $cursor     = 'null';
     $mondayData = [];
     $after      = 'ddd';

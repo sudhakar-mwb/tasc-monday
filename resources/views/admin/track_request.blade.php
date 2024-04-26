@@ -2,6 +2,7 @@
 <?php
 
 $trackdata = $response['data']['boards'][0]['items_page']['items'];
+$total_data =$response['data']['boards']['totalMondayData'];
 $status_color = $data['status_color'];
 // $cs = $response['data']['boards'][0]['items_page']['cursor'];
 
@@ -383,7 +384,7 @@ color: #928F8F;
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
 
-                    @foreach ([3, 5, 75, 100] as $item)
+                    @foreach ([25, 50, 75, 100] as $item)
                         <li class="item-per-page {{ $limit == $item ? 'bg-primary' : '' }}" count="{{ $item }}">
 
                             <span
@@ -398,13 +399,16 @@ color: #928F8F;
             <input type="hidden" id="per-page-limit" name="limit" value="{{ $limit }}">
             <input type="hidden" id="cs-input" name="cursor" value="{{ $cs }}">
 
-            <p class="p-0 m-0">1-25 of 100</p>
+            <p class="p-0 m-0">{{ ($cs*($limit)-($limit-1))}}-{{ ($cs*$limit) >$total_data?$total_data:$cs*$limit }} of {{ $total_data }}</p>
 
             <div class="buttons d-flex justify-content-end align-items-center">
 
-                <button type="button" class="{{ $cs== 1?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs-1 }}"><i
+                <button type="button" {{ $cs==1?'disabled':'' }} class="{{ $cs== 1?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs-1 }}"><i
                         class="bi bi-arrow-left-circle"></i></button>
-                <button type="button" class="{{ $cs== null?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs+1 }}"><i
+                        <?php 
+                        $isNextDisable=$cs== null||(($cs*$limit) >$total_data?$total_data:$cs*$limit)==$total_data;
+                        ?>
+                <button type="button" {{ $isNextDisable?'disabled':'' }}  class="{{ $isNextDisable?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $isNextDisable?$cs:$cs+1 }}"><i
                         class="bi bi-arrow-right-circle"></i></button>
 
             </div>
@@ -472,8 +476,8 @@ color: #928F8F;
     $(document).ready(function(e) {
         $('.navigation-buttons').on('click', function() {
             $cur = $(this).attr('cursor')
-            console.log({$cur})
-            if ($cur) {
+            $isDisable=$(this).attr('disabled')
+            if ($cur&&!$isDisable) {
                 $('#cs-input').val($cur);
                 $("#bottom-form").submit();
             }

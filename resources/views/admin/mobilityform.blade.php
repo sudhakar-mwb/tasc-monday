@@ -1,15 +1,8 @@
 @include('includes.header')
-{{-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>TASC FORM</title>
-</head> --}}
 <main class="px-3 pt-5">
     @include('admin.headtitle')
-    <div style="margin:0px; height:250vh;" id="iframe-signup">
+    <div style="margin:0px; height:150vh;" style="position: relative" id="iframe-signup">
+      <div id="loader" class="blurry w-100" style="height: 100%;"></div>
         <?php echo $embed_code; ?>
     </div>
     <style>
@@ -19,8 +12,18 @@
             border: 0px !important;
             box-shadow: none !important
         }
+        .blurry {
+        position: absolute;
+        z-index: 100000;
+        backdrop-filter: blur(8px);
+    }
     </style>
 </main>
-{{-- </html> --}}
-
+<script>
+      $(document).ready(function() {
+        setTimeout(() => {
+            $('#loader').hide()
+        }, 4000);
+    })
+</script>
 @include('includes.footer')
