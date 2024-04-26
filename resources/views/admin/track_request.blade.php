@@ -2,7 +2,7 @@
 <?php
 
 $trackdata = $response['data']['boards'][0]['items_page']['items'];
-$total_data =$response['data']['boards']['totalMondayData'];
+$total_data = $response['data']['boards']['totalMondayData'];
 $status_color = $data['status_color'];
 // $cs = $response['data']['boards'][0]['items_page']['cursor'];
 
@@ -222,11 +222,11 @@ function dateFormater($dateString)
                     </div>
                 </a>
                 <?php
-                $disable=$_SERVER['REQUEST_METHOD'] === 'GET';
+                $disable = $_SERVER['REQUEST_METHOD'] === 'GET';
                 ?>
-                <a href="{{ $disable?'#':'' }}" class="{{ $disable?'text-decoration-none':'' }} ">
-               
-                    <div class="p-2 d-flex align-items-center {{ $disable?'text-secondary':'' }}">
+                <a href="{{ $disable ? '#' : '' }}" class="{{ $disable ? 'text-decoration-none' : '' }} ">
+
+                    <div class="p-2 d-flex align-items-center {{ $disable ? 'text-secondary' : '' }}">
                         <span class="ms-2">Clear Filter</span>
                     </div>
                 </a>
@@ -281,7 +281,8 @@ function dateFormater($dateString)
             }
             ?>
             <div class="track-card-container animation-container mb-3" style="min-height:280px">
-                <div class="animation-content card-card-details" style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
+                <div class="animation-content card-card-details"
+                    style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
                     <div
                         class="track-card h-100 p-4  @php echo getClass(strtoupper(getValueById($trackdata[$x]['column_values'],'status8','text')),$status_color) @endphp rounded-3">
                         <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
@@ -326,23 +327,7 @@ function dateFormater($dateString)
             </div>
         @endfor
     </div>
-    <style>
-.card-card-details .card-name{
-color:#434343 !important;
-font-size:26px;
-}
-.card-card-details .card-column2{
-  color:#434343 !important;
-font-size:21px;
-}
-.card-card-details .card-status{
-  font-size: 17px;
-}
-.card-card-details .breadcrumb li *{
-font-size: 15px;
-color: #928F8F;
-}
-    </style>
+
     @if ($cs == null && count($trackdata) > 2)
         <small class="mt-3 text-secondary">No More Data Available.</small>
     @endif
@@ -368,62 +353,70 @@ color: #928F8F;
             <h3 class="mt-3 text-secondary ">No Request Available.</h3>
         </div>
     @endif
-    <div class="d-flex align-items-center justify-content-center mt-3" style="gap:20px">
-        {{-- @if (!$ispageone)
+
+    @if ($total_data)
+        <div class="d-flex align-items-center justify-content-center mt-3" style="gap:20px">
+            {{-- @if (!$ispageone)
           <a href="{{ URL::previous() }}" class="btn btn-link mt-3  btn-lg" >BACK</a>
           @endif --}}
-        {{-- @if ($cs !== null) --}}
+            {{-- @if ($cs !== null) --}}
 
-        <form action="" id="bottom-form" class="d-flex justify-content-end align-items-center w-100"
-            style="gap:20px" method="POST">
-            <div class="dropdown" style="margin: auto 0;">
-                Rows Per Page: &nbsp;
-                <button class="btn-count dropdown-toggle" style="min-width: 80px" type="button"
-                    id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{ $limit }}&nbsp;
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <form action="" id="bottom-form" class="d-flex justify-content-end align-items-center w-100"
+                style="gap:20px" method="POST">
+                <div class="dropdown" style="margin: auto 0;">
+                    Rows Per Page: &nbsp;
+                    <button class="btn-count dropdown-toggle" style="min-width: 80px" type="button"
+                        id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ $limit }}&nbsp;
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
 
-                    @foreach ([25, 50, 75, 100] as $item)
-                        <li class="item-per-page {{ $limit == $item ? 'bg-primary' : '' }}" count="{{ $item }}">
+                        @foreach ([25, 50, 75, 100] as $item)
+                            <li class="item-per-page {{ $limit == $item ? 'bg-primary' : '' }}"
+                                count="{{ $item }}">
 
-                            <span
-                                class="dropdown-item px-3 py-2 {{ $limit == $item ? 'text-light' : '' }}">{{ $item }}</span>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-            @csrf
-
-
-            <input type="hidden" id="per-page-limit" name="limit" value="{{ $limit }}">
-            <input type="hidden" id="cs-input" name="cursor" value="{{ $cs }}">
-
-            <p class="p-0 m-0">{{ ($cs*($limit)-($limit-1))}}-{{ ($cs*$limit) >$total_data?$total_data:$cs*$limit }} of {{ $total_data }}</p>
-
-            <div class="buttons d-flex justify-content-end align-items-center">
-
-                <button type="button" {{ $cs==1?'disabled':'' }} class="{{ $cs== 1?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $cs-1 }}"><i
-                        class="bi bi-arrow-left-circle"></i></button>
-                        <?php 
-                        $isNextDisable=$cs== null||(($cs*$limit) >$total_data?$total_data:$cs*$limit)==$total_data;
-                        ?>
-                <button type="button" {{ $isNextDisable?'disabled':'' }}  class="{{ $isNextDisable?'disabled-btn':'' }} fs-2 navigation-buttons" cursor="{{ $isNextDisable?$cs:$cs+1 }}"><i
-                        class="bi bi-arrow-right-circle"></i></button>
-
-            </div>
+                                <span
+                                    class="dropdown-item px-3 py-2 {{ $limit == $item ? 'text-light' : '' }}">{{ $item }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                @csrf
 
 
+                <input type="hidden" id="per-page-limit" name="limit" value="{{ $limit }}">
+                <input type="hidden" id="cs-input" name="cursor" value="{{ $cs }}">
 
-            {{-- <nav aria-label="Page navigation example">
+                <p class="p-0 m-0">
+                    {{ $cs * $limit - ($limit - 1) }}-{{ $cs * $limit > $total_data ? $total_data : $cs * $limit }} of
+                    {{ $total_data }}</p>
+
+                <div class="buttons d-flex justify-content-end align-items-center">
+
+                    <button type="button" {{ $cs == 1 ? 'disabled' : '' }}
+                        class="{{ $cs == 1 ? 'disabled-btn' : '' }} fs-2 navigation-buttons"
+                        cursor="{{ $cs - 1 }}"><i class="bi bi-arrow-left-circle"></i></button>
+                    <?php
+                    $isNextDisable = $cs == null || ($cs * $limit > $total_data ? $total_data : $cs * $limit) == $total_data;
+                    ?>
+                    <button type="button" {{ $isNextDisable ? 'disabled' : '' }}
+                        class="{{ $isNextDisable ? 'disabled-btn' : '' }} fs-2 navigation-buttons"
+                        cursor="{{ $isNextDisable ? $cs : $cs + 1 }}"><i
+                            class="bi bi-arrow-right-circle"></i></button>
+
+                </div>
+
+
+
+                {{-- <nav aria-label="Page navigation example">
               <ul class="pagination justify-content-end">
                 <li class="page-item disabled">
                   <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
                 </li>
                 <li class="page-item">
                   {{-- <a class="page-link" href="#">Next</a> --}}
-            {{-- @csrf --}}
-            {{-- <input type="hidden" name="limit" value="{{ $limit }}">
+                {{-- @csrf --}}
+                {{-- <input type="hidden" name="limit" value="{{ $limit }}">
                   <input type="hidden" name="cursor" value="{{ $cs }}">
                   <button class="page-link" type="submit">
                       NEXT
@@ -435,15 +428,37 @@ color: #928F8F;
 
 
 
-        </form>
-        {{-- @endif --}}
+            </form>
+            {{-- @endif --}}
 
-    </div>
+        </div>
+    @endif
 </main>
 <style>
+    .card-card-details .card-name {
+        color: #434343 !important;
+        font-size: 26px;
+        font-weight: 700
+    }
+
+    .card-card-details .card-column2 {
+        color: #434343 !important;
+        font-size: 21px;
+    }
+
+    .card-card-details .card-status {
+        font-size: 17px;
+    }
+
+    .card-card-details .breadcrumb li * {
+        font-size: 15px;
+        color: #928F8F;
+    }
+
     #topbar .dropdown-toggle::after {
         display: none !important;
     }
+
 
     .item-per-page.bg-primary>.dropdown-item:hover {
         color: black !important;
@@ -476,8 +491,8 @@ color: #928F8F;
     $(document).ready(function(e) {
         $('.navigation-buttons').on('click', function() {
             $cur = $(this).attr('cursor')
-            $isDisable=$(this).attr('disabled')
-            if ($cur&&!$isDisable) {
+            $isDisable = $(this).attr('disabled')
+            if ($cur && !$isDisable) {
                 $('#cs-input').val($cur);
                 $("#bottom-form").submit();
             }
