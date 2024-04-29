@@ -222,7 +222,7 @@ function getValueById($columnValues, $id, $key = 'value')
 
 function validText($txt)
 {
-    return $txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available' && strtolower($txt) != 'not-applicable'&& strtolower($txt) != 'not applicable';;
+    return $txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available' && strtolower($txt) != 'not-applicable'&& strtolower($txt) != 'not applicable';
 }
 
 function dynamicChecker($txt)
@@ -335,7 +335,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
-                        href="/onboardify/form"><u> {{ ucwords('Command Center') }}</u></a></li>
+                        href="/onboardify/form"><u> {{ ucwords('Home') }}</u></a></li>
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
                         href="/onboardify/form/track-request"><u> {{ $requestTracking }}</u></a></li>
                 <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"

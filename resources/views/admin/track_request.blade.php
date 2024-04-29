@@ -6,7 +6,7 @@ $total_data = $response['data']['boards']['totalMondayData'];
 $status_color = $data['status_color'];
 // $cs = $response['data']['boards'][0]['items_page']['cursor'];
 $disable = $_SERVER['REQUEST_METHOD'] === 'GET';
-           
+
 $columns = $response['data']['boards'][0]['columns'];
 
 function getValueById($columnValues, $id, $key = 'value')
@@ -176,19 +176,21 @@ function dateFormater($dateString)
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                          <a href="{{ $disable ? '#' : '' }}" class="dropdown-item btn btn-link w-100 d-flex justify-content-start {{ $disable ? 'text-decoration-none' : '' }} ">
-                            <span class="">
-                              <label class="form-check w-100" for="flexCheckDefault_status_all">
-                                  <input class="form-check-input" name="status_filter" type="radio" value=""
-                                      {{ $status_filter == ''||$status_filter == null ? 'checked' : '' }}
-                                      id="flexCheckDefault_status_all">
-                                  <label class="form-check-label" for="flexCheckDefault_status_all">
-                                      <span class=" ms-2 ps-auto pe-auto">All</span>
-                                  </label>
-                              </label>
-                            </span>
-                          </a>
-                         </li>
+                            <a href="{{ $disable ? '#' : '' }}"
+                                class="dropdown-item btn btn-link w-100 d-flex justify-content-start {{ $disable ? 'text-decoration-none' : '' }} ">
+                                <span class="">
+                                    <label class="form-check w-100" for="flexCheckDefault_status_all">
+                                        <input class="form-check-input" name="status_filter" type="radio"
+                                            value=""
+                                            {{ $status_filter == '' || $status_filter == null ? 'checked' : '' }}
+                                            id="flexCheckDefault_status_all">
+                                        <label class="form-check-label" for="flexCheckDefault_status_all">
+                                            <span class=" ms-2 ps-auto pe-auto">All</span>
+                                        </label>
+                                    </label>
+                                </span>
+                            </a>
+                        </li>
                         <li>
                             <span class="dropdown-item">
                                 <label class="form-check " for="flexCheckDefault_status_completed">
@@ -213,9 +215,9 @@ function dateFormater($dateString)
                                 </label>
                             </span>
                         </li>
-                       
-                 
-                  
+
+
+
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -239,8 +241,8 @@ function dateFormater($dateString)
                         <span class="ms-2 text-secondary">Export</span>
                     </div>
                 </a>
-             
-                
+
+
                 {{-- <div class="p-2 d-flex align-items-center nav-item dropdown">
 
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -375,7 +377,7 @@ function dateFormater($dateString)
             <form action="" id="bottom-form" class="d-flex justify-content-end align-items-center w-100"
                 style="gap:20px" method="POST">
                 <div class="dropdown" style="margin: auto 0;">
-                    Rows Per Page: &nbsp;
+                    Request Per Page: &nbsp;
                     <button class="btn-count dropdown-toggle" style="min-width: 80px" type="button"
                         id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         {{ $limit }}&nbsp;
@@ -398,9 +400,9 @@ function dateFormater($dateString)
                 <input type="hidden" id="per-page-limit" name="limit" value="{{ $limit }}">
                 <input type="hidden" id="cs-input" name="cursor" value="{{ $cs }}">
 
-                <p class="p-0 m-0">
+                <span class="p-0 m-0 mt-2">
                     {{ $cs * $limit - ($limit - 1) }}-{{ $cs * $limit > $total_data ? $total_data : $cs * $limit }} of
-                    {{ $total_data }}</p>
+                    {{ $total_data }}</span>
 
                 <div class="buttons d-flex justify-content-end align-items-center">
 

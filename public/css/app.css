@@ -47,7 +47,7 @@ body,
 }
 
 .track-card.bg-light-progress {
-	background: #fdece9;
+	background: #fcefbe;
 }
 .track-card.bg-light-progress > .track-profession {
 	color: rgb(244, 152, 31);
@@ -210,10 +210,14 @@ button * {
 }
 .navigation-buttons > i::before {
 	position: relative;
-	top: -5px;
+	top: -7px;
 }
 #bottom-form > p.p-0.m-0 {
 	padding-top: 10px;
+}
+#search-button > i::before {
+	position: relative;
+	top: -5px;
 }
 @media (max-width: 767px) {
 	.btn.btn-gradiant {
