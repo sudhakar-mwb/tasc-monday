@@ -222,7 +222,7 @@ function getValueById($columnValues, $id, $key = 'value')
 
 function validText($txt)
 {
-    return $txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available' && strtolower($txt) != 'not-applicable'&& strtolower($txt) != 'not applicable';;
+    return $txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available' && strtolower($txt) != 'not-applicable'&& strtolower($txt) != 'not applicable';
 }
 
 function dynamicChecker($txt)

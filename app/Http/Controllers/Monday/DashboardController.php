@@ -453,7 +453,7 @@ class DashboardController extends Controller
   {
     $query = 'query
         {
-          boards {
+          boards (limit:500){
             id
             name
             state
@@ -506,8 +506,7 @@ class DashboardController extends Controller
     $subheading = "Stay informed and in control of the overall status of your onboarding requests";
     $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->paginate(10);
     $query = 'query {
-            #   boards (limit: 500, page: 1){
-              boards {
+              boards(limit: 500) {
                 id
                 name
                 state
