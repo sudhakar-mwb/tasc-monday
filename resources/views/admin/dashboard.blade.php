@@ -2,12 +2,12 @@
 <?php
 $settings = Session::get('settings');
 ?>
-<main class="px-3 pt-5">
+<main class="">
     <p class="lead mt-3">
         <a href="#" class="btn btn-lg btn-light text-dark fw-bold border-white bg-white" style="font-size: 26px;font-weight:700;color:#434343">Welcome
             to</a>
     </p>
-    <h1 class="header-heading1 mt-2 mb-5 fw-bold " style="color:{{ $settings->head_title_color ?? null }}">
+    <h1 class="header-heading1 mt-2 mb-4 fw-bold " style="color:{{ $settings->head_title_color ?? null }}">
         {{ $heading }}</h1>
     <p class="lead">
     <div class="row">
@@ -22,7 +22,7 @@ $settings = Session::get('settings');
                     <p style="font-size: 17px;color:#928f8f">{{ $card['description'] }}</p>
                 </div>
                 <p>
-                    <a class="btn btn-secondary btn-gradiant mt-4" href={{ $card['link'] }}>
+                    <a class="btn btn-secondary btn-gradiant mt-2" href={{ $card['link'] }}>
                         <span class="fs-6">{{ $card['btn_text'] }}</span> &nbsp;
                         <span style="float:right"><svg height="25px" xmlns="http://www.w3.org/2000/svg"
                                 xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px"

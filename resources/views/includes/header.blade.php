@@ -50,8 +50,8 @@
     </div>
 
     <?php } ?>
-    <header class="mb-auto mb-3  w-100" style="background-color:{{ $settings->header_bg ?? null }}">
-        <div class="container  h-100 p-3 mx-auto d-flex align-items-center justify-content-between">
+    <header class="header-bar mb-auto mb-3  w-100" style="background-color:{{ $settings->header_bg ?? null }}">
+        <div class="container  h-100 p-3 py-2 mx-auto d-flex align-items-center justify-content-between">
             <a href="/onboardify/form" class="text-decoration-none">
                 <span class="header-logo float-md-start">
                     <img height="80" src="{{ asset('uploads/' . $settings->logo_image) }}" alt="TASC logo">
@@ -75,10 +75,10 @@
 
                 @if (in_array('form', $segments) && count($segments) > array_search('form', $segments) + 1)
                     <a href="/onboardify/form" class="text-decoration-none">
-                        <button class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center"
+                        <button class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center justify-content-around"
                             type="button">
                             <span>
-                                Onboardify
+                                Home
                             </span>
 
                             <span class="icon-btn_track" style="height: 22px;width: 22px">
@@ -103,8 +103,8 @@
                     </a>
                 @endif
                 {{-- <a href="lo gin">Already have an Account?</a> --}}
-                <a href="{{ route('monday.get.logout') }}"
-                    class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center">
+                <a id="log-btn" href="{{ route('monday.get.logout') }}"
+                    class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center justify-content-around">
                     <span>Log out</span>
                     <span class="icon-btn_track" style="height: 22px;width: 22px">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
