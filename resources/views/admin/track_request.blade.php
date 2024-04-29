@@ -183,7 +183,7 @@ function dateFormater($dateString)
                                       {{ $status_filter == ''||$status_filter == null ? 'checked' : '' }}
                                       id="flexCheckDefault_status_all">
                                   <label class="form-check-label" for="flexCheckDefault_status_all">
-                                      <span class=" ms-2 ps-auto pe-auto">ALL</span>
+                                      <span class=" ms-2 ps-auto pe-auto">All</span>
                                   </label>
                               </label>
                             </span>
@@ -196,7 +196,7 @@ function dateFormater($dateString)
                                         {{ $status_filter == '1' ? 'checked' : '' }} value="1"
                                         id="flexCheckDefault_status_completed">
                                     <label class="form-check-label" for="flexCheckDefault_status_completed">
-                                        <span class=" ms-2 ps-auto pe-auto">COMPETED</span>
+                                        <span class=" ms-2 ps-auto pe-auto">Completed</span>
                                     </label>
                                 </label>
                             </span>
@@ -208,7 +208,7 @@ function dateFormater($dateString)
                                         {{ $status_filter == '0' ? 'checked' : '' }} value="0"
                                         id="flexCheckDefault_status_inprogress">
                                     <label class="form-check-label" for="flexCheckDefault_status_inprogress">
-                                        <span class=" ms-2 ps-auto pe-auto">IN PROGRESS</span>
+                                        <span class=" ms-2 ps-auto pe-auto">In Progress</span>
                                     </label>
                                 </label>
                             </span>
