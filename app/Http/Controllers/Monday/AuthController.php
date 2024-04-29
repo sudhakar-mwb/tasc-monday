@@ -69,7 +69,8 @@ class AuthController extends Controller
             $validator = FacadesValidator::make($request->all(),[
                 'name'         => 'required',
                 'company_name' => 'required',
-                'phone'        => 'required|max:10',
+                // 'phone'        => 'required|regex:/^[+]{1}(?:[0-9\-\(\)\/\.]\s?){6,15}[0-9]{1}$/',
+                'phone'        => 'required|regex:/^\+(?:[0-9] ?){6,14}[0-9]$/',
                 'email'        => 'required|email|unique:monday_users',
                 'password'     => 'required|min:6|max:100'
             // ]);
@@ -276,7 +277,8 @@ class AuthController extends Controller
         return [
             "required" => ":attribute is required.",
             "max"   => ":attribute should not be more then :max characters.",
-            "min"   => ":attribute should not be less then :min characters."
+            "min"   => ":attribute should not be less then :min characters.",
+            "regex" => "please enter phone number input field with + country code",
         ];
     }
 

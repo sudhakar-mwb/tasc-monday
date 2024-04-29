@@ -21,7 +21,7 @@
         @error('company_name')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
-        <input type="number" placeholder="Phone*" name="phone" value="{{ old('phone') }}">
+        <input type="text" placeholder="Phone*" name="phone" value="{{ old('phone') }}">
         @error('phone')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
