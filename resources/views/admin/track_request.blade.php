@@ -7,7 +7,7 @@ $status_color = $data['status_color'];
 // $cs = $response['data']['boards'][0]['items_page']['cursor'];
 $disable = $_SERVER['REQUEST_METHOD'] === 'GET';
 
-$columns = $response['data']['boards'][0]['columns'];
+$columns = isset($response['data']['boards'][0]['columns'])?$response['data']['boards'][0]['columns']:[];
 
 function getValueById($columnValues, $id, $key = 'value')
 {
