@@ -12,17 +12,17 @@
 <style>
     body,
     #hider {
-        background: #f6f7fb;
+        /* background: #f6f7fb; */
     }
 
     .blurry {
         position: absolute;
         z-index: 100000;
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(10px);
     }
 
     .bottom-blur {
-        backdrop-filter: blur(5px);
+        backdrop-filter: blur(10px);
         height: 50px;
         position: absolute;
         bottom: 6px
@@ -39,6 +39,7 @@
 
     #iframe-chart>iframe {
         border: 0;
+        border-radius: 0.5rem;
         box-shadow: 5px 5px 56px 0px rgba(0, 0, 0, 0.25);
         width: 100% !important;
         height: 100% !important;

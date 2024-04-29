@@ -65,7 +65,7 @@ class DashboardController extends Controller
 
   public function trackRequest(Request $request)
   {
-    $prev_cursor=null;
+    $prev_cursor = null;
     // dd(request()->input('limit'));
 
     $cs = 1;
@@ -79,7 +79,7 @@ class DashboardController extends Controller
       $boardId  = auth()->user()->board_id;
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
       $response = json_decode($response, true);
-      if ($response['0']['columns']??false) {
+      if ($response['0']['columns'] ?? false) {
         $boardColumnMappingDbData = $response['0']['columns'];
       } else {
         die('board column mapping not exist in db');
@@ -91,46 +91,44 @@ class DashboardController extends Controller
       return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
     }
     if ($request->isMethod('post')) {
-      $searchAvailable = (request()->has('search') && trim(request()->input('search')) !== "");
-      $statusfilterAvailable = (request()->has('status_filter') && trim(request()->input('status_filter') !== ''));
-      $sortAvailable = request()->has('sort_by_date') && trim(request()->input('sort_by_date') !== '');
-      if ($searchAvailable || $statusfilterAvailable)
-        $operation_query = ', query_params: {';
-      // dd(strlen($operation_query));
       if (request()->has('cursor')) {
         $cs = (int)$request->input('cursor');
-        // $prev_cursor=$request->input('cursor') ;
       }
-      if ($searchAvailable || $statusfilterAvailable) {
+      $searchAvailable = (request()->has('search') && trim(request()->input('search')) !== "");
+      $sortAvailable = request()->has('sort_by_date') && trim(request()->input('sort_by_date') !== '');
+      $isStatusFilterAvailable = request()->has('status_filter') && trim(request()->input('status_filter')) !== '' && request()->has('status_filter') != null;
+      if ($searchAvailable || $isStatusFilterAvailable) {
+        $operation_query = ', query_params: { groups:[';
 
-        $searchquery = request()->input('search');
-        $seachAvailable = (request()->has('search') && trim(request()->input('search')) !== "");
-        $operation_query .= 'rules: [';
-        if ((request()->has('search') && trim(request()->input('search')) !== "")) {
-          $operation_query .= '{column_id: "name", compare_value: ["' . request()->input('search') . '"]}';
+        if ($searchAvailable) {
+          $searchquery = request()->input('search');
+          $operation_query .= ' { rules: [ {
+            column_id: "short_text1",
+            compare_value: ["' . request()->input('search') . '"],
+            operator: starts_with
+          },
+          {column_id: "name",
+             compare_value: ["' . request()->input('search') . '"],
+             operator: starts_with
+            }], operator: or }';
         }
-        if (request()->has('status_filter') && trim(request()->input('status_filter') !== '')) {
-          if ($seachAvailable)
-            $operation_query .= ",";
-          $operation_query .= '{column_id: "status8", compare_value: [' . request()->input('status_filter') . ']}';
+        if ($isStatusFilterAvailable) {
+          if ($searchAvailable)
+            // $operation_query .= ",";
+            $operation_query .= '{ rules: [{column_id: "status8", compare_value: [' . request()->input('status_filter') . ']}]
+            ,operator: and  }';
         }
-        $operation_query .= ']';
+        $operation_query .= "]
+        operator: and }";
       }
 
-      // if (request()->has('sort_by_date') && trim(request()->input('sort_by_date') !== '')) {
-      //   if (strlen($operation_query) > 17)
-      //     $operation_query .= ', ';
-      //   $operation_query .= 'order_by:[{direction: ' . request()->input('sort_by_date') . ', column_id:"name"}]';
-      // }
-      if ($searchAvailable || $statusfilterAvailable)
-        $operation_query .= ', operator: and}';
+      // if ($searchAvailable || $statusfilterAvailable)
+      //   $operation_query .= ', operator: and}';
     };
+    //     if($request->isMethod('post'))
+    // dd($operation_query);
     $response = $this->fetchMondayData($limit, $cs, $operation_query);
-
-
-    // if (!empty($response['data']) && !empty($response['data']['boards'])&& !empty($response['data']['boards'][0]['items_page']['items'])) {
-    //   $response['data']['boards'][0]['items_page']['items'] = array_slice($response['data']['boards'][0]['items_page']['items'], ($limit * ($cs-1)), $limit * $cs);
-    // }
+    // dd($response);
     $heading = 'Request Tracking';
     $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
 
@@ -307,7 +305,7 @@ class DashboardController extends Controller
     $data = json_decode($boardColumnMappingDbData, true);
     $data = $data['card_section'];
 
-    $items=$response['data']['boards'][0]['items_page']['items'];
+    $items = $response['data']['boards'][0]['items_page']['items'];
 
 
 
@@ -321,7 +319,7 @@ class DashboardController extends Controller
     $colors_status = json_decode($this->getColourMapping());
     $data['status_color'] = $colors_status;
 
-    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data', 'limit','prev_cursor', 'cs'));
+    return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data', 'limit', 'prev_cursor', 'cs'));
   }
 
   public function manageById(Request $request)
@@ -331,7 +329,7 @@ class DashboardController extends Controller
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
       $response = json_decode($response, true);
 
-      if ($response['0']['columns']??false) {
+      if ($response['0']['columns'] ?? false) {
         $boardColumnMappingDbData = $response['0']['columns'];
       } else {
         die('board column mapping not exist in db');
@@ -353,7 +351,7 @@ class DashboardController extends Controller
       $colors_status = json_decode($this->getColourMapping());
 
 
-      if ($response['0']['columns']??false) {
+      if ($response['0']['columns'] ?? false) {
         $data = json_decode($response['0']['columns'], true);
         $data['status_color'] = $colors_status;
       } else {
@@ -532,7 +530,7 @@ class DashboardController extends Controller
                 }
               }
             }';
-            // dd($this->_get($query)['response']);
+    // dd($this->_get($query)['response']);
     $boardsData = $this->_get($query)['response']['data'];
     if ($request->isMethod('post')) {
       if (!empty(auth()->user()) && (auth()->user()->role == 2 || auth()->user()->role == 1)) {
@@ -680,16 +678,16 @@ class DashboardController extends Controller
       // Check if the record was updated
       if ($user && $response->wasChanged()) {
         // Session::flash('message', 'Board column mapping successfully updated.');
-        return response( json_encode( array( 'response' => true, 'status' => true, 'message' => "Board column mapping successfully updated." ) ) );
+        return response(json_encode(array('response' => true, 'status' => true, 'message' => "Board column mapping successfully updated.")));
       } else {
         // Session::flash('message', 'Board column mapping updated.');
-        return response( json_encode( array( 'response' => true, 'status' => true, 'message' => "Board column mapping updated." ) ) );
+        return response(json_encode(array('response' => true, 'status' => true, 'message' => "Board column mapping updated.")));
       }
       // Session::flash('error', 'something went wrong during board column mapping.');
-      return response( json_encode( array( 'response' => true, 'status' => false, 'message' => "Something went wrong during board column mapping." ) ) );
+      return response(json_encode(array('response' => true, 'status' => false, 'message' => "Something went wrong during board column mapping.")));
     } else {
       // Session::flash('error', 'Board column mapping data not received.');
-      return response( json_encode( array( 'response' => true, 'status' => false, 'message' => "Board column mapping data not received." ) ) );
+      return response(json_encode(array('response' => true, 'status' => false, 'message' => "Board column mapping data not received.")));
     }
   }
 
@@ -797,7 +795,7 @@ class DashboardController extends Controller
 
       $msg    = "Admin Created Successfully.";
       if ($request['role'] == 1)
-      $msg    = "Super admin Created Successfully.";
+        $msg    = "Super admin Created Successfully.";
       $status = "success";
       return view('admin.addAdmin', compact('heading', 'subheading',  'msg', 'status'));
     } elseif ($insertUserInDB['status'] == "already") {
@@ -923,30 +921,31 @@ class DashboardController extends Controller
 
       // Check if the record was updated
       if ($colourMappingDBData && $response->wasChanged()) {
-        return response( json_encode( array( 'response' => true, 'status' => true, 'message' => "Colour mapping successfully updated." ) ) );
-    
+        return response(json_encode(array('response' => true, 'status' => true, 'message' => "Colour mapping successfully updated.")));
+
         // Session::flash('message', 'Colour mapping successfully updated.');
       } else {
-        return response( json_encode( array( 'response' => true, 'status' => true, 'message' => "Colour mapping successfully updated." ) ) );
+        return response(json_encode(array('response' => true, 'status' => true, 'message' => "Colour mapping successfully updated.")));
         // Session::flash('message', 'Colour mapping successfully updated.');
       }
-      return response( json_encode( array( 'response' => true, 'status' => false, 'message' => "something went wrong during colour mapping." ) ) );
+      return response(json_encode(array('response' => true, 'status' => false, 'message' => "something went wrong during colour mapping.")));
       // Session::flash('error', 'something went wrong during colour mapping.');
     } else {
-      return response( json_encode( array( 'response' => true, 'status' => false, 'message' => "Colour mapping data not received." ) ) );
+      return response(json_encode(array('response' => true, 'status' => false, 'message' => "Colour mapping data not received.")));
 
       // Session::flash('error', 'Colour mapping data not received.');
     }
   }
 
-  public function fetchMondayData ($limit, $cs, $operation_query){
+  public function fetchMondayData($limit, $cs, $operation_query)
+  {
     // $tolalData = $limit * $cs;
     $tolalData  = 500;
     $cursor     = 'null';
     $mondayData = [];
     $after      = 'ddd';
     do {
-        $query = "query {
+      $query = "query {
           boards(ids: " . auth()->user()->board_id . ") {
               columns {
                 title
@@ -976,29 +975,28 @@ class DashboardController extends Controller
           }
         }";
 
-        $response = $this->_get($query)['response'];
-        // $tolalData += $tolalData;
-        if (!empty($response['data']['boards'][0]['items_page']['cursor']) ) {
-          $cursor =  "\"". $response['data']['boards'][0]['items_page']['cursor']. "\"";
-        }else{
-          $after = '';
-        }
-        // dd($response);
-        $curr_data=isset($response['data']['boards'][0]['items_page']['items'])?$response['data']['boards'][0]['items_page']['items']:[];
-        if (!empty($curr_data)) {
-          if(count($curr_data))
-          foreach($curr_data as $item){
+      $response = $this->_get($query)['response'];
+      if (!empty($response['data']['boards'][0]['items_page']['cursor'])) {
+        $cursor =  "\"" . $response['data']['boards'][0]['items_page']['cursor'] . "\"";
+      } else {
+        $after = '';
+      }
+      // dd($response);
+      $curr_data = isset($response['data']['boards'][0]['items_page']['items']) ? $response['data']['boards'][0]['items_page']['items'] : [];
+      if (!empty($curr_data)) {
+        if (count($curr_data))
+          foreach ($curr_data as $item) {
             $mondayData[] = $item;
           }
-        }
-        $newResponse = $response;
-      } while (!empty($after));
-      $totalMondayData = count($mondayData);
-      unset($newResponse['data']['boards'][0]['items_page']['items']);
-      $newResponse['data']['boards'][0]['items_page']['items'] = $mondayData;
+      }
+      $newResponse = $response;
+    } while (!empty($after));
+    $totalMondayData = count($mondayData);
+    unset($newResponse['data']['boards'][0]['items_page']['items']);
+    $newResponse['data']['boards'][0]['items_page']['items'] = $mondayData;
 
-      $newResponse['data']['boards'][0]['items_page']['items'] = array_slice($newResponse['data']['boards'][0]['items_page']['items'], ($limit * ($cs-1)), $limit );
-      $newResponse['data']['boards']['totalMondayData'] = $totalMondayData;
-      return $newResponse;
+    $newResponse['data']['boards'][0]['items_page']['items'] = array_slice($newResponse['data']['boards'][0]['items_page']['items'], ($limit * ($cs - 1)), $limit);
+    $newResponse['data']['boards']['totalMondayData'] = $totalMondayData;
+    return $newResponse;
   }
 }
