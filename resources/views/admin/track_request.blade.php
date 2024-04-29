@@ -85,7 +85,7 @@ function dateFormater($dateString)
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
-                        href="/onboardify/form"><u> {{ ucwords('Command Center') }}</u></a></li>
+                        href="/onboardify/form"><u> {{ ucwords('Home') }}</u></a></li>
                 <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none" href="">
                         {{ ucwords('Request Tracking') }}</a></li>
 
@@ -176,6 +176,20 @@ function dateFormater($dateString)
                             <hr class="dropdown-divider">
                         </li>
                         <li>
+                          <a href="{{ $disable ? '#' : '' }}" class="dropdown-item btn btn-link w-100 d-flex justify-content-start {{ $disable ? 'text-decoration-none' : '' }} ">
+                            <span class="">
+                              <label class="form-check w-100" for="flexCheckDefault_status_all">
+                                  <input class="form-check-input" name="status_filter" type="radio" value=""
+                                      {{ $status_filter == ''||$status_filter == null ? 'checked' : '' }}
+                                      id="flexCheckDefault_status_all">
+                                  <label class="form-check-label" for="flexCheckDefault_status_all">
+                                      <span class=" ms-2 ps-auto pe-auto">ALL</span>
+                                  </label>
+                              </label>
+                            </span>
+                          </a>
+                         </li>
+                        <li>
                             <span class="dropdown-item">
                                 <label class="form-check " for="flexCheckDefault_status_completed">
                                     <input class="form-check-input" name="status_filter" type="radio"
@@ -200,13 +214,7 @@ function dateFormater($dateString)
                             </span>
                         </li>
                        
-                     <li>
-                      <a href="{{ $disable ? '#' : '' }}" class="btn btn-link w-100 d-flex justify-content-center {{ $disable ? 'text-decoration-none' : '' }} ">
-                        <div class="d-flex align-items-center {{ $disable ? 'text-secondary' : '' }}">
-                            <span class="">Clear Filter</span>
-                        </div>
-                    </a>
-                     </li>
+                 
                   
                         <li>
                             <hr class="dropdown-divider">
@@ -483,7 +491,6 @@ function dateFormater($dateString)
         border-radius: 5px;
         background-color: transparent
     }
-
 
     .disabled-btn {
         color: grey;

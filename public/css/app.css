@@ -1,6 +1,7 @@
 body,
 * {
 	font-family: "Hind", sans-serif;
+	box-sizing: border-box;
 }
 .header-icons {
 	height: 100px;
@@ -162,28 +163,7 @@ body,
 .dt-length > label {
 	margin-left: 15px;
 }
-/* .btn-gradiant */
-@media (max-width: 480px) {
-	.btn.btn-gradiant {
-		min-width: 30px;
-	}
-	.btn.btn-gradiant > span:first-child {
-		display: none;
-	}
-	.nav-masthead {
-		margin-top: 20px;
-	}
-	#iframe-signup {
-		width: auto;
-	}
-	.nav.nav-masthead > span.text-secondary:first-child {
-		width: 100%;
-		margin-bottom: 20px;
-	}
-	.nav.nav-masthead {
-		justify-content: space-around !important;
-	}
-}
+
 .primary-shadow {
 	box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
 		rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
@@ -214,12 +194,86 @@ body,
 	font-family: "Montserrat";
 }
 button * {
-
 }
-.btn-to-link *{
-  font-size: 12px;
-  font-family: "Montserrat" !important;
+.btn-to-link * {
+	font-size: 12px;
+	font-family: "Montserrat" !important;
 }
-.fs-17{
-  font-size: 17px
- }
+.fs-17 {
+	font-size: 17px;
+}
+#iframe-signup > iframe {
+	height: 100%;
+	width: 1000px !important;
+	border: 0px !important;
+	box-shadow: none !important;
+}
+.navigation-buttons > i::before {
+	position: relative;
+	top: -5px;
+}
+#bottom-form > p.p-0.m-0 {
+	padding-top: 10px;
+}
+@media (max-width: 767px) {
+	.btn.btn-gradiant {
+		min-width: 30px;
+	}
+	main.px-3.pt-5 {
+		padding-left: 0px !important;
+		padding-right: 0px !important;
+		margin: 0px;
+	}
+	.nav-masthead {
+		margin-top: 20px;
+	}
+	#iframe-signup {
+		width: auto;
+	}
+	nav.nav-masthead > span.text-secondary {
+		width: 100% !important;
+	}
+	.header-bar > .container {
+		flex-direction: column;
+	}
+	.header-bar > .container > nav {
+		display: flex;
+		justify-content: end !important;
+		gap: 10px;
+		width: 100%;
+		align-items: center !important;
+	}
+	#log-btn {
+		order: 1;
+	}
+	.nav.nav-masthead > span.text-secondary:first-child {
+		width: auto;
+		margin-bottom: 0px;
+	}
+	.header-logo > img {
+		height: 60px;
+	}
+	#iframe-signup > iframe {
+		max-width: 100% !important;
+	}
+	.header-heading1 {
+		font-size: 35px;
+	}
+	p.secondry-heading {
+		font-size: 13px !important;
+	}
+	.animation-content {
+		position: static !important;
+	}
+	#bottom-form {
+		flex-wrap: wrap;
+		align-items: center;
+	}
+	#bottom-form .dropdown {
+		width: 100%;
+	}
+}
+@media (min-width: 768px) and (max-width: 991px) {
+}
+@media (min-width: 992px) {
+}

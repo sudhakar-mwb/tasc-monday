@@ -33,7 +33,7 @@ class AuthController extends Controller
         $msg        = '';
         $status     = '';
         $heading    = "Log In";
-        $subheading = "TASC Outsourcing KSA";
+        $subheading = "";
         $this->setSetting();
         if ($request->isMethod('post')) {
             $input = $request->all();
@@ -265,8 +265,8 @@ class AuthController extends Controller
     }
     public function thankssignup()
     {
-        $heading = "Thanks";
-        $subheading = "Our team will be in touch within the next 48 hours to activate your account.";
+        $heading = "Verify Your Email Address";
+        $subheading = "Just verify your email address to confirm that you want to use this email for your TASC 360 account.";
         $status=true;
         $this->setSetting();
         return view('auth.thankssignup', compact('heading', 'subheading','status'));

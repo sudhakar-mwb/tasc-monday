@@ -79,7 +79,7 @@ class DashboardController extends Controller
       $boardId  = auth()->user()->board_id;
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
       $response = json_decode($response, true);
-      if ($response['0']['columns']) {
+      if ($response['0']['columns']??false) {
         $boardColumnMappingDbData = $response['0']['columns'];
       } else {
         die('board column mapping not exist in db');
@@ -331,7 +331,7 @@ class DashboardController extends Controller
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
       $response = json_decode($response, true);
 
-      if ($response['0']['columns']) {
+      if ($response['0']['columns']??false) {
         $boardColumnMappingDbData = $response['0']['columns'];
       } else {
         die('board column mapping not exist in db');
@@ -353,7 +353,7 @@ class DashboardController extends Controller
       $colors_status = json_decode($this->getColourMapping());
 
 
-      if ($response['0']['columns']) {
+      if ($response['0']['columns']??false) {
         $data = json_decode($response['0']['columns'], true);
         $data['status_color'] = $colors_status;
       } else {
@@ -407,7 +407,7 @@ class DashboardController extends Controller
 
   public function mobilityform()
   {
-    $heading = "Mobility Service Request";
+    $heading = "Create Onboarding Request";
     $subheading = "Provide essential details to ensure a smooth and efficient onboarding experience for your new team members. Let's get started on building your workforce seamlessly";
     $boardId  = auth()->user()->board_id;
     if (empty($boardId)) {

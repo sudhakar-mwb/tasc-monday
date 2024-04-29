@@ -222,9 +222,17 @@ function getValueById($columnValues, $id, $key = 'value')
 
 function validText($txt)
 {
-    return $txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available' && strtolower($txt) != 'not-applicable';
+    return $txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available' && strtolower($txt) != 'not-applicable'&& strtolower($txt) != 'not applicable';;
 }
 
+function dynamicChecker($txt)
+{
+    if (strtotime($txt) !== false) {
+        return dateFormater($txt);
+    } else {
+        return $txt;
+    }
+}
 function findElementByTitle($name, $data, $trackdata, $key = 'value')
 {
     $columnsid = null;
@@ -387,13 +395,15 @@ if ($joiningDate !== null && validText($joiningDate)) {
 
                             {{ implode(' ', $str) }}
                         </p>
-                        <h6 class="fs-17 status m-0 text-start text-{{ getClass($profileStatus, $status_color) }} fw-bold">
+                        <h6
+                            class="fs-17 status m-0 text-start text-{{ getClass($profileStatus, $status_color) }} fw-bold">
                             {{ $profileStatus }}</h6>
                     </div>
                 </div>
                 <div class="w-100">
                     <div class="card border-0 border-1 p-4">
-                        <p class="column-head text-start head-color fw-bold pb-4 border-bottom">Candidate Information</h4>
+                        <p class="column-head text-start head-color fw-bold pb-4 border-bottom">Candidate Information
+                            </h4>
                         <ul class="list-group list-group-flush">
                             @foreach ($candidate_coulmns as $col)
                                 <?php 
@@ -416,7 +426,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                                     style="background: inherit;gap:12px"><span class="mb-2">
                                         <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-info-circle' }}"></i>
                                     </span><span>
-                                        {{ $col['custom_title'] ? $col['custom_title'] . ': ' : '' }}{{ $text }}</span><span>{{ $flag }}</span>
+                                        {{ $col['custom_title'] ? $col['custom_title'] . ': ' : '' }}{{ dynamicChecker($text) }}</span><span>{{ $flag }}</span>
                                 </li>
                                 <?php }?>
                             @endforeach
@@ -537,17 +547,20 @@ if ($joiningDate !== null && validText($joiningDate)) {
         font-size: 17px;
         color: #928F8F;
     }
-    .card-user-name{
-      color:#434343;
-      font-size: 26px;
-      font-weight: 700
+
+    .card-user-name {
+        color: #434343;
+        font-size: 26px;
+        font-weight: 700
     }
-    .column-head{
-      font-weight: 700;
-      font-size: 26px;
+
+    .column-head {
+        font-weight: 700;
+        font-size: 26px;
     }
-    .second-heading{
-      font-size: 19px
+
+    .second-heading {
+        font-size: 19px
     }
 </style>
 @include('includes.footer')

@@ -1,6 +1,6 @@
 @include('auth.header')
 
-<main class="px-3 pt-5">
+<main class="pt-3">
     @include('admin.headtitle')
     @if ($status != '')
         <div class="d-flex justify-content-center">

@@ -1,7 +1,7 @@
 @include('auth.header')
 
 
-<main class="px-3 pt-5">
+<main class="pt-3">
     @include('admin.headtitle')
 
     @if ($status != '')
@@ -41,11 +41,9 @@
 
         </div>
         <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="submit"
-            {{-- type="button" --}}>
+           >
             <span>
-                {{-- <a href="thanks" class="text-decoration-none text-light"> --}}
-                Request Access
-                {{-- </a> --}}
+                  Sign Up
 
             </span>
 
@@ -60,7 +58,7 @@
     </form>
 
 
-    <a href="login">Already have an Account?</a>
+    <a href="/">Already have an Account?</a>
 </main>
 <script>
     var form = document.getElementById('registration-custom-form');
