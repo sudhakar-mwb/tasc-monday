@@ -4,10 +4,20 @@
 <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
 
 <?php
-// dd($boardsData);
+$success=null;
+$msg="";
+if( isset($_GET['success'])) {
+   $success= $_GET['success']=='1'?'success':'danger';
+   $msg=$_GET['success']=='1'?'Record deleted successfully.':'Something wents wrong. Try again.';
+}
 ?>
 <main class="px-3 pt-5">
     @include('admin.headtitle')
+    @if ($success != null)
+    <div class="d-flex justify-content-center">
+        <div class="alert alert-{{ $success}}" style="max-width:400px"> {{ $msg }}</div>
+    </div>
+@endif
     @include('includes.links', ['active' => 'users'])
     <script>
         function copyToBoard(val) {
@@ -38,6 +48,7 @@
             {{-- <th scope="col " class="bg-success site-bg text-light">Password</th> --}}
             <th scope="col " class="bg-success site-bg text-light">Created Date</th>
             <th scope="col " class="bg-success site-bg text-light">Forgot Pass</th>
+            <th scope="col " class="bg-success site-bg text-light">Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -95,6 +106,13 @@
                         <a href="{{ url('/') }}/onboardify/forgot?email={{ $user->email }}" 
                             class="btn m-0 fs-5 rounded-0" style="display: block !important">
                             <i class="bi bi-send-arrow-up-fill"></i>
+
+                            </button>
+                    </td>
+                    <td class="text-info p-0 btn-primary">
+                        <a href="{{ url('/') }}/onboardify/admin/usersDelete/{{ $user->id }}" 
+                            class="btn m-0 text-danger fs-5 rounded-0" style="display: block !important">
+                            <i class="bi bi-trash-fill"></i>
 
                             </button>
                     </td>

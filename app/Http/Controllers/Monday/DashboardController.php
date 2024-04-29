@@ -1001,4 +1001,21 @@ class DashboardController extends Controller
       $newResponse['data']['boards']['totalMondayData'] = $totalMondayData;
       return $newResponse;
   }
+
+  public function usersDelete (Request $request) {
+     // Get the ID of the record you want to delete
+     $record = MondayUsers::where('id', $request->id)->first();
+
+     if (!empty($record)) {
+         // Delete the record based on the retrieved ID
+         $deletedCount = MondayUsers::where('id', $request->id)->delete();
+         if ($deletedCount > 0) {
+          return redirect()->route('admin.users',['success'=> true]);
+         } else {
+          return redirect()->route('admin.users',['success'=> false]);
+         }
+     } else {
+      return redirect()->route('admin.users',['success'=> false]);
+     }
+  }
 }
