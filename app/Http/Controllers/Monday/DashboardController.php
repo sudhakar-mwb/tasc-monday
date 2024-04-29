@@ -113,8 +113,6 @@ class DashboardController extends Controller
             }], operator: or }';
         }
         if ($isStatusFilterAvailable) {
-          if ($searchAvailable)
-            // $operation_query .= ",";
             $operation_query .= '{ rules: [{column_id: "status8", compare_value: [' . request()->input('status_filter') . ']}]
             ,operator: and  }';
         }
