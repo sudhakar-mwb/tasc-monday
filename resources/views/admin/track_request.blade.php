@@ -380,7 +380,7 @@ function dateFormater($dateString)
         <div class="d-flex align-items-center justify-content-center mt-3" style="gap:20px">
             <form action="" id="bottom-form" class="d-flex justify-content-end align-items-center w-100"
                 style="gap:20px" method="POST">
-                <div class="dropdown" style="margin: auto 0;">
+                <div class="dropdown onboarding-text-align-end" style="margin: auto 0;">
                     Request Per Page: &nbsp;
                     <button class="btn-count dropdown-toggle" style="min-width: 80px" type="button"
                         id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">

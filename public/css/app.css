@@ -353,6 +353,10 @@ button * {
 	.onboarding-min-height-120{
 		min-height:120px !important;
 	}
+
+	.onboarding-text-align-end{
+		text-align: end;
+	}
 	
 }
 @media (min-width: 768px) and (max-width: 991px) {
