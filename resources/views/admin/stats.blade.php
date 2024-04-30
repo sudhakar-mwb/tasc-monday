@@ -1,6 +1,6 @@
 @include('includes.header')
 
-<main class="px-3 pt-5">
+<main class="px-3">
     @include('admin.headtitle')
     <div class="w-100 mt-5" style="position: relative">
         <div id="loader" class="blurry w-100" style="height: 100vh;"></div>
