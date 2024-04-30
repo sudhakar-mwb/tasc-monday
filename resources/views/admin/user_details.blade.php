@@ -157,7 +157,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
 <main class="px-3 pt-5 onboarding-paddingtop">
     <div class="w-100 mt-3">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-            <ol class="breadcrumb">
+            <ol class="breadcrumb onboarding-fs-14">
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
                         href="/onboardify/form"><u> {{ ucwords('Home') }}</u></a></li>
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
@@ -165,8 +165,6 @@ if ($joiningDate !== null && validText($joiningDate)) {
                 <li class="breadcrumb-item active"> <a class="inactive link-primary text-decoration-none"
                         href="">
                         {{ $name }}</a></li>
-
-
             </ol>
         </nav>
     </div>
@@ -199,8 +197,8 @@ if ($joiningDate !== null && validText($joiningDate)) {
                         </div>
                     </div>
                     <div class="d-flex flex-column justify-content-around">
-                        <h5 class="text-start m-0 card-user-name">{{ $name }}</h5>
-                        <p class="profession m-0 text-start user-candidate-column" style="font-weight: 400">
+                        <h5 class="text-start m-0 card-user-name onboarding-fs-24">{{ $name }}</h5>
+                        <p class="profession m-0 text-start user-candidate-column onboarding-fs-14" style="font-weight: 400">
                             <?php
                             
                             $str = [];
@@ -226,7 +224,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                 </div>
                 <div class="w-100">
                     <div class="card border-0 border-1 p-4">
-                        <p class="column-head text-start head-color fw-bold pb-4 border-bottom">Candidate Information
+                        <p class="column-head text-start head-color fw-bold pb-4 border-bottom onboarding-fs-20">Candidate Information
                             </h4>
                         <ul class="list-group list-group-flush">
                             @foreach ($candidate_coulmns as $col)
@@ -258,7 +256,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                         </ul>
                     </div>
                     <div class="card border-0 border-1 p-4">
-                        <h4 class="text-start head-color fw-bold pb-4 border-bottom">Onboarding Status</h4>
+                        <h4 class="text-start head-color fw-bold pb-4 border-bottom onboarding-fs-20">Onboarding Status</h4>
                         <ul class="list-group list-group-flush">
                             @foreach ($onboarding_columns as $step)
                                 <?php
