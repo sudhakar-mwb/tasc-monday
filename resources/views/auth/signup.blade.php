@@ -69,4 +69,9 @@
         }
     }, false);
 </script>
+<style>
+  .animation-container{
+    margin: 0px !important;
+  }
+</style>
 @include('includes.footer')

@@ -48,6 +48,10 @@
 
 </script>
 </main>
-
+<style>
+  .animation-container{
+    margin: 0px !important;
+  }
+</style>
 
 @include('includes.footer')
