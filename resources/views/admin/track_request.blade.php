@@ -1,14 +1,34 @@
 @include('includes.header')
 <?php
+function findStatusList($array, $key, $value) {
+  $data=[];
+    foreach ($array as $element) {
+        if (isset($element[$key]) && $element[$key] === $value) {
+          $data= $element;
+        }
+    }
+    
+    if(isset($data['settings_str'])){
+        $data=json_decode($data['settings_str'],true);
+        // dd($data['labels']);
+          if(isset($data['labels']))
+             return $data['labels'];
+          else
+          return [];
+  }
+  return [];
 
+  // Return null if the element is not found
+}
 $trackdata = $response['data']['boards'][0]['items_page']['items'];
 $total_data = $response['data']['boards']['totalMondayData'];
 $status_color = $data['status_color'];
+
 // $cs = $response['data']['boards'][0]['items_page']['cursor'];
 $disable = $_SERVER['REQUEST_METHOD'] === 'GET';
-
 $columns = isset($response['data']['boards'][0]['columns'])?$response['data']['boards'][0]['columns']:[];
-
+$status_available= findStatusList($columns,"title","Overall Status");
+// dd($status_available);
 function getValueById($columnValues, $id, $key = 'value')
 {
     foreach ($columnValues as $item) {
@@ -57,7 +77,6 @@ function getClass($str, $status_color)
 {
 
     $input = matchStatus($str, $status_color);
-
     switch ($input) {
         case 'IN PROGRESS':
             return 'bg-light-progress';
@@ -177,61 +196,35 @@ function dateFormater($dateString)
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <a href="{{ $disable ? '#' : '' }}"
-                                class="dropdown-item btn btn-link w-100 d-flex justify-content-start {{ $disable ? 'text-decoration-none' : '' }} ">
-                                <span class="">
-                                    <label class="form-check w-100" for="flexCheckDefault_status_all">
-                                        <input class="form-check-input" name="status_filter" type="radio"
-                                            value=""
-                                            {{ $status_filter == '' || $status_filter == null ? 'checked' : '' }}
-                                            id="flexCheckDefault_status_all">
-                                        <label class="form-check-label" for="flexCheckDefault_status_all">
-                                            <span class=" ms-2 ps-auto pe-auto">All</span>
-                                        </label>
-                                    </label>
-                                </span>
-                            </a>
-                        </li>
+                          <a href="{{ $disable ? '#' : '' }}"
+                              class="dropdown-item btn btn-link w-100 d-flex justify-content-start {{ $disable ? 'text-decoration-none' : '' }} ">
+                              <span class="">
+                                  <label class="form-check w-100" for="flexCheckDefault_status_all">
+                                      <input class="form-check-input" name="status_filter" type="radio"
+                                          value=""
+                                          {{ $status_filter == '' || $status_filter == null ? 'checked' : '' }}
+                                          id="flexCheckDefault_status_all">
+                                      <label class="form-check-label" for="flexCheckDefault_status_all">
+                                          <span class=" ms-2 ps-auto pe-auto">All</span>
+                                      </label>
+                                  </label>
+                              </span>
+                          </a>
+                      </li>
+                        @foreach($status_available as $val=>$status)
                         <li>
                           <span class="dropdown-item">
-                              <label class="form-check " for="flexCheckDefault_status_pending">
+                              <label class="form-check " for="flexCheckDefault_status_{{ $status }}">
                                   <input class="form-check-input" name="status_filter" type="radio"
-                                      {{ $status_filter == '2' ? 'checked' : '' }} value="2"
-                                      id="flexCheckDefault_status_pending">
-                                  <label class="form-check-label" for="flexCheckDefault_status_pending">
-                                      <span class=" ms-2 ps-auto pe-auto">Pending</span>
+                                      {{ $val == $status_filter ? 'checked' : '' }} value="{{ $val }}"
+                                      id="flexCheckDefault_status_{{ $status }}">
+                                  <label class="form-check-label" for="flexCheckDefault_status_{{ $status }}">
+                                      <span class=" ms-2 ps-auto pe-auto">{{ $status }}</span>
                                   </label>
                               </label>
                           </span>
                       </li>
-                      <li>
-                        <span class="dropdown-item">
-                            <label class="form-check " for="flexCheckDefault_status_inprogress">
-                                <input class="form-check-input" name="status_filter" type="radio"
-                                    {{ $status_filter == '0' ? 'checked' : '' }} value="0"
-                                    id="flexCheckDefault_status_inprogress">
-                                <label class="form-check-label" for="flexCheckDefault_status_inprogress">
-                                    <span class=" ms-2 ps-auto pe-auto">In Progress</span>
-                                </label>
-                            </label>
-                        </span>
-                    </li>
-                        <li>
-                            <span class="dropdown-item">
-                                <label class="form-check " for="flexCheckDefault_status_completed">
-                                    <input class="form-check-input" name="status_filter" type="radio"
-                                        {{ $status_filter == '1' ? 'checked' : '' }} value="1"
-                                        id="flexCheckDefault_status_completed">
-                                    <label class="form-check-label" for="flexCheckDefault_status_completed">
-                                        <span class=" ms-2 ps-auto pe-auto">Completed</span>
-                                    </label>
-                                </label>
-                            </span>
-                        </li>
-                    
-
-                  
-
+                        @endforeach
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -311,7 +304,7 @@ function dateFormater($dateString)
                 <div class="animation-content card-card-details"
                     style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
                     <div
-                        class="track-card h-100 p-4  @php echo getClass(strtoupper(getValueById($trackdata[$x]['column_values'],'status8','text')),$status_color) @endphp rounded-3">
+                        class="track-card h-100 p-4  @php echo getClass(strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'text')),$status_color) @endphp rounded-3">
                         <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item text-secondary"><a
@@ -354,13 +347,9 @@ function dateFormater($dateString)
             </div>
         @endfor
     </div>
-
     @if ($cs == null && count($trackdata) > 2)
         <small class="mt-3 text-secondary">No More Data Available.</small>
     @endif
-
-
-
     @if (count($trackdata) == 0 && trim($searchquery) !== '')
         <div class="d-flex flex-column align-items-center justify-content-center text-secondary">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
@@ -383,11 +372,6 @@ function dateFormater($dateString)
 
     @if ($total_data)
         <div class="d-flex align-items-center justify-content-center mt-3" style="gap:20px">
-            {{-- @if (!$ispageone)
-          <a href="{{ URL::previous() }}" class="btn btn-link mt-3  btn-lg" >BACK</a>
-          @endif --}}
-            {{-- @if ($cs !== null) --}}
-
             <form action="" id="bottom-form" class="d-flex justify-content-end align-items-center w-100"
                 style="gap:20px" method="POST">
                 <div class="dropdown" style="margin: auto 0;">

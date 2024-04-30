@@ -66,8 +66,6 @@ class DashboardController extends Controller
   public function trackRequest(Request $request)
   {
     $prev_cursor = null;
-    // dd(request()->input('limit'));
-
     $cs = 1;
     $operation_query = "";
     $searchquery = "";
@@ -113,23 +111,16 @@ class DashboardController extends Controller
             }], operator: or }';
         }
         if ($isStatusFilterAvailable) {
-            $operation_query .= '{ rules: [{column_id: "status8", compare_value: [' . request()->input('status_filter') . ']}]
+          $operation_query .= '{ rules: [{column_id: "status8", compare_value: [' . request()->input('status_filter') . ']}]
             ,operator: and  }';
         }
         $operation_query .= "]
         operator: and }";
       }
-
-      // if ($searchAvailable || $statusfilterAvailable)
-      //   $operation_query .= ', operator: and}';
     };
-    //     if($request->isMethod('post'))
-    // dd($operation_query);
     $response = $this->fetchMondayData($limit, $cs, $operation_query);
-    // dd($response);
     $heading = 'Request Tracking';
     $subheading = 'Track your onboarding progress effortlessly by using our request-tracking center';
-
     if ($request->export == true) {
       $query = "query {
             boards(ids: " . auth()->user()->board_id . ") {
@@ -302,21 +293,15 @@ class DashboardController extends Controller
     }
     $data = json_decode($boardColumnMappingDbData, true);
     $data = $data['card_section'];
-
     $items = $response['data']['boards'][0]['items_page']['items'];
-
-
-
     if ($request->isMethod('get') && (!$items || count($items) == 0)) {
       $heading = "No Data Found";
       $subheading = "The board lacks sufficient data.";
       $status = false;
       return view('auth.thankssignup', compact('status', 'heading', 'subheading'));
     }
-
     $colors_status = json_decode($this->getColourMapping());
     $data['status_color'] = $colors_status;
-
     return view('admin.track_request', compact('heading', 'subheading', 'response', 'searchquery', 'sortbyname', 'status_filter', 'data', 'limit', 'prev_cursor', 'cs'));
   }
 
@@ -344,10 +329,10 @@ class DashboardController extends Controller
     $data = "{}";
     if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
       $boardId  = auth()->user()->board_id;
+
       $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
       $response = json_decode($response, true);
       $colors_status = json_decode($this->getColourMapping());
-
 
       if ($response['0']['columns'] ?? false) {
         $data = json_decode($response['0']['columns'], true);
@@ -946,7 +931,8 @@ class DashboardController extends Controller
           boards(ids: " . auth()->user()->board_id . ") {
               columns {
                 title
-                id
+                id,
+                settings_str
               }
               items_page (limit: $tolalData, cursor:" . $cursor . " {$operation_query}) {
                 cursor
@@ -997,20 +983,21 @@ class DashboardController extends Controller
     return $newResponse;
   }
 
-  public function usersDelete (Request $request) {
-     // Get the ID of the record you want to delete
-     $record = MondayUsers::where('id', $request->id)->first();
+  public function usersDelete(Request $request)
+  {
+    // Get the ID of the record you want to delete
+    $record = MondayUsers::where('id', $request->id)->first();
 
-     if (!empty($record)) {
-         // Delete the record based on the retrieved ID
-         $deletedCount = MondayUsers::where('id', $request->id)->delete();
-         if ($deletedCount > 0) {
-          return redirect()->route('admin.users',['success'=> true]);
-         } else {
-          return redirect()->route('admin.users',['success'=> false]);
-         }
-     } else {
-      return redirect()->route('admin.users',['success'=> false]);
-     }
+    if (!empty($record)) {
+      // Delete the record based on the retrieved ID
+      $deletedCount = MondayUsers::where('id', $request->id)->delete();
+      if ($deletedCount > 0) {
+        return redirect()->route('admin.users', ['success' => true]);
+      } else {
+        return redirect()->route('admin.users', ['success' => false]);
+      }
+    } else {
+      return redirect()->route('admin.users', ['success' => false]);
+    }
   }
 }
