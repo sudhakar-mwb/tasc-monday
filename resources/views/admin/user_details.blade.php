@@ -330,7 +330,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
 // $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance'];
 
 ?>
-<main class="px-3 pt-5">
+<main class="px-3 pt-5 onboarding-paddingtop">
     <div class="w-100 mt-3">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -347,10 +347,10 @@ if ($joiningDate !== null && validText($joiningDate)) {
         </nav>
     </div>
     <div class="w-100">
-        <div class="d-flex mt-5 w-100" style="gap:20px">
-            <div class="col-6 d-flex flex-column" style="gap:30px">
+        <div class="d-flex mt-5 w-100 onboarding-flexcolumn" style="gap:20px">
+            <div class="col-6 d-flex flex-column onboarding-width" style="gap:30px">
                 <div class="d-flex mb-2" style="gap:16px">
-                    <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4">
+                    <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
                             <svg xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
                                 xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"
@@ -485,7 +485,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                     </div>
                 </div>
             </div>
-            <div class="col-6 d-flex flex-column" style="gap:30px">
+            <div class="col-6 d-flex flex-column onboarding-width" style="gap:30px">
                 <div class="card border-0 border-1 p-4" style="background: rgba(111, 116, 144, 0.06)">
                     <p class="second-heading text-start head-color fw-bold pb-4 border-bottom">Onboarding Updates</h5>
                     <h6 class="text-start mt-2 mb-4 fw-bold text-secondary">
@@ -563,14 +563,13 @@ if ($joiningDate !== null && validText($joiningDate)) {
         font-size: 19px
     }
 
-
-    @media (min-width: 500px) and (max-width: 899px) {
-        
+    .onboarding-button{
+        display:flex;
+        flex-direction:row;
+        justify-content: space-evenly;
     }
 
-    @media (min-width: 350px) and (max-width: 500px) {
-        
-    }
+
 
 </style>
 @include('includes.footer')
