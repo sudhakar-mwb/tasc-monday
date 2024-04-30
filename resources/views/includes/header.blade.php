@@ -58,16 +58,15 @@
 
                 </span>
             </a>
-            <nav class="nav nav-masthead justify-content-center align-items-center float-md-end">
-                <span class="text-secondary fs-17
-
-  ">
+            <nav class="nav nav-masthead justify-content-center align-items-center float-md-end onboarding-text-center onboardig-marginbottom">
+                <span class="text-secondary fs-17">
                     @if (auth()->check())
                         Welcome <strong> {{ auth()->user()->name }}</strong>
                     @else
                         Welcome
                     @endif
                 </span>
+                <div class='onboarding-button d-flex'>
 
                 @php
                     $segments = Request::segments();
@@ -122,6 +121,7 @@
                             </g>
                         </svg>
                     </span></a>
+    </div>
             </nav>
         </div>
     </header>

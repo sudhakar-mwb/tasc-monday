@@ -16,7 +16,7 @@ main.px-3.pt-5{
 </style>
 <main class="px-3 pt-5">
     @include('admin.headtitle')
-    <div style="margin:0px; height:60vh;" style="position: relative" id="iframe-signup">
+    <div style="margin:0px; height:75vh;" style="position: relative" id="iframe-signup">
       <div id="loader" class="blurry w-100" style="height: 100%;"></div>
      <?php echo $embed_code  ?>
     </div>
