@@ -51,7 +51,7 @@
     $(document).ready(function() {
         setTimeout(() => {
             $('#loader').hide()
-        }, 4000);
+        }, 5000);
     })
 </script>
 

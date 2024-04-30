@@ -3,7 +3,7 @@
 $settings = Session::get('settings');
 ?>
 <main class="">
-    <p class="lead mt-3">
+    <p class="lead mt-2">
         <a href="#" class="btn btn-lg btn-light text-dark fw-bold border-white bg-white" style="font-size: 26px;font-weight:700;color:#434343">Welcome
             to</a>
     </p>
