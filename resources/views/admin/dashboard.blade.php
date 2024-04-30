@@ -161,10 +161,10 @@ $settings = Session::get('settings');
                     <a href="#" class="btn btn-lg btn-light text-dark fw-bold border-white bg-white" style="font-size: 26px;font-weight:700;color:#434343">Welcome
                         to</a>
                 </p>
-                <h1 class="header-heading1 mt-2 mb-4 fw-bold " style="color:{{ $settings->head_title_color ?? null }}">
+                <h1 class="header-heading1 mt-2 mb-2 fw-bold " style="color:{{ $settings->head_title_color ?? null }}">
                     {{ $heading }}
                 </h1>
-                <p class="lead">
+                {{-- <p class="lead"> --}}
                 <div class="row">
 
                     @foreach ($cards as $card)
@@ -190,7 +190,7 @@ $settings = Session::get('settings');
                     @endforeach
                     <!-- /.col-lg-4 --><!-- /.col-lg-4 -->
                 </div>
-                </p>
+               
 
             </main>
 
