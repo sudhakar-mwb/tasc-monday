@@ -562,5 +562,15 @@ if ($joiningDate !== null && validText($joiningDate)) {
     .second-heading {
         font-size: 19px
     }
+
+
+    @media (min-width: 500px) and (max-width: 899px) {
+        
+    }
+
+    @media (min-width: 350px) and (max-width: 500px) {
+        
+    }
+
 </style>
 @include('includes.footer')
