@@ -192,7 +192,7 @@ $settings = Session::get('settings');
                 </div>
                <style>
                 .header-icons{
-                  height: 6rem;
+                  height: 4rem;
                 }
 
                </style>
