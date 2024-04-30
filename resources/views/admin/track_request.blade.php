@@ -4,9 +4,9 @@
 $trackdata = $response['data']['boards'][0]['items_page']['items'];
 $total_data = $response['data']['boards']['totalMondayData'];
 $status_color = $data['status_color'];
+
 // $cs = $response['data']['boards'][0]['items_page']['cursor'];
 $disable = $_SERVER['REQUEST_METHOD'] === 'GET';
-
 $columns = isset($response['data']['boards'][0]['columns'])?$response['data']['boards'][0]['columns']:[];
 
 function getValueById($columnValues, $id, $key = 'value')
@@ -57,7 +57,6 @@ function getClass($str, $status_color)
 {
 
     $input = matchStatus($str, $status_color);
-
     switch ($input) {
         case 'IN PROGRESS':
             return 'bg-light-progress';
@@ -311,7 +310,7 @@ function dateFormater($dateString)
                 <div class="animation-content card-card-details"
                     style="  transition: transform .3s ease 0.5s, opacity 1s ease 0.5s;">
                     <div
-                        class="track-card h-100 p-4  @php echo getClass(strtoupper(getValueById($trackdata[$x]['column_values'],'status8','text')),$status_color) @endphp rounded-3">
+                        class="track-card h-100 p-4  @php echo getClass(strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'text')),$status_color) @endphp rounded-3">
                         <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item text-secondary"><a
@@ -354,13 +353,9 @@ function dateFormater($dateString)
             </div>
         @endfor
     </div>
-
     @if ($cs == null && count($trackdata) > 2)
         <small class="mt-3 text-secondary">No More Data Available.</small>
     @endif
-
-
-
     @if (count($trackdata) == 0 && trim($searchquery) !== '')
         <div class="d-flex flex-column align-items-center justify-content-center text-secondary">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
@@ -383,11 +378,6 @@ function dateFormater($dateString)
 
     @if ($total_data)
         <div class="d-flex align-items-center justify-content-center mt-3" style="gap:20px">
-            {{-- @if (!$ispageone)
-          <a href="{{ URL::previous() }}" class="btn btn-link mt-3  btn-lg" >BACK</a>
-          @endif --}}
-            {{-- @if ($cs !== null) --}}
-
             <form action="" id="bottom-form" class="d-flex justify-content-end align-items-center w-100"
                 style="gap:20px" method="POST">
                 <div class="dropdown" style="margin: auto 0;">

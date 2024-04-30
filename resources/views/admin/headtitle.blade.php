@@ -9,7 +9,7 @@ $settings = Session::get('settings');
         <div class="w-100 d-flex flex-column justify-content-center align-items-center secondaryHeading">
             @if ($subheading ?? false)
                 <p class="secondry-heading header-heading3 mb-0 text-secondary"
-                    style="max-width:800px;font-size:19px">{{ $subheading }}</p>
+                    style="max-width:800px;font-size:19px"><?php echo $subheading; ?></p>
             @endif
             @if ($secondaryHeading ?? false)
                 <p class="header-heading3 mt-0 fs-6 text-secondary" style="width:90vw;max-width:800px">
