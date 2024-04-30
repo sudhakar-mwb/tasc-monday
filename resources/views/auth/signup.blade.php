@@ -1,7 +1,7 @@
 @include('auth.header')
 
 
-<main class="pt-3">
+<main class="">
     @include('admin.headtitle')
 
     @if ($status != '')
@@ -21,7 +21,7 @@
         @error('company_name')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
-        <input type="text" placeholder="Phone*" name="phone" value="{{ old('phone') }}">
+        <input type="text" placeholder="+00 876787" name="phone" value="{{ old('phone') }}">
         @error('phone')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror

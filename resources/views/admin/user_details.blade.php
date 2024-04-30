@@ -2,202 +2,26 @@
 
 
 <?php
-// dd(['data' => $data, 'response' => $response]);
 
-$countryInfo = [
-    'AF' => ['flag' => '🇦🇫', 'calling_code' => '+93'],
-    'AL' => ['flag' => '🇦🇱', 'calling_code' => '+355'],
-    'DZ' => ['flag' => '🇩🇿', 'calling_code' => '+213'],
-    'AD' => ['flag' => '🇦🇩', 'calling_code' => '+376'],
-    'AO' => ['flag' => '🇦🇴', 'calling_code' => '+244'],
-    'AR' => ['flag' => '🇦🇷', 'calling_code' => '+54'],
-    'AM' => ['flag' => '🇦🇲', 'calling_code' => '+374'],
-    'AU' => ['flag' => '🇦🇺', 'calling_code' => '+61'],
-    'AT' => ['flag' => '🇦🇹', 'calling_code' => '+43'],
-    'AZ' => ['flag' => '🇦🇿', 'calling_code' => '+994'],
-    'BS' => ['flag' => '🇧🇸', 'calling_code' => '+1'],
-    'BH' => ['flag' => '🇧🇭', 'calling_code' => '+973'],
-    'BD' => ['flag' => '🇧🇩', 'calling_code' => '+880'],
-    'BB' => ['flag' => '🇧🇧', 'calling_code' => '+1'],
-    'BY' => ['flag' => '🇧🇾', 'calling_code' => '+375'],
-    'BE' => ['flag' => '🇧🇪', 'calling_code' => '+32'],
-    'BZ' => ['flag' => '🇧🇿', 'calling_code' => '+501'],
-    'BJ' => ['flag' => '🇧🇯', 'calling_code' => '+229'],
-    'BT' => ['flag' => '🇧🇹', 'calling_code' => '+975'],
-    'BO' => ['flag' => '🇧🇴', 'calling_code' => '+591'],
-    'BA' => ['flag' => '🇧🇦', 'calling_code' => '+387'],
-    'BW' => ['flag' => '🇧🇼', 'calling_code' => '+267'],
-    'BR' => ['flag' => '🇧🇷', 'calling_code' => '+55'],
-    'BN' => ['flag' => '🇧🇳', 'calling_code' => '+673'],
-    'BG' => ['flag' => '🇧🇬', 'calling_code' => '+359'],
-    'BF' => ['flag' => '🇧🇫', 'calling_code' => '+226'],
-    'BI' => ['flag' => '🇧🇮', 'calling_code' => '+257'],
-    'KH' => ['flag' => '🇰🇭', 'calling_code' => '+855'],
-    'CM' => ['flag' => '🇨🇲', 'calling_code' => '+237'],
-    'CA' => ['flag' => '🇨🇦', 'calling_code' => '+1'],
-    'CV' => ['flag' => '🇨🇻', 'calling_code' => '+238'],
-    'CF' => ['flag' => '🇨🇫', 'calling_code' => '+236'],
-    'TD' => ['flag' => '🇹🇩', 'calling_code' => '+235'],
-    'CL' => ['flag' => '🇨🇱', 'calling_code' => '+56'],
-    'CN' => ['flag' => '🇨🇳', 'calling_code' => '+86'],
-    'CO' => ['flag' => '🇨🇴', 'calling_code' => '+57'],
-    'KM' => ['flag' => '🇰🇲', 'calling_code' => '+269'],
-    'CG' => ['flag' => '🇨🇬', 'calling_code' => '+242'],
-    'CD' => ['flag' => '🇨🇩', 'calling_code' => '+243'],
-    'CR' => ['flag' => '🇨🇷', 'calling_code' => '+506'],
-    'HR' => ['flag' => '🇭🇷', 'calling_code' => '+385'],
-    'CU' => ['flag' => '🇨🇺', 'calling_code' => '+53'],
-    'CY' => ['flag' => '🇨🇾', 'calling_code' => '+357'],
-    'CZ' => ['flag' => '🇨🇿', 'calling_code' => '+420'],
-    'DK' => ['flag' => '🇩🇰', 'calling_code' => '+45'],
-    'DJ' => ['flag' => '🇩🇯', 'calling_code' => '+253'],
-    'DM' => ['flag' => '🇩🇲', 'calling_code' => '+1'],
-    'DO' => ['flag' => '🇩🇴', 'calling_code' => '+1'],
-    'EC' => ['flag' => '🇪🇨', 'calling_code' => '+593'],
-    'EG' => ['flag' => '🇪🇬', 'calling_code' => '+20'],
-    'SV' => ['flag' => '🇸🇻', 'calling_code' => '+503'],
-    'GQ' => ['flag' => '🇬🇶', 'calling_code' => '+240'],
-    'ER' => ['flag' => '🇪🇷', 'calling_code' => '+291'],
-    'EE' => ['flag' => '🇪🇪', 'calling_code' => '+372'],
-    'ET' => ['flag' => '🇪🇹', 'calling_code' => '+251'],
-    'FJ' => ['flag' => '🇫🇯', 'calling_code' => '+679'],
-    'FI' => ['flag' => '🇫🇮', 'calling_code' => '+358'],
-    'FR' => ['flag' => '🇫🇷', 'calling_code' => '+33'],
-    'GA' => ['flag' => '🇬🇦', 'calling_code' => '+241'],
-    'GM' => ['flag' => '🇬🇲', 'calling_code' => '+220'],
-    'GE' => ['flag' => '🇬🇪', 'calling_code' => '+995'],
-    'DE' => ['flag' => '🇩🇪', 'calling_code' => '+49'],
-    'GH' => ['flag' => '🇬🇭', 'calling_code' => '+233'],
-    'GR' => ['flag' => '🇬🇷', 'calling_code' => '+30'],
-    'GD' => ['flag' => '🇬🇩', 'calling_code' => '+1'],
-    'GT' => ['flag' => '🇬🇹', 'calling_code' => '+502'],
-    'GN' => ['flag' => '🇬🇳', 'calling_code' => '+224'],
-    'GW' => ['flag' => '🇬🇼', 'calling_code' => '+245'],
-    'GY' => ['flag' => '🇬🇾', 'calling_code' => '+592'],
-    'HT' => ['flag' => '🇭🇹', 'calling_code' => '+509'],
-    'HN' => ['flag' => '🇭🇳', 'calling_code' => '+504'],
-    'HU' => ['flag' => '🇭🇺', 'calling_code' => '+36'],
-    'IS' => ['flag' => '🇮🇸', 'calling_code' => '+354'],
-    'IN' => ['flag' => '🇮🇳', 'calling_code' => '+91'],
-    'ID' => ['flag' => '🇮🇩', 'calling_code' => '+62'],
-    'IR' => ['flag' => '🇮🇷', 'calling_code' => '+98'],
-    'IQ' => ['flag' => '🇮🇶', 'calling_code' => '+964'],
-    'IE' => ['flag' => '🇮🇪', 'calling_code' => '+353'],
-    'IL' => ['flag' => '🇮🇱', 'calling_code' => '+972'],
-    'IT' => ['flag' => '🇮🇹', 'calling_code' => '+39'],
-    'JM' => ['flag' => '🇯🇲', 'calling_code' => '+1'],
-    'JP' => ['flag' => '🇯🇵', 'calling_code' => '+81'],
-    'JO' => ['flag' => '🇯🇴', 'calling_code' => '+962'],
-    'KZ' => ['flag' => '🇰🇿', 'calling_code' => '+7'],
-    'KE' => ['flag' => '🇰🇪', 'calling_code' => '+254'],
-    'KI' => ['flag' => '🇰🇮', 'calling_code' => '+686'],
-    'KP' => ['flag' => '🇰🇵', 'calling_code' => '+850'],
-    'KR' => ['flag' => '🇰🇷', 'calling_code' => '+82'],
-    'KW' => ['flag' => '🇰🇼', 'calling_code' => '+965'],
-    'KG' => ['flag' => '🇰🇬', 'calling_code' => '+996'],
-    'LA' => ['flag' => '🇱🇦', 'calling_code' => '+856'],
-    'LV' => ['flag' => '🇱🇻', 'calling_code' => '+371'],
-    'LB' => ['flag' => '🇱🇧', 'calling_code' => '+961'],
-    'LS' => ['flag' => '🇱🇸', 'calling_code' => '+266'],
-    'LR' => ['flag' => '🇱🇷', 'calling_code' => '+231'],
-    'LY' => ['flag' => '🇱🇾', 'calling_code' => '+218'],
-    'LI' => ['flag' => '🇱🇮', 'calling_code' => '+423'],
-    'LT' => ['flag' => '🇱🇹', 'calling_code' => '+370'],
-    'LU' => ['flag' => '🇱🇺', 'calling_code' => '+352'],
-    'MG' => ['flag' => '🇲🇬', 'calling_code' => '+261'],
-    'MW' => ['flag' => '🇲🇼', 'calling_code' => '+265'],
-    'MY' => ['flag' => '🇲🇾', 'calling_code' => '+60'],
-    'MV' => ['flag' => '🇲🇻', 'calling_code' => '+960'],
-    'ML' => ['flag' => '🇲🇱', 'calling_code' => '+223'],
-    'MT' => ['flag' => '🇲🇹', 'calling_code' => '+356'],
-    'MH' => ['flag' => '🇲🇭', 'calling_code' => '+692'],
-    'MR' => ['flag' => '🇲🇷', 'calling_code' => '+222'],
-    'MU' => ['flag' => '🇲🇺', 'calling_code' => '+230'],
-    'MX' => ['flag' => '🇲🇽', 'calling_code' => '+52'],
-    'FM' => ['flag' => '🇫🇲', 'calling_code' => '+691'],
-    'MD' => ['flag' => '🇲🇩', 'calling_code' => '+373'],
-    'MC' => ['flag' => '🇲🇨', 'calling_code' => '+377'],
-    'MN' => ['flag' => '🇲🇳', 'calling_code' => '+976'],
-    'ME' => ['flag' => '🇲🇪', 'calling_code' => '+382'],
-    'MA' => ['flag' => '🇲🇦', 'calling_code' => '+212'],
-    'MZ' => ['flag' => '🇲🇿', 'calling_code' => '+258'],
-    'MM' => ['flag' => '🇲🇲', 'calling_code' => '+95'],
-    'NA' => ['flag' => '🇳🇦', 'calling_code' => '+264'],
-    'NR' => ['flag' => '🇳🇷', 'calling_code' => '+674'],
-    'NP' => ['flag' => '🇳🇵', 'calling_code' => '+977'],
-    'NL' => ['flag' => '🇳🇱', 'calling_code' => '+31'],
-    'NZ' => ['flag' => '🇳🇿', 'calling_code' => '+64'],
-    'NI' => ['flag' => '🇳🇮', 'calling_code' => '+505'],
-    'NE' => ['flag' => '🇳🇪', 'calling_code' => '+227'],
-    'NG' => ['flag' => '🇳🇬', 'calling_code' => '+234'],
-    'MK' => ['flag' => '🇲🇰', 'calling_code' => '+389'],
-    'NO' => ['flag' => '🇳🇴', 'calling_code' => '+47'],
-    'OM' => ['flag' => '🇴🇲', 'calling_code' => '+968'],
-    'PK' => ['flag' => '🇵🇰', 'calling_code' => '+92'],
-    'PW' => ['flag' => '🇵🇼', 'calling_code' => '+680'],
-    'PA' => ['flag' => '🇵🇦', 'calling_code' => '+507'],
-    'PG' => ['flag' => '🇵🇬', 'calling_code' => '+675'],
-    'PY' => ['flag' => '🇵🇾', 'calling_code' => '+595'],
-    'PE' => ['flag' => '🇵🇪', 'calling_code' => '+51'],
-    'PH' => ['flag' => '🇵🇭', 'calling_code' => '+63'],
-    'PL' => ['flag' => '🇵🇱', 'calling_code' => '+48'],
-    'PT' => ['flag' => '🇵🇹', 'calling_code' => '+351'],
-    'QA' => ['flag' => '🇶🇦', 'calling_code' => '+974'],
-    'RO' => ['flag' => '🇷🇴', 'calling_code' => '+40'],
-    'RU' => ['flag' => '🇷🇺', 'calling_code' => '+7'],
-    'RW' => ['flag' => '🇷🇼', 'calling_code' => '+250'],
-    'KN' => ['flag' => '🇰🇳', 'calling_code' => '+1'],
-    'LC' => ['flag' => '🇱🇨', 'calling_code' => '+1'],
-    'VC' => ['flag' => '🇻🇨', 'calling_code' => '+1'],
-    'WS' => ['flag' => '🇼🇸', 'calling_code' => '+685'],
-    'SM' => ['flag' => '🇸🇲', 'calling_code' => '+378'],
-    'ST' => ['flag' => '🇸🇹', 'calling_code' => '+239'],
-    'SA' => ['flag' => '🇸🇦', 'calling_code' => '+966'],
-    'SN' => ['flag' => '🇸🇳', 'calling_code' => '+221'],
-    'RS' => ['flag' => '🇷🇸', 'calling_code' => '+381'],
-    'SC' => ['flag' => '🇸🇨', 'calling_code' => '+248'],
-    'SL' => ['flag' => '🇸🇱', 'calling_code' => '+232'],
-    'SG' => ['flag' => '🇸🇬', 'calling_code' => '+65'],
-    'SK' => ['flag' => '🇸🇰', 'calling_code' => '+421'],
-    'SI' => ['flag' => '🇸🇮', 'calling_code' => '+386'],
-    'SB' => ['flag' => '🇸🇧', 'calling_code' => '+677'],
-    'SO' => ['flag' => '🇸🇴', 'calling_code' => '+252'],
-    'ZA' => ['flag' => '🇿🇦', 'calling_code' => '+27'],
-    'ES' => ['flag' => '🇪🇸', 'calling_code' => '+34'],
-    'LK' => ['flag' => '🇱🇰', 'calling_code' => '+94'],
-    'SD' => ['flag' => '🇸🇩', 'calling_code' => '+249'],
-    'SR' => ['flag' => '🇸🇷', 'calling_code' => '+597'],
-    'SZ' => ['flag' => '🇸🇿', 'calling_code' => '+268'],
-    'SE' => ['flag' => '🇸🇪', 'calling_code' => '+46'],
-    'CH' => ['flag' => '🇨🇭', 'calling_code' => '+41'],
-    'SY' => ['flag' => '🇸🇾', 'calling_code' => '+963'],
-    'TW' => ['flag' => '🇹🇼', 'calling_code' => '+886'],
-    'TJ' => ['flag' => '🇹🇯', 'calling_code' => '+992'],
-    'TZ' => ['flag' => '🇹🇿', 'calling_code' => '+255'],
-    'TH' => ['flag' => '🇹🇭', 'calling_code' => '+66'],
-    'TL' => ['flag' => '🇹🇱', 'calling_code' => '+670'],
-    'TG' => ['flag' => '🇹🇬', 'calling_code' => '+228'],
-    'TO' => ['flag' => '🇹🇴', 'calling_code' => '+676'],
-    'TT' => ['flag' => '🇹🇹', 'calling_code' => '+1'],
-    'TN' => ['flag' => '🇹🇳', 'calling_code' => '+216'],
-    'TR' => ['flag' => '🇹🇷', 'calling_code' => '+90'],
-    'TM' => ['flag' => '🇹🇲', 'calling_code' => '+993'],
-    'TV' => ['flag' => '🇹🇻', 'calling_code' => '+688'],
-    'UG' => ['flag' => '🇺🇬', 'calling_code' => '+256'],
-    'UA' => ['flag' => '🇺🇦', 'calling_code' => '+380'],
-    'AE' => ['flag' => '🇦🇪', 'calling_code' => '+971'],
-    'GB' => ['flag' => '🇬🇧', 'calling_code' => '+44'],
-    'US' => ['flag' => '🇺🇸', 'calling_code' => '+1'],
-    'UY' => ['flag' => '🇺🇾', 'calling_code' => '+598'],
-    'UZ' => ['flag' => '🇺🇿', 'calling_code' => '+998'],
-    'VU' => ['flag' => '🇻🇺', 'calling_code' => '+678'],
-    'VA' => ['flag' => '🇻🇦', 'calling_code' => '+379'],
-    'VE' => ['flag' => '🇻🇪', 'calling_code' => '+58'],
-    'VN' => ['flag' => '🇻🇳', 'calling_code' => '+84'],
-    'YE' => ['flag' => '🇾🇪', 'calling_code' => '+967'],
-    'ZM' => ['flag' => '🇿🇲', 'calling_code' => '+260'],
-    'ZW' => ['flag' => '🇿🇼', 'calling_code' => '+263'],
-];
+function countryFlag($countryCode) {
+    // Convert the country code to uppercase
+    $countryCode = strtoupper($countryCode);
+    
+    // Convert each letter of the country code to its corresponding regional indicator symbol
+    $flag = '';
+    foreach (str_split($countryCode) as $char) {
+        // Check if the character is an uppercase letter
+        if (ctype_upper($char)) {
+            // Convert the letter to its corresponding Unicode regional indicator symbol
+            $flag .= mb_convert_encoding('&#' . (ord($char) + 127397) . ';', 'UTF-8', 'HTML-ENTITIES');
+        } else {
+            // If the character is not an uppercase letter, append it as is
+            $flag .= $char;
+        }
+    }
+    
+    return $flag;
+}
 $status_color = $data['status_color'];
 // print_r($status_color);
 $candidate_coulmns = $data['candidate_coulmns'];
@@ -222,7 +46,7 @@ function getValueById($columnValues, $id, $key = 'value')
 
 function validText($txt)
 {
-    return $txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available' && strtolower($txt) != 'not-applicable'&& strtolower($txt) != 'not applicable';
+    return $txt && $txt != 'N/A' && $txt !== 'NA' && strtolower($txt) != 'not available' && strtolower($txt) != 'not-applicable' && strtolower($txt) != 'not applicable';
 }
 
 function dynamicChecker($txt)
@@ -416,7 +240,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                               $flag = json_decode($flag);
                               $flag = $flag->countryCode ?? null;
                            
-                              $flag = $flag ? ($countryInfo[$flag]['flag']?? null) : null;
+                              $flag = $flag ? (countryFlag($flag)?? null) : null;
                             
                             }
                             if(validText($text))
@@ -438,11 +262,12 @@ if ($joiningDate !== null && validText($joiningDate)) {
                         <ul class="list-group list-group-flush">
                             @foreach ($onboarding_columns as $step)
                                 <?php
-                                
+                      
                                 $valued = json_decode(getValueById($columns_val, $step['id'], 'value'), true);
+                              
                                 $status = getValueById($columns_val, $step['id'], 'text');
-                                 
-                                if(validText($status)&&validText($joiningDate))
+                        
+                                if(validText($status))
 {
                                 ?>
                                 <li class="list-group-item d-flex align-items-start border-0 text-start mb-1"

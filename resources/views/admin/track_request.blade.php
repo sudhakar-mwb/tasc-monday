@@ -55,6 +55,7 @@ function matchStatus($inputString, $statusArray)
 }
 function getClass($str, $status_color)
 {
+
     $input = matchStatus($str, $status_color);
 
     switch ($input) {
@@ -79,7 +80,7 @@ function dateFormater($dateString)
 ?>
 
 
-<main class="px-3 pt-5">
+<main class="px-3 ">
     @include('admin.headtitle')
     <div class="w-100 mt-3">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -192,6 +193,30 @@ function dateFormater($dateString)
                             </a>
                         </li>
                         <li>
+                          <span class="dropdown-item">
+                              <label class="form-check " for="flexCheckDefault_status_pending">
+                                  <input class="form-check-input" name="status_filter" type="radio"
+                                      {{ $status_filter == '2' ? 'checked' : '' }} value="2"
+                                      id="flexCheckDefault_status_pending">
+                                  <label class="form-check-label" for="flexCheckDefault_status_pending">
+                                      <span class=" ms-2 ps-auto pe-auto">Pending</span>
+                                  </label>
+                              </label>
+                          </span>
+                      </li>
+                      <li>
+                        <span class="dropdown-item">
+                            <label class="form-check " for="flexCheckDefault_status_inprogress">
+                                <input class="form-check-input" name="status_filter" type="radio"
+                                    {{ $status_filter == '0' ? 'checked' : '' }} value="0"
+                                    id="flexCheckDefault_status_inprogress">
+                                <label class="form-check-label" for="flexCheckDefault_status_inprogress">
+                                    <span class=" ms-2 ps-auto pe-auto">In Progress</span>
+                                </label>
+                            </label>
+                        </span>
+                    </li>
+                        <li>
                             <span class="dropdown-item">
                                 <label class="form-check " for="flexCheckDefault_status_completed">
                                     <input class="form-check-input" name="status_filter" type="radio"
@@ -203,20 +228,9 @@ function dateFormater($dateString)
                                 </label>
                             </span>
                         </li>
-                        <li>
-                            <span class="dropdown-item">
-                                <label class="form-check " for="flexCheckDefault_status_inprogress">
-                                    <input class="form-check-input" name="status_filter" type="radio"
-                                        {{ $status_filter == '0' ? 'checked' : '' }} value="0"
-                                        id="flexCheckDefault_status_inprogress">
-                                    <label class="form-check-label" for="flexCheckDefault_status_inprogress">
-                                        <span class=" ms-2 ps-auto pe-auto">In Progress</span>
-                                    </label>
-                                </label>
-                            </span>
-                        </li>
+                    
 
-
+                  
 
                         <li>
                             <hr class="dropdown-divider">
