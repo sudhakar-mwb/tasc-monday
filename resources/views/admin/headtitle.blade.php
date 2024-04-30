@@ -2,7 +2,7 @@
 $settings = Session::get('settings');
 
 ?>
-<div class="animation-container my-3 mt-5 onboarding-margin-top-0 onboarding-min-height-120" style="min-height: <?php echo $subheading == '' ? '100px' : '160px'; ?>">
+<div class="animation-container my-3 mt-5 onboarding-margin-top-18 onboarding-min-height-120" style="min-height: <?php echo $subheading == '' ? '100px' : '160px'; ?>">
     <div class="animation-content" style="transition: transform 1s ease, opacity 2s ease;">
         <h1 class="header-heading1 mt-2 fw-bold ff-ws onboarding-font-size-30" style="color:{{ $settings->head_title_color ?? null }}">
             {{ $heading }}</h1>
