@@ -19,7 +19,7 @@
        </div>
         <button class="btn btn-to-link btn-secondary btn-gradiant  d-flex align-items-center" type="submit">
             <span>
-                Send Link to Email
+                Email me a recovery link
             </span>
             <span class="icon-btn_track" style="margin-left:10px">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

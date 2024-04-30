@@ -104,7 +104,7 @@ class AuthController extends Controller
             }
         }
             $heading = "Sign Up";
-            $subheading = "In order to sign up, you have to be invited by TASC KSA admin. Please complete the form below.";
+            $subheading = "We’re excited to have you join us! To complete your sign-up, please fill in your information below.";
             return view('auth.signup', compact('heading', 'subheading', 'msg', 'status'), );
     }
     public function forgot(Request $request)
