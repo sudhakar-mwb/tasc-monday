@@ -54,7 +54,7 @@
         <div class="container  h-100 p-3 py-2 mx-auto d-flex align-items-center justify-content-between">
             <a href="/onboardify/form" class="text-decoration-none">
                 <span class="header-logo float-md-start">
-                    <img height="80" src="{{ asset('uploads/' . $settings->logo_image) }}" alt="TASC logo">
+                    <img height="70" src="{{ asset('uploads/' . $settings->logo_image) }}" alt="TASC logo">
 
                 </span>
             </a>

@@ -157,7 +157,7 @@ $settings = Session::get('settings');
         <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
 
             <main class="">
-                <p class="lead mt-2">
+                <p class="lead m-2">
                     <a href="#" class="btn btn-lg btn-light text-dark fw-bold border-white bg-white" style="font-size: 26px;font-weight:700;color:#434343">Welcome
                         to</a>
                 </p>
@@ -168,7 +168,7 @@ $settings = Session::get('settings');
                 <div class="row">
 
                     @foreach ($cards as $card)
-                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 300px">
+                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 270px">
                         <div>
                             <div class="header-icons">
                                 {!! $card['icon'] !!}
@@ -190,7 +190,12 @@ $settings = Session::get('settings');
                     @endforeach
                     <!-- /.col-lg-4 --><!-- /.col-lg-4 -->
                 </div>
-               
+               <style>
+                .header-icons{
+                  height: 6rem;
+                }
+
+               </style>
 
             </main>
 
