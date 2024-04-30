@@ -316,6 +316,11 @@ button * {
 	.onboarding-fs-14{
 		font-size:14px !important;
 	}
+
+
+	.onboardin-padding-24{
+		padding-left:24px;
+	}
 	
 }
 @media (min-width: 768px) and (max-width: 991px) {
@@ -371,11 +376,18 @@ button * {
 	.onboarding-fs-24{
 		font-size:24px !important;;
 	}
+
+	.onboardin-padding-24{
+		padding-left:24px;
+	}
 	
 }
 
-/* @media (max-width: 500px) {
 
-	
-} */
+@media (min-width: 500px) and (max-width: 999px) {
 
+	.onboarding-rounded-circle{
+		width:100px;
+		height:100px;
+	}
+}

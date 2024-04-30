@@ -171,7 +171,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
     <div class="w-100">
         <div class="d-flex mt-5 w-100 onboarding-flexcolumn" style="gap:20px">
             <div class="col-6 d-flex flex-column onboarding-width" style="gap:30px">
-                <div class="d-flex mb-2" style="gap:16px">
+                <div class="d-flex mb-2 onboardin-padding-24" style="gap:16px">
                     <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
                             <svg xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
@@ -318,7 +318,8 @@ if ($joiningDate !== null && validText($joiningDate)) {
                         if(validText($desc)){
                         ?>
                     <p class="text-start text-secondary">
-                        {{ $desc ?? '' }}
+                        <!-- {{ $desc ?? '' }} -->
+                        "Lorem ipsum" is a placeholder text commonly used in the graphic design, publishing, and web design industries. It's used to fill in spaces where actual content will eventually go, serving as a mockup or template. The text itself is nonsensical Latin-like gibberish, with words and phrases chosen for their resemblance to real Latin words, but lacking coherent meaning. It typically begins with "Lorem ipsum dolor sit amet," followed by a string of seemingly random words and phrases. It allows designers to focus on the layout and design aspects without being distracted by the actual content.
                     </p>
                     <?php } ?>
                 </div>
