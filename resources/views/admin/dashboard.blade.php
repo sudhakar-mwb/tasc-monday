@@ -19,7 +19,7 @@ $settings = Session::get('settings');
                         {!! $card['icon'] !!}
                     </div>
                     <h2 class="fw-bold mt-3 mb-3 fs-3">{{ $card['title'] }}</h2>
-                    <p style="font-size: 17px;color:#928f8f">{{ $card['description'] }}</p>
+                    <p style="font-size: 1.1rem;color:#928f8f">{{ $card['description'] }}</p>
                 </div>
                 <p>
                     <a class="btn btn-secondary btn-gradiant mt-2" href={{ $card['link'] }}>

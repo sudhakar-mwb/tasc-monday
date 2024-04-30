@@ -4,8 +4,8 @@ body,
 	box-sizing: border-box;
 }
 .header-icons {
-	height: 100px;
-	width: 100px;
+	height: 8rem;
+	width: 8rem;
 	margin: 0px auto;
 }
 .btn-gradiant {
@@ -275,6 +275,9 @@ button * {
 	}
 	#bottom-form .dropdown {
 		width: 100%;
+	}
+	.cover-container {
+		padding: 0px !important;
 	}
 }
 @media (min-width: 768px) and (max-width: 991px) {

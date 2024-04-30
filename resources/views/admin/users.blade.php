@@ -11,6 +11,9 @@ if( isset($_GET['success'])) {
    $msg=$_GET['success']=='1'?'Record deleted successfully.':'Something wents wrong. Try again.';
 }
 ?>
+<style>
+
+</style>
 <main class="px-3">
     @include('admin.headtitle')
     @if ($success != null)
@@ -34,7 +37,7 @@ if( isset($_GET['success'])) {
         }
     </script>
 
-<div style="max-width: 90vw">
+<div >
   <table class="table border table-hover table-bordered" id="users-list-table">
     <thead>
         <tr>
@@ -85,22 +88,6 @@ if( isset($_GET['success'])) {
                                 @endforeach
                             @endif
                         </select></td>
-                    {{-- <td class="p-0">
-                        <div class="d-flex align-items-center btn btn-outline-info border-0 rounded-0 text-dark"
-                            style="gap:10px" onclick="copyToBoard('{{ $user->password  }}')">
-                            <span class="btn-copy" style="cursor:pointer;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                    fill="currentColor" class="bi bi-copy" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z" />
-                                </svg>
-
-                            </span>
-
-
-                            <span>{{ $user->password }}</span>
-                        </div>
-                    </td> --}}
                     <td>{{ $user->created_at }}</td>
                     <td class="text-info p-0 btn-primary">
                         <a href="{{ url('/') }}/onboardify/forgot?email={{ $user->email }}" 
@@ -146,7 +133,9 @@ if( isset($_GET['success'])) {
 <script>
     const base_url = "{{ url('/') }}/";
 $(document).ready(function(){
-  let table = new DataTable('#users-list-table');
+  let table = new DataTable('#users-list-table',{
+    response:true
+  });
 })
     $('.board_change').on('change', setBoard)
     async function setBoard() {
