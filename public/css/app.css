@@ -344,6 +344,14 @@ button * {
 	.onboarding-font-size-30{
 		font-size: 30px;
 	}
+
+	.onboarding-margin-top-0{
+		margin-top:0px !important;
+	}
+
+	.onboarding-min-height-120{
+		min-height:120px !important;
+	}
 	
 }
 @media (min-width: 768px) and (max-width: 991px) {
