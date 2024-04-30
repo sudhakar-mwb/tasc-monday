@@ -4,7 +4,7 @@
     @include('admin.headtitle')
     <div class="w-100 mt-5" style="position: relative">
         <div id="loader" class="blurry w-100" style="height: 100vh;"></div>
-        <div style="margin:0px; height:90vh;position: relative"class="w-100" id="iframe-chart">
+        <div style="margin:0px; height:130vh;position: relative"class="w-100" id="iframe-chart">
             <?php echo $embed_code; ?>
             <div class="w-100 bottom-blur" style="height: 50px"></div>
         </div>
