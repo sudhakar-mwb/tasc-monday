@@ -111,7 +111,7 @@ class DashboardController extends Controller
             }], operator: or }';
         }
         if ($isStatusFilterAvailable) {
-            $operation_query .= '{ rules: [{column_id: "status8", compare_value: [' . request()->input('status_filter') . ']}]
+          $operation_query .= '{ rules: [{column_id: "status8", compare_value: [' . request()->input('status_filter') . ']}]
             ,operator: and  }';
         }
         $operation_query .= "]
@@ -983,20 +983,21 @@ class DashboardController extends Controller
     return $newResponse;
   }
 
-  public function usersDelete (Request $request) {
-     // Get the ID of the record you want to delete
-     $record = MondayUsers::where('id', $request->id)->first();
+  public function usersDelete(Request $request)
+  {
+    // Get the ID of the record you want to delete
+    $record = MondayUsers::where('id', $request->id)->first();
 
-     if (!empty($record)) {
-         // Delete the record based on the retrieved ID
-         $deletedCount = MondayUsers::where('id', $request->id)->delete();
-         if ($deletedCount > 0) {
-          return redirect()->route('admin.users',['success'=> true]);
-         } else {
-          return redirect()->route('admin.users',['success'=> false]);
-         }
-     } else {
-      return redirect()->route('admin.users',['success'=> false]);
-     }
+    if (!empty($record)) {
+      // Delete the record based on the retrieved ID
+      $deletedCount = MondayUsers::where('id', $request->id)->delete();
+      if ($deletedCount > 0) {
+        return redirect()->route('admin.users', ['success' => true]);
+      } else {
+        return redirect()->route('admin.users', ['success' => false]);
+      }
+    } else {
+      return redirect()->route('admin.users', ['success' => false]);
+    }
   }
 }
