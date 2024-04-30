@@ -931,7 +931,8 @@ class DashboardController extends Controller
           boards(ids: " . auth()->user()->board_id . ") {
               columns {
                 title
-                id
+                id,
+                settings_str
               }
               items_page (limit: $tolalData, cursor:" . $cursor . " {$operation_query}) {
                 cursor

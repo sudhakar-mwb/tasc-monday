@@ -22,7 +22,27 @@ $settings = Session::get('settings');
 </head>
 
 <body>
-
+  <style>
+    *{
+      margin-block-start: 0px;
+      padding: 0px;
+      margin: 0px;
+     
+    }
+    body{
+      width: 100%;
+      box-sizing: border-box
+      height: 100vh;
+    }
+    @media screen and (max-width: 600px) {
+    body {
+        /* Scale down the body content */
+        transform: scale(0.8) !important;
+        /* Adjust the scale factor as needed */
+        /* Add any other styles for smaller screens */
+    }
+}
+  </style>
     <?php
     $settings = Session::get('settings');
     echo " <style>
