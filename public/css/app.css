@@ -317,9 +317,32 @@ button * {
 		font-size:14px !important;
 	}
 
-
 	.onboardin-padding-24{
 		padding-left:24px;
+	}
+
+	.onboarding-text-align-left{
+		text-align: left;
+	}
+
+	.onboarding-display-none::before{
+		display:none;
+	}
+
+	.onboarding-padding-left-0{
+		padding-left: 0px !important;
+	}
+
+	.onboarding-display-block{
+		display:block;
+	}
+
+	.onboarding-margin-top-16{
+		margin-top:16px !important;
+	}
+
+	.onboarding-font-size-30{
+		font-size: 30px;
 	}
 	
 }
@@ -381,6 +404,13 @@ button * {
 		padding-left:24px;
 	}
 	
+	.onboarding-text-align-left{
+		text-align: left;
+	}
+
+
+
+
 }
 
 

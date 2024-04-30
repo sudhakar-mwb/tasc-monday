@@ -313,19 +313,19 @@ function dateFormater($dateString)
                     <div
                         class="track-card h-100 p-4  @php echo getClass(strtoupper(getValueById($trackdata[$x]['column_values'],'status8','text')),$status_color) @endphp rounded-3">
                         <nav style="--bs-breadcrumb-divider: '|';" aria-label="breadcrumb">
-                            <ol class="breadcrumb">
-                                <li class="breadcrumb-item text-secondary"><a
+                            <ol class="breadcrumb onboarding-display-block">
+                                <li class="breadcrumb-item text-secondary onboarding-text-align-left"><a
                                         class="text-secondary fs-s text-decoration-none"
                                         href="#">{{ $column1 }}</a>
                                 </li>
-                                <li class="breadcrumb-item  text-secondary" aria-current="page"><span class="fs-s">
+                                <li class="breadcrumb-item  text-secondary onboarding-text-align-left onboarding-display-none onboarding-padding-left-0" aria-current="page"><span class="fs-s">
                                         Created at {{ dateFormater($trackdata[$x]['created_at']) }}
 
                                     </span></li>
                             </ol>
                         </nav>
                         <h4 class="card-name ff-hind text-start mt-2 mb-2">@php echo $trackdata[$x]['name']; @endphp</h4>
-                        <h5 class="card-column2 text-start mt-4">{{ $column2 }}</h5>
+                        <h5 class="card-column2 text-start mt-4 onboarding-margin-top-16">{{ $column2 }}</h5>
                         <h6 class="card-status text-start mt-3 track-profession fw-bold">@php echo  strtoupper(findElementByTitle('Overall Status',$columns,$trackdata[$x],'text')); @endphp</h6>
                         <a class="text-decoration-none"
                             href="/onboardify/form/track-request/{{ $trackdata[$x]['id'] }}/{{ str_replace(' ', '_', $trackdata[$x]['name']) }}">
