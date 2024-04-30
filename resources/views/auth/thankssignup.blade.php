@@ -20,7 +20,8 @@
 
         <?php }?>
     </h2>
-    @include('admin.headtitle')
 
+    @include('admin.headtitle')
+<button class="btn btn-primary btn-lg" onclick="window.history.back()">Back</button>
 </main>
 @include('includes.footer')

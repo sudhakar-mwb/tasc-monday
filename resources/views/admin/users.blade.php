@@ -11,7 +11,7 @@ if( isset($_GET['success'])) {
    $msg=$_GET['success']=='1'?'Record deleted successfully.':'Something wents wrong. Try again.';
 }
 ?>
-<main class="px-3 pt-5">
+<main class="px-3">
     @include('admin.headtitle')
     @if ($success != null)
     <div class="d-flex justify-content-center">
