@@ -168,7 +168,7 @@ $settings = Session::get('settings');
                 <div class="row">
 
                     @foreach ($cards as $card)
-                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 270px">
+                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 250px">
                         <div>
                             <div class="header-icons">
                                 {!! $card['icon'] !!}
