@@ -152,10 +152,6 @@ if ($joiningDate !== null && validText($joiningDate)) {
     $joiningDate = 'NA';
 }
 
-// dd($profileStatus);
-// dd($status_color);
-// $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance'];
-
 ?>
 <main class="px-3 pt-2 onboarding-paddingtop">
     <div class="w-100 mt-3">
@@ -259,7 +255,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                                     <span>
                                         @if ($flag !== '')
                                             <img height="20" width="22" src="{{ $flag }}"
-                                                alt="">
+                                                alt="{{ $flag }}">
                                         @endif
                                     </span>
                                 </li>
