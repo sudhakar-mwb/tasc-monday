@@ -142,6 +142,9 @@ class AuthController extends Controller
                 $admin_email = env('MAIL_FROM_ADDRESS'); // admin ,mail
                 // return view('mail.forget-password', ['mail_data' => $verificationData]);
                 // $mail_body   = view('mail.forget-password', ['mail_data' => $verificationData]);
+                $get_data   = SiteSettings::where('id', '=', 1)->first()->toArray();
+                $logo_image = json_decode($get_data['ui_settings']);
+                // return $next($request);
                 $mail_body   = '<!DOCTYPE html>
                 <html>
                 <head>
@@ -181,8 +184,8 @@ class AuthController extends Controller
                 </head>
                 <body>
                     <div class="container">
-                        <div class="logo">
-                            <img src="https://spent.rf.gd/transparent_logo.png" alt="TASC Logo">
+                        <div class="logo" style="width: 100%; display:flex; justify-content:center">
+                            <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : '')).' alt="TASC Logo">
                         </div>
                         <div class="message">
                             <p>Hello ' . $verificationData['name'] . ',</p>
@@ -191,7 +194,7 @@ class AuthController extends Controller
                             <p><a style="color:#ffff;" href="' .$verificationData['link']  . '" class="button">Reset Password</a></p>
                             <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
                             <p>This link will expire in 1 hr for security reasons.</p>
-                            <p>If you have any questions, please contact us at test@gamil.com.</p>
+                            <p>If you have any questions, please contact us at KSAAutomation@tascoutsourcing.com</p>
                         </div>
                     </div>
                 </body>
@@ -209,43 +212,108 @@ class AuthController extends Controller
                     // $status = 'success';
                     // return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
 
-                    $mj = new \Mailjet\Client(getenv('MJ_APIKEY_PUBLIC'), getenv('MJ_APIKEY_PRIVATE'),true,['version' => 'v3.1']);
-                    $body = [
-                        'Messages' => [
-                            [
-                                'From' => [
-                                    'Email' => "noreply@tasc360.com",
-                                    'Name'  => "TASC"
-                                ],
-                                'To' => [
-                                    [
-                                        'Email' => $verificationData['email'],
-                                        'Name'  => $verificationData['name'],
-                                    ]
-                                ],
-                                'Subject'  => "Reset Password",
-                                'TextPart' => "Greetings from Mailjet!",
-                                'HTMLPart' => $mail_body
-                            ]
-                        ]
-                    ];
+                    // $mj = new \Mailjet\Client(getenv('MJ_APIKEY_PUBLIC'), getenv('MJ_APIKEY_PRIVATE'),true,['version' => 'v3.1']);
+                    // $body = [
+                    //     'Messages' => [
+                    //         [
+                    //             'From' => [
+                    //                 'Email' => "noreply@tasc360.com",
+                    //                 'Name'  => "TASC"
+                    //             ],
+                    //             'To' => [
+                    //                 [
+                    //                     'Email' => $verificationData['email'],
+                    //                     'Name'  => $verificationData['name'],
+                    //                 ]
+                    //             ],
+                    //             'Subject'  => "Reset Password",
+                    //             'TextPart' => "Greetings from Mailjet!",
+                    //             'HTMLPart' => $mail_body
+                    //         ]
+                    //     ]
+                    // ];
 
-                    $response = $mj->post(Resources::$Email, ['body' => $body]);
+                    // $response = $mj->post(Resources::$Email, ['body' => $body]);
 
-                    if ($response->getData()['StatusCode'] == 200) {
-                        $response = DB::table('monday_users')->where('id', $getUser->id)->update(['email_exp' => $dataToEncrypt['email_exp']]);
-                        $msg    = 'Success, Verification Mail Sent.';
-                        $status = 'success';
-                        return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
-                    }else{
-                        $msg    = 'Forgot Password mail not send. Sinch mailjet response -> '.$response->getData()['ErrorMessage'];
+                    // if ($response->getData()['StatusCode'] == 200) {
+                    //     $response = DB::table('monday_users')->where('id', $getUser->id)->update(['email_exp' => $dataToEncrypt['email_exp']]);
+                    //     $msg    = 'Success, Verification Mail Sent.';
+                    //     $status = 'success';
+                    //     return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
+                    // }else{
+                    //     $msg    = 'Forgot Password mail not send. Sinch mailjet response -> '.$response->getData()['ErrorMessage'];
+                    //     $status = 'danger';
+                    //     if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2) ) {
+                    //         return view('auth.forgotForAdmin', compact('heading', 'subheading', 'msg', 'status'), );
+                    //     }
+                    //     return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
+                    // }
+
+                    $email   = "KSAAutomation@tascoutsourcing.com";
+                    $body    =  $mail_body;
+                    $subject = "Reset Password";
+
+                    $data = array(
+                        "personalizations" => array(
+                            array(
+                                "to" =>array(
+                                    array(
+
+                                        "email" => $verificationData['email'],
+                                        "name"  => $verificationData['name']
+                                    )
+                                )
+                            )
+                        ),
+
+                        "from" => array(
+                            "email"=> $email
+                        ),
+
+                        "subject" =>$subject,
+                        "content" =>array(
+                            array(
+                                "type" => "text/html",
+                                "value" => $body
+                            )
+                        )
+                    );
+
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => 'https://api.sendgrid.com/v3/mail/send',
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 30,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'POST',
+                        CURLOPT_POSTFIELDS => json_encode($data),
+                        CURLOPT_HTTPHEADER => array(
+                            'Authorization: Bearer ' . env('SENDGRID_API_KEY'),
+                            'Content-Type: application/json'
+                        ),
+                    ));
+
+                    $response = curl_exec($curl);
+                    $err = curl_error($curl);
+                    curl_close($curl);
+
+                    if ($err) {
+                        $msg    = 'Forgot Password mail not send. Please check sendgrid activity log.';
                         $status = 'danger';
                         if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2) ) {
                             return view('auth.forgotForAdmin', compact('heading', 'subheading', 'msg', 'status'), );
                         }
                         return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
+                    } else {
+                        $msg    = 'Success, Verification Mail Sent.';
+                        $status = 'success';
+                        if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2) ) {
+                            return view('auth.forgotForAdmin', compact('heading', 'subheading', 'msg', 'status'), );
+                        }
+                        return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
                     }
-    
                 }
                 catch(\Exception $e)
                 {
