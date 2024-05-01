@@ -238,9 +238,9 @@ if ($joiningDate !== null && validText($joiningDate)) {
                             if(str_contains( $col['id'],'country')||str_contains( $col['id'],'national')){
                               $flag = getValueById($columns_val, $col['id'], 'value');
                               $flag = json_decode($flag);
-                              $flag = $flag->countryCode ?? null;
+                              $flag = $flag->countryCode ?? "";
                            
-                              $flag = $flag ? (countryFlag($flag)?? null) : null;
+                              $flag = $flag ? (countryFlag($flag)?? "") : "";
                             
                             }
                           
