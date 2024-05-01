@@ -157,7 +157,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
 // $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance'];
 
 ?>
-<main class="px-3 pt-5 onboarding-paddingtop">
+<main class="px-3 pt-2 onboarding-paddingtop">
     <div class="w-100 mt-3">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb onboarding-fs-14">
