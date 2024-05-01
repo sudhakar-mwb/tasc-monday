@@ -22,7 +22,27 @@ $settings = Session::get('settings');
 </head>
 
 <body>
-
+  <style>
+    *{
+      margin-block-start: 0px;
+      padding: 0px;
+      margin: 0px;
+     
+    }
+    body{
+      width: 100%;
+      box-sizing: border-box
+      height: 100vh;
+    }
+    @media screen and (max-width: 600px) {
+    body {
+        /* Scale down the body content */
+        transform: scale(0.8) !important;
+        /* Adjust the scale factor as needed */
+        /* Add any other styles for smaller screens */
+    }
+}
+  </style>
     <?php
     $settings = Session::get('settings');
     echo " <style>
@@ -137,18 +157,18 @@ $settings = Session::get('settings');
         <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
 
             <main class="">
-                <p class="lead mt-3">
+                <p class="lead m-2">
                     <a href="#" class="btn btn-lg btn-light text-dark fw-bold border-white bg-white" style="font-size: 26px;font-weight:700;color:#434343">Welcome
                         to</a>
                 </p>
-                <h1 class="header-heading1 mt-2 mb-4 fw-bold " style="color:{{ $settings->head_title_color ?? null }}">
+                <h1 class="header-heading1 mt-2 mb-2 fw-bold " style="color:{{ $settings->head_title_color ?? null }}">
                     {{ $heading }}
                 </h1>
-                <p class="lead">
+                {{-- <p class="lead"> --}}
                 <div class="row">
 
                     @foreach ($cards as $card)
-                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 300px">
+                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 240px">
                         <div>
                             <div class="header-icons">
                                 {!! $card['icon'] !!}
@@ -170,7 +190,12 @@ $settings = Session::get('settings');
                     @endforeach
                     <!-- /.col-lg-4 --><!-- /.col-lg-4 -->
                 </div>
-                </p>
+               <style>
+                .header-icons{
+                  height: 4rem;
+                }
+
+               </style>
 
             </main>
 
