@@ -1,4 +1,4 @@
-da@include('includes.header')
+@include('includes.header')
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.dataTables.css" />
   
 <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
