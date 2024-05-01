@@ -232,18 +232,13 @@ if ($joiningDate !== null && validText($joiningDate)) {
                             @foreach ($candidate_coulmns as $col)
                                 <?php 
                             $text=getValueById($columns_val, $col['id'], 'text')??"NA";
-                            // dd($columns_val);
                             $flag="";
-                     
                             if(str_contains( $col['id'],'country')||str_contains( $col['id'],'national')){
                               $flag = getValueById($columns_val, $col['id'], 'value');
                               $flag = json_decode($flag);
                               $flag = $flag->countryCode ?? "";
-                           
                               $flag = $flag ? (countryFlag($flag)?? "") : "";
-                            
                             }
-                          
                             if(validText($text))
                            {
                             ?>
