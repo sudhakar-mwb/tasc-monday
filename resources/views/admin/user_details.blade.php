@@ -11,23 +11,8 @@ function countryFlag($countryCode)
     } else {
         return '';
     }
-    // Convert each letter of the country code to its corresponding regional indicator symbol
-    $flag = '';
-    foreach (str_split($countryCode) as $char) {
-        // Check if the character is an uppercase letter
-        if (ctype_upper($char)) {
-            // Convert the letter to its corresponding Unicode regional indicator symbol
-            $flag .= mb_convert_encoding('&#' . (ord($char) + 127397) . ';', 'UTF-8', 'HTML-ENTITIES');
-        } else {
-            // If the character is not an uppercase letter, append it as is
-            $flag .= $char;
-        }
-    }
-
-    return $flag;
 }
 $status_color = $data['status_color'];
-// print_r($status_color);
 $candidate_coulmns = $data['candidate_coulmns'];
 $onboarding_columns = $data['onboarding_columns'];
 $sub_headings_column = $data['sub_headings_column'];
@@ -171,6 +156,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
         <div class="d-flex mt-5 w-100 onboarding-flexcolumn" style="gap:20px">
             <div class="col-6 d-flex flex-column onboarding-width" style="gap:30px">
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <div class="d-flex mb-2 onboardin-padding-24" style="gap:16px">
                     <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
 =======
@@ -178,6 +164,10 @@ if ($joiningDate !== null && validText($joiningDate)) {
                     <div
                         class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
 >>>>>>> 6cf6ba00fb3413911d46daf62e52dfc640459b44
+=======
+                <div class="d-flex mb-2 onboardin-padding-24" style="gap:16px">
+                    <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
+>>>>>>> 40b871c77cdc5a16f96b64e280426376ee5a348f
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
                             <svg xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
                                 xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"
