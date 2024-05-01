@@ -11,23 +11,8 @@ function countryFlag($countryCode)
     } else {
         return '';
     }
-    // Convert each letter of the country code to its corresponding regional indicator symbol
-    $flag = '';
-    foreach (str_split($countryCode) as $char) {
-        // Check if the character is an uppercase letter
-        if (ctype_upper($char)) {
-            // Convert the letter to its corresponding Unicode regional indicator symbol
-            $flag .= mb_convert_encoding('&#' . (ord($char) + 127397) . ';', 'UTF-8', 'HTML-ENTITIES');
-        } else {
-            // If the character is not an uppercase letter, append it as is
-            $flag .= $char;
-        }
-    }
-
-    return $flag;
 }
 $status_color = $data['status_color'];
-// print_r($status_color);
 $candidate_coulmns = $data['candidate_coulmns'];
 $onboarding_columns = $data['onboarding_columns'];
 $sub_headings_column = $data['sub_headings_column'];
@@ -151,10 +136,6 @@ if ($joiningDate !== null && validText($joiningDate)) {
 } else {
     $joiningDate = 'NA';
 }
-
-// dd($profileStatus);
-// dd($status_color);
-// $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance'];
 
 ?>
 <main class="px-3 pt-5 onboarding-paddingtop">
