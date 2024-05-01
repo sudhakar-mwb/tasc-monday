@@ -155,19 +155,9 @@ if ($joiningDate !== null && validText($joiningDate)) {
     <div class="w-100">
         <div class="d-flex mt-5 w-100 onboarding-flexcolumn" style="gap:20px">
             <div class="col-6 d-flex flex-column onboarding-width" style="gap:30px">
-<<<<<<< HEAD
-<<<<<<< HEAD
+
                 <div class="d-flex mb-2 onboardin-padding-24" style="gap:16px">
                     <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
-=======
-                <div class="d-flex mb-2" style="gap:16px">
-                    <div
-                        class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
->>>>>>> 6cf6ba00fb3413911d46daf62e52dfc640459b44
-=======
-                <div class="d-flex mb-2 onboardin-padding-24" style="gap:16px">
-                    <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
->>>>>>> 40b871c77cdc5a16f96b64e280426376ee5a348f
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
                             <svg xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
                                 xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"
