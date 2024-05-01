@@ -3,10 +3,14 @@
 
 <?php
 
-function countryFlag($countryCode) {
-    // Convert the country code to uppercase
-    $countryCode = strtoupper($countryCode);
-    
+function countryFlag($countryCode)
+{
+    $countryCode = strtolower($countryCode);
+    if (File::exists(public_path('asset/flags/' . $countryCode . '.svg'))) {
+        return asset('asset/flags/' . $countryCode . '.svg');
+    } else {
+        return '';
+    }
     // Convert each letter of the country code to its corresponding regional indicator symbol
     $flag = '';
     foreach (str_split($countryCode) as $char) {
@@ -19,7 +23,7 @@ function countryFlag($countryCode) {
             $flag .= $char;
         }
     }
-    
+
     return $flag;
 }
 $status_color = $data['status_color'];
@@ -148,12 +152,8 @@ if ($joiningDate !== null && validText($joiningDate)) {
     $joiningDate = 'NA';
 }
 
-// dd($profileStatus);
-// dd($status_color);
-// $onboardings = ['Visa Issuance', 'Visa / E-wakala', 'Degree Attestation', 'Police Clearance'];
-
 ?>
-<main class="px-3 pt-5 onboarding-paddingtop">
+<main class="px-3 pt-2 onboarding-paddingtop">
     <div class="w-100 mt-3">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb onboarding-fs-14 onboardin-padding-24">
@@ -170,8 +170,14 @@ if ($joiningDate !== null && validText($joiningDate)) {
     <div class="w-100">
         <div class="d-flex mt-5 w-100 onboarding-flexcolumn" style="gap:20px">
             <div class="col-6 d-flex flex-column onboarding-width" style="gap:30px">
+<<<<<<< HEAD
                 <div class="d-flex mb-2 onboardin-padding-24" style="gap:16px">
                     <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
+=======
+                <div class="d-flex mb-2" style="gap:16px">
+                    <div
+                        class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
+>>>>>>> 6cf6ba00fb3413911d46daf62e52dfc640459b44
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
                             <svg xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
                                 xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"
@@ -197,7 +203,8 @@ if ($joiningDate !== null && validText($joiningDate)) {
                     </div>
                     <div class="d-flex flex-column justify-content-around">
                         <h5 class="text-start m-0 card-user-name onboarding-fs-24">{{ $name }}</h5>
-                        <p class="profession m-0 text-start user-candidate-column onboarding-fs-14" style="font-weight: 400">
+                        <p class="profession m-0 text-start user-candidate-column onboarding-fs-14"
+                            style="font-weight: 400">
                             <?php
                             
                             $str = [];
@@ -223,24 +230,20 @@ if ($joiningDate !== null && validText($joiningDate)) {
                 </div>
                 <div class="w-100">
                     <div class="card border-0 border-1 p-4">
-                        <p class="column-head text-start head-color fw-bold pb-4 border-bottom onboarding-fs-20">Candidate Information
+                        <p class="column-head text-start head-color fw-bold pb-4 border-bottom onboarding-fs-20">
+                            Candidate Information
                             </h4>
                         <ul class="list-group list-group-flush">
                             @foreach ($candidate_coulmns as $col)
                                 <?php 
                             $text=getValueById($columns_val, $col['id'], 'text')??"NA";
-                            // dd($columns_val);
                             $flag="";
-                     
                             if(str_contains( $col['id'],'country')||str_contains( $col['id'],'national')){
                               $flag = getValueById($columns_val, $col['id'], 'value');
                               $flag = json_decode($flag);
-                              $flag = $flag->countryCode ?? null;
-                           
-                              $flag = $flag ? (countryFlag($flag)?? null) : null;
-                            
+                              $flag = $flag->countryCode ?? "";
+                              $flag = $flag ? (countryFlag($flag)?? "") : "";
                             }
-                          
                             if(validText($text))
                            {
                             ?>
@@ -248,7 +251,13 @@ if ($joiningDate !== null && validText($joiningDate)) {
                                     style="background: inherit;gap:12px"><span class="mb-2">
                                         <i class="bi {{ $col['icon'] ? $col['icon'] : 'bi-info-circle' }}"></i>
                                     </span><span>
-                                        {{ $col['custom_title'] ? $col['custom_title'] . ': ' : '' }}{{ $text }}</span><span>{{ $flag }}</span>
+                                        {{ $col['custom_title'] ? $col['custom_title'] . ': ' : '' }}{{ $text }}</span>
+                                    <span>
+                                        @if ($flag !== '')
+                                            <img height="20" width="22" src="{{ $flag }}"
+                                                alt="{{ $flag }}">
+                                        @endif
+                                    </span>
                                 </li>
                                 <?php }?>
                             @endforeach
@@ -256,7 +265,8 @@ if ($joiningDate !== null && validText($joiningDate)) {
                         </ul>
                     </div>
                     <div class="card border-0 border-1 p-4">
-                        <h4 class="text-start head-color fw-bold pb-4 border-bottom onboarding-fs-20">Onboarding Status</h4>
+                        <h4 class="text-start head-color fw-bold pb-4 border-bottom onboarding-fs-20">Onboarding Status
+                        </h4>
                         <ul class="list-group list-group-flush">
                             @foreach ($onboarding_columns as $step)
                                 <?php
@@ -297,7 +307,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                                                     <path fill-rule="evenodd"
                                                         d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
                                                 </svg> {{ $status }} |
-                                                {{ (isset($valued['changed_at'])&&$valued !== null )? dateFormater($valued['changed_at']) : 'Pending' }}
+                                                {{ isset($valued['changed_at']) && $valued !== null ? dateFormater($valued['changed_at']) : 'Pending' }}
                                             </span>
                                         @endif
                                     </div>
@@ -386,13 +396,10 @@ if ($joiningDate !== null && validText($joiningDate)) {
         font-size: 19px
     }
 
-    .onboarding-button{
-        display:flex;
-        flex-direction:row;
+    .onboarding-button {
+        display: flex;
+        flex-direction: row;
         justify-content: space-evenly;
     }
-
-
-
 </style>
 @include('includes.footer')

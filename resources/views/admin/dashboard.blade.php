@@ -22,7 +22,13 @@ $settings = Session::get('settings');
 </head>
 
 <body>
-
+  <style>
+    *{
+      padding: 0px;
+      margin: 0px;
+     
+    }
+  </style>
     <?php
     $settings = Session::get('settings');
     echo " <style>
@@ -122,41 +128,31 @@ $settings = Session::get('settings');
             })
         })
     </script>
-    <style>
-        .remove-notification {
-            rotate: 180deg;
-        }
 
-        .banner-content {
-            font-weight: 600
-        }
-    </style>
     <div class=" container d-flex flex-column h-100 text-center">
-
-
         <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
 
             <main class="">
-                <p class="lead mt-3">
+                <p class="lead m-2">
                     <a href="#" class="btn btn-lg btn-light text-dark fw-bold border-white bg-white" style="font-size: 26px;font-weight:700;color:#434343">Welcome
                         to</a>
                 </p>
-                <h1 class="header-heading1 mt-2 mb-4 fw-bold " style="color:{{ $settings->head_title_color ?? null }}">
+                <h1 class="header-heading1 mt-2 mb-2 fw-bold " style="color:{{ $settings->head_title_color ?? null }}">
                     {{ $heading }}
                 </h1>
-                <p class="lead">
+                {{-- <p class="lead"> --}}
                 <div class="row">
 
                     @foreach ($cards as $card)
-                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 300px">
+                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 220px">
                         <div>
                             <div class="header-icons">
                                 {!! $card['icon'] !!}
                             </div>
-                            <h2 class="fw-bold mt-3 mb-3 fs-3">{{ $card['title'] }}</h2>
-                            <p style="font-size: 1.1rem;color:#928f8f">{{ $card['description'] }}</p>
+                            <h2 class="card-titles fw-bold mt-3 mb-3 fs-3">{{ $card['title'] }}</h2>
+                            <p class="card-desc" style="font-size: 1.1rem;color:#928f8f">{{ $card['description'] }}</p>
                         </div>
-                        <p>
+                        <p class="mb-0">
                             <a class="btn btn-secondary btn-gradiant mt-2" href={{ $card['link'] }}>
                                 <span class="fs-6">{{ $card['btn_text'] }}</span> &nbsp;
                                 <span style="float:right"><svg height="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve" style="max-width:100%">
@@ -170,7 +166,90 @@ $settings = Session::get('settings');
                     @endforeach
                     <!-- /.col-lg-4 --><!-- /.col-lg-4 -->
                 </div>
-                </p>
+               <style>
+
+        .remove-notification {
+            rotate: 180deg;
+        }
+
+        .banner-content {
+            font-weight: 600
+        }
+                .header-icons{
+                  height: 4rem;
+                }
+             
+/* Extra small devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+ .lead{
+  margin-top: 20px !important
+ }
+  .row>div.col-lg-4, .header-heading1{
+                  margin-bottom:40px  !important
+                }
+}
+
+/* Small devices (phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .lead{
+  margin-top: 20px !important
+ } .lead{
+  margin-top: 20px !important
+ }
+  .row>div.col-lg-4,.header-heading1{
+                  margin-bottom:40px  !important
+                }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .lead{
+  margin-top: 20px !important
+ }
+  .row>div.col-lg-4,.header-heading1{
+                  margin-bottom:40px !important;
+                }
+
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  p.card-desc{
+    font-size: 1rem !important;
+  }
+
+  .header-icons{
+    height: 4rem;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+
+  p.card-desc{
+    font-size: 1rem !important;
+  }
+
+  .header-icons{
+    height: 5rem;
+  }
+}
+@media (min-width: 1500px) {
+  p.card-desc{
+    font-size: 1.2rem !important;
+  }
+
+  .header-icons{
+    height: 6rem;
+  }
+  .header-heading1{
+    margin-bottom: 20px !important
+  }
+.container{
+  max-width: 1480px !important;
+ }
+}
+               </style>
 
             </main>
 
