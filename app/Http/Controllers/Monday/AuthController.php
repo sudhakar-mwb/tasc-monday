@@ -322,6 +322,7 @@ class AuthController extends Controller
                         }
                         return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'), );
                     } else {
+                        $response = DB::table('monday_users')->where('id', $getUser->id)->update(['email_exp' => $dataToEncrypt['email_exp']]);
                         $msg    = 'Success, Verification Mail Sent.';
                         $status = 'success';
                         if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2) ) {
