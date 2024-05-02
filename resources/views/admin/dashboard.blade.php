@@ -24,24 +24,10 @@ $settings = Session::get('settings');
 <body>
   <style>
     *{
-      margin-block-start: 0px;
       padding: 0px;
       margin: 0px;
      
     }
-    body{
-      width: 100%;
-      box-sizing: border-box
-      height: 100vh;
-    }
-    @media screen and (max-width: 600px) {
-    body {
-        /* Scale down the body content */
-        transform: scale(0.8) !important;
-        /* Adjust the scale factor as needed */
-        /* Add any other styles for smaller screens */
-    }
-}
   </style>
     <?php
     $settings = Session::get('settings');
@@ -142,18 +128,8 @@ $settings = Session::get('settings');
             })
         })
     </script>
-    <style>
-        .remove-notification {
-            rotate: 180deg;
-        }
 
-        .banner-content {
-            font-weight: 600
-        }
-    </style>
     <div class=" container d-flex flex-column h-100 text-center">
-
-
         <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
 
             <main class="">
@@ -168,15 +144,15 @@ $settings = Session::get('settings');
                 <div class="row">
 
                     @foreach ($cards as $card)
-                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 240px">
+                    <div class="col-lg-4 d-flex flex-column justify-content-between" style="min-height: 220px">
                         <div>
                             <div class="header-icons">
                                 {!! $card['icon'] !!}
                             </div>
-                            <h2 class="fw-bold mt-3 mb-3 fs-3">{{ $card['title'] }}</h2>
-                            <p style="font-size: 1.1rem;color:#928f8f">{{ $card['description'] }}</p>
+                            <h2 class="card-titles fw-bold mt-3 mb-3 fs-3">{{ $card['title'] }}</h2>
+                            <p class="card-desc" style="font-size: 1.1rem;color:#928f8f">{{ $card['description'] }}</p>
                         </div>
-                        <p>
+                        <p class="mb-0">
                             <a class="btn btn-secondary btn-gradiant mt-2" href={{ $card['link'] }}>
                                 <span class="fs-6">{{ $card['btn_text'] }}</span> &nbsp;
                                 <span style="float:right"><svg height="25px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve" style="max-width:100%">
@@ -191,10 +167,88 @@ $settings = Session::get('settings');
                     <!-- /.col-lg-4 --><!-- /.col-lg-4 -->
                 </div>
                <style>
+
+        .remove-notification {
+            rotate: 180deg;
+        }
+
+        .banner-content {
+            font-weight: 600
+        }
                 .header-icons{
                   height: 4rem;
                 }
+             
+/* Extra small devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+ .lead{
+  margin-top: 20px !important
+ }
+  .row>div.col-lg-4, .header-heading1{
+                  margin-bottom:40px  !important
+                }
+}
 
+/* Small devices (phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .lead{
+  margin-top: 20px !important
+ } .lead{
+  margin-top: 20px !important
+ }
+  .row>div.col-lg-4,.header-heading1{
+                  margin-bottom:40px  !important
+                }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .lead{
+  margin-top: 20px !important
+ }
+  .row>div.col-lg-4,.header-heading1{
+                  margin-bottom:40px !important;
+                }
+
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  p.card-desc{
+    font-size: 1rem !important;
+  }
+
+  .header-icons{
+    height: 4rem;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+
+  p.card-desc{
+    font-size: 1rem !important;
+  }
+
+  .header-icons{
+    height: 5rem;
+  }
+}
+@media (min-width: 1500px) {
+  p.card-desc{
+    font-size: 1.2rem !important;
+  }
+
+  .header-icons{
+    height: 6rem;
+  }
+  .header-heading1{
+    margin-bottom: 20px !important
+  }
+.container{
+  max-width: 1480px !important;
+ }
+}
                </style>
 
             </main>

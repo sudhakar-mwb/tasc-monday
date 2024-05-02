@@ -158,5 +158,13 @@
         // 		});
         // 	});
     </script>
+    <style>
+
+        .onboarding-flrx-direction-column{
+            flex-direction:column;
+        }
+
+
+    </style>
 </main>
 @include('includes.footer')

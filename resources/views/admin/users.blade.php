@@ -37,7 +37,7 @@ if( isset($_GET['success'])) {
         }
     </script>
 
-<div >
+<div class="onboarding-overflow-x-auto">
   <table class="table border table-hover table-bordered" id="users-list-table">
     <thead>
         <tr>
@@ -172,6 +172,12 @@ $(document).ready(function(){
     }
  
 </script>
+<style>
+  .onboarding-overflow-x-auto{
+    overflow-x:auto;
+  }
+
+</style>
 
 
 @include('includes.footer')

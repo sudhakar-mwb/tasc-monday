@@ -4,7 +4,7 @@
 <main class="px-3">
     @include('admin.headtitle')
     @include('includes.links', ['active' => 'board-visiblilty'])
-    <div class="d-flex w-100 justify-content-center" style="gap:20px">
+    <div class="d-flex w-100 justify-content-center onboarding-flex-direction-column" style="gap:20px">
 
         <div title="coloumn visibility form" style="max-width:550px;width:100%;">
             <div class="bg-success text-white site-bg">
@@ -166,5 +166,14 @@
     .color-block>li>ul {
         margin-bottom: 15px
     }
+
+    @media screen and (max-width: 572px) {
+      
+        .onboarding-flex-direction-column{
+            flex-direction:column;
+        }
+    
+    }
+
 </style>
 @include('includes.footer')

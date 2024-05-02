@@ -138,7 +138,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
 }
 
 ?>
-<main class="px-3 pt-5 onboarding-paddingtop">
+<main class="px-3 pt-2 onboarding-paddingtop">
     <div class="w-100 mt-3">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
             <ol class="breadcrumb onboarding-fs-14 onboardin-padding-24">
@@ -155,6 +155,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
     <div class="w-100">
         <div class="d-flex mt-5 w-100 onboarding-flexcolumn" style="gap:20px">
             <div class="col-6 d-flex flex-column onboarding-width" style="gap:30px">
+
                 <div class="d-flex mb-2 onboardin-padding-24" style="gap:16px">
                     <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
@@ -216,18 +217,13 @@ if ($joiningDate !== null && validText($joiningDate)) {
                             @foreach ($candidate_coulmns as $col)
                                 <?php 
                             $text=getValueById($columns_val, $col['id'], 'text')??"NA";
-                            // dd($columns_val);
                             $flag="";
-                     
                             if(str_contains( $col['id'],'country')||str_contains( $col['id'],'national')){
                               $flag = getValueById($columns_val, $col['id'], 'value');
                               $flag = json_decode($flag);
-                              $flag = $flag->countryCode ?? null;
-                           
-                              $flag = $flag ? (countryFlag($flag)?? null) : null;
-                            
+                              $flag = $flag->countryCode ?? "";
+                              $flag = $flag ? (countryFlag($flag)?? "") : "";
                             }
-                          
                             if(validText($text))
                            {
                             ?>
@@ -239,7 +235,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                                     <span>
                                         @if ($flag !== '')
                                             <img height="20" width="22" src="{{ $flag }}"
-                                                alt="">
+                                                alt="{{ $flag }}">
                                         @endif
                                     </span>
                                 </li>
