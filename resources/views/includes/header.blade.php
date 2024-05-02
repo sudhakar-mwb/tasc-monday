@@ -73,8 +73,8 @@
                 @endphp
 
                 @if (in_array('form', $segments) && count($segments) > array_search('form', $segments) + 1)
-                    <a href="/onboardify/form" class="text-decoration-none">
-                        <button class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center justify-content-around"
+                    <a href="/onboardify/form" class="text-decoration-none ">
+                        <button class="hit-loading btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center justify-content-around"
                             type="button">
                             <span>
                                 Home
@@ -103,7 +103,7 @@
                 @endif
                 {{-- <a href="lo gin">Already have an Account?</a> --}}
                 <a id="log-btn" href="{{ route('monday.get.logout') }}"
-                    class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center justify-content-around">
+                    class="btn btn-to-link btn-secondary ms-3 btn-gradiant  d-flex align-items-center justify-content-around hit-loading">
                     <span>Log out</span>
                     <span class="icon-btn_track" style="height: 22px;width: 22px">
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"

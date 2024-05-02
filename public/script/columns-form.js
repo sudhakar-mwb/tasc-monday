@@ -17,10 +17,10 @@ const initial_state = {
 		column1: "",
 		column2: "",
 	},
-  required_columns:{
-    profession:"",
-    overall_status:""
-  },
+	required_columns: {
+		profession: "",
+		overall_status: "",
+	},
 	extra_details: {
 		key: "",
 		time_stamp: "",
@@ -197,12 +197,12 @@ $(document).ready(function () {
 			updateSelectedInOrder("#sub_headings", "sub_headings_column");
 		});
 
-	function showLoader() {
-		$("#full-loader").show();
-	}
-	function hideLoader() {
-		$("#full-loader").hide();
-	}
+	// function showLoader() {
+	// 	$("#full-loader").show();
+	// }
+	// function hideLoader() {
+	// 	$("#full-loader").hide();
+	// }
 
 	/**
 	 *
@@ -249,7 +249,7 @@ $(document).ready(function () {
 		$("#onboarding-updates-option").html(single_select_options);
 		$("#card-column-1").html(single_select_options);
 		$("#card-column-2").html(single_select_options);
-    $("#profession_column").html(single_select_options);
+		$("#profession_column").html(single_select_options);
 		$("#overall_status").html(single_select_options);
 		setValuesFromData();
 		step2.show();
@@ -281,7 +281,7 @@ $(document).ready(function () {
 		$("#onboarding-updates-option").val("");
 		$("#card-column-1").val("");
 		$("#card-column-2").val("");
-    $("#profession_column").val("");
+		$("#profession_column").val("");
 		$("#overall_status").val("");
 		$("#icon_inputs-wrapper").hide();
 		$("#chart_embed_code").val("");
@@ -309,10 +309,8 @@ $(document).ready(function () {
 
 		$("#card-column-1").val(data.card_section.column1);
 		$("#card-column-2").val(data.card_section.column2);
-    $("#profession_column").val(data.required_columns.profession);
+		$("#profession_column").val(data.required_columns.profession);
 		$("#overall_status").val(data.required_columns.overall_status);
-    
-
 	}
 
 	$("#onboarding-updates-option").change(function (e) {
@@ -414,7 +412,7 @@ $(document).ready(function () {
 
 				if (!response.ok) throw new Error("HTTP status " + response.status);
 				else {
-          response= await response.json()
+					response = await response.json();
 					if (response?.status) {
 						alert(response?.message);
 						hideLoader();
