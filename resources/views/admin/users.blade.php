@@ -178,7 +178,7 @@ if (isset($_GET['success'])) {
     overflow-x:auto;
   } */
     .dt-layout-row.dt-layout-table {
-        overflow: scroll
+        overflow-x: scroll
     }
 
     @media(max-width:769px) {
