@@ -17,6 +17,10 @@ const initial_state = {
 		column1: "",
 		column2: "",
 	},
+  required_columns:{
+    profession:"",
+    overall_status:""
+  },
 	extra_details: {
 		key: "",
 		time_stamp: "",
@@ -260,13 +264,14 @@ $(document).ready(function () {
 
 		$("#candidate_columns").html(options);
 		$("#onboarding_columns").html(options);
-		// $("#documents_columns").html(options);
 		$("#sub_headings").html(options);
 		const single_select_options =
 			'<option value="">-- Select Column --</option>' + options;
 		$("#onboarding-updates-option").html(single_select_options);
 		$("#card-column-1").html(single_select_options);
 		$("#card-column-2").html(single_select_options);
+    $("#profession_column").html(single_select_options);
+		$("#overall_status").html(single_select_options);
 		setValuesFromData();
 		step2.show();
 
@@ -293,11 +298,12 @@ $(document).ready(function () {
 	function resetFields() {
 		$("#candidate_columns").val(null).trigger("change");
 		$("#onboarding_columns").val(null).trigger("change");
-		// $("#documents_columns").val(null).trigger("change");
 		$("#sub_headings").val(null).trigger("change");
 		$("#onboarding-updates-option").val("");
 		$("#card-column-1").val("");
 		$("#card-column-2").val("");
+    $("#profession_column").val("");
+		$("#overall_status").val("");
 		$("#icon_inputs-wrapper").hide();
 		$("#chart_embed_code").val("");
 		$("#form_embed_code").val("");
@@ -324,6 +330,10 @@ $(document).ready(function () {
 
 		$("#card-column-1").val(data.card_section.column1);
 		$("#card-column-2").val(data.card_section.column2);
+    $("#profession_column").val(data.required_columns.profession);
+		$("#overall_status").val(data.required_columns.overall_status);
+    
+
 	}
 
 	$("#onboarding-updates-option").change(function (e) {
@@ -335,6 +345,12 @@ $(document).ready(function () {
 	});
 	$("#card-column-2").change(function (e) {
 		data.card_section.column2 = this.value;
+	});
+	$("#profession_column").change(function (e) {
+		data.required_columns.profession = this.value;
+	});
+	$("#overall_status").change(function (e) {
+		data.required_columns.overall_status = this.value;
 	});
 
 	$(document).ready(function () {

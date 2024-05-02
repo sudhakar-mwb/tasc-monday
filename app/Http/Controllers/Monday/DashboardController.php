@@ -96,12 +96,14 @@ class DashboardController extends Controller
       $sortAvailable = request()->has('sort_by_date') && trim(request()->input('sort_by_date') !== '');
       $isStatusFilterAvailable = request()->has('status_filter') && trim(request()->input('status_filter')) !== '' && request()->has('status_filter') != null;
       if ($searchAvailable || $isStatusFilterAvailable) {
+        $column_setting=json_decode($boardColumnMappingDbData);
+        $profession=$column_setting->required_columns->profession;
+        $overall_status=$column_setting->required_columns->overall_status;
         $operation_query = ', query_params: { groups:[';
-
         if ($searchAvailable) {
           $searchquery = request()->input('search');
           $operation_query .= ' { rules: [ {
-            column_id: "short_text1",
+            column_id: "'.$profession.'",
             compare_value: ["' . request()->input('search') . '"],
             operator: starts_with
           },
@@ -111,7 +113,7 @@ class DashboardController extends Controller
             }], operator: or }';
         }
         if ($isStatusFilterAvailable) {
-          $operation_query .= '{ rules: [{column_id: "status8", compare_value: [' . request()->input('status_filter') . ']}]
+          $operation_query .= '{ rules: [{column_id: "'.$overall_status.'", compare_value: [' . request()->input('status_filter') . ']}]
             ,operator: and  }';
         }
         $operation_query .= "]
@@ -487,7 +489,7 @@ class DashboardController extends Controller
     $status     = '';
     $heading    = "Registerd users";
     $subheading = "Stay informed and in control of the overall status of your onboarding requests";
-    $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->paginate(10);
+    $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->get();
     $query = 'query {
               boards(limit: 500) {
                 id
@@ -958,7 +960,9 @@ class DashboardController extends Controller
           }
         }";
 
-      $response = $this->_get($query)['response'];
+
+        $response = $this->_get($query)['response'];
+        // dd($response);
       if (!empty($response['data']['boards'][0]['items_page']['cursor'])) {
         $cursor =  "\"" . $response['data']['boards'][0]['items_page']['cursor'] . "\"";
       } else {

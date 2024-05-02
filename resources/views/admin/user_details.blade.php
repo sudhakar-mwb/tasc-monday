@@ -114,7 +114,6 @@ function initiatedDate($activityLog, $detail)
         if ($activity['data'] !== null) {
             foreach ($activity_data as $key => $value) {
                 if ($key == 'column_title' && $value == $detail) {
-                    // dd($activity['created_at']);
                     return date('F j, Y', $activity['created_at'] / 10000000);
                 }
             }
@@ -131,7 +130,6 @@ $VisaIssuanceValue = json_decode(findElementByTitle('Visa Issuance', $columns, $
 $VisaIssuancestatus = findElementByTitle('Visa Issuance', $columns, $trackdata, 'label');
 $joiningDate = $trackdata['created_at'];
 if ($joiningDate !== null && validText($joiningDate)) {
-    // dd($joiningDate);
     $joiningDate = dateFormater($joiningDate);
 } else {
     $joiningDate = 'NA';
@@ -286,8 +284,8 @@ if ($joiningDate !== null && validText($joiningDate)) {
                                                     viewBox="0 0 16 16">
                                                     <path fill-rule="evenodd"
                                                         d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
-                                                </svg> {{ $status }} |
-                                                {{ isset($valued['changed_at']) && $valued !== null ? dateFormater($valued['changed_at']) : 'Pending' }}
+                                                </svg> {{ $status }} 
+                                                {{ isset($valued['changed_at']) && $valued !== null ? '| '.dateFormater($valued['changed_at']) : '' }}
                                             </span>
                                         @endif
                                     </div>
