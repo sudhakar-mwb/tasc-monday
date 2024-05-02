@@ -43,17 +43,28 @@ class AuthController extends Controller
             ], $this->getErrorMessages());
 
            $userInDb = MondayUsers::loginUser(array( 'email' => trim($input['email']), 'password' =>  trim($input['password'])));
-
+           if ($userInDb['status'] == 'success') {
             $userCredential = $request->only('email','password');
             if(Auth::attempt($userCredential)){
                 $route = $this->redirectDash();
                 return redirect($route);
             }
-            else{
+           }elseif ($userInDb['status'] == 'not_verified'){
+
+            $msg    = "Your email has not been verified yet. Please check your email inbox";
+            $status = "danger";
+            return view('auth.login',compact('heading','subheading',  'msg', 'status'));
+           }elseif ($userInDb['status'] == 'wrong_pass'){
+
             $msg    = "Email or Password is incorrect.";
             $status = "danger";
             return view('auth.login',compact('heading','subheading',  'msg', 'status'));
-            }
+           }elseif ($userInDb['status'] == 'not_found'){
+
+            $msg    = "This user not found in database.";
+            $status = "danger";
+            return view('auth.login',compact('heading','subheading',  'msg', 'status'));
+           }
         }
         return view('auth.login', compact('heading', 'subheading', 'msg', 'status'), );
     }
@@ -92,6 +103,9 @@ class AuthController extends Controller
                 if ($insertUserInDB['status'] == "success") {
                     $msg    = "User Created Successfully.";
                     $status = "success";
+                    // send verification email
+                    $this->sendVerificationEmail($dataToSave);
+                    //
                     return $this->thankssignup();
                 } elseif ($insertUserInDB['status'] == "already") {
                     $msg    = "User Already Exists.";
@@ -184,7 +198,7 @@ class AuthController extends Controller
                 </head>
                 <body>
                     <div class="container">
-                        <div class="logo" style="width: 100%; display:flex; justify-content:center">
+                        <div class="logo" style="width: 100%; justify-content:center">
                             <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : '')).' alt="TASC Logo">
                         </div>
                         <div class="message">
@@ -481,5 +495,184 @@ class AuthController extends Controller
 
     public function test(){
       return $this->getSiteSettings();
+    }
+
+    public function sendVerificationEmail ($userData){
+
+        $dataToEncrypt = array(
+            'email' => trim($userData['email']),
+            'name'  => trim($userData['name']),
+        );
+
+        $linkHash         = Crypt::encrypt(json_encode($dataToEncrypt));
+        $verificationURL  = url('/').'/onboardify/verify/'.$linkHash;
+        $verificationData = array(
+            'name'       => trim($userData['name']),
+            'email'      => trim($userData['email']),
+            'link'       => $verificationURL
+        );
+
+        $get_data   = SiteSettings::where('id', '=', 1)->first()->toArray();
+        $logo_image = json_decode($get_data['ui_settings']);
+
+        $mail_body   = '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>MakeWebBetter | Reset Password</title>
+            <style>
+                /* Inline CSS styles */
+                body {
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #F9F9F9;
+                    border-radius: 5px;
+                }
+                .logo {
+                    text-align: center;
+                }
+                .logo img {
+                    width: 100px;
+                }
+                .message {
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                }
+                .button {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background-color: #007BFF;
+                    color: #fff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo" style="width: 100%; justify-content:center">
+                    <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : '')).' alt="TASC Logo">
+                </div>
+                <div class="message">
+                    <p>Hello ' . $verificationData['name'] . ',</p>
+                    <p>We received a request to verify your account. If you did not make this request, please ignore this email.</p>
+                    <p>To verify your account, click the button below:</p>
+                    <p><a style="color:#ffff;" href="' .$verificationData['link']  . '" class="button">Verify Account</a></p>
+                    <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
+                    <p>If you have any questions, please contact us at KSAAutomation@tascoutsourcing.com</p>
+                </div>
+            </div>
+        </body>
+        </html>';
+        try
+        {
+            $email   = "KSAAutomation@tascoutsourcing.com";
+            $body    =  $mail_body;
+            $subject = "Verify Account";
+
+            $data = array(
+                "personalizations" => array(
+                    array(
+                        "to" =>array(
+                            array(
+
+                                "email" => $verificationData['email'],
+                                "name"  => $verificationData['name']
+                            )
+                        )
+                    )
+                ),
+
+                "from" => array(
+                    "email"=> $email
+                ),
+
+                "subject" =>$subject,
+                "content" =>array(
+                    array(
+                        "type" => "text/html",
+                        "value" => $body
+                    )
+                )
+            );
+
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.sendgrid.com/v3/mail/send',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => json_encode($data),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: Bearer ' . env('SENDGRID_API_KEY'),
+                    'Content-Type: application/json'
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            // return true;
+        }
+        catch(\Exception $e)
+        {
+            // return true;
+        }
+    }
+
+    public function verify (Request $request){
+
+        if (!empty($request->token)) {
+            $decryptedData = Crypt::decrypt($request->token);
+            $decryptedData = json_decode($decryptedData, true);
+            if (!empty($decryptedData['email'])) {
+                $userInDb = MondayUsers::getUser(array( 'email' => $decryptedData['email'] ));
+                if ($userInDb) {
+                    if ($userInDb->status != '1') {
+                        $dataToUpdate = array(
+                            'status'     => '1',
+                            'updated_at' => date("Y-m-d H:i:s")
+                        );
+                        $params = array(
+                            'id' => $userInDb->id
+                        );
+                        $updateRes = MondayUsers::setUser( $params, $dataToUpdate );
+                        if ($updateRes) {
+                            $msg    = "Thank you, Your account verify successfully.";
+                            $status = "success";
+                            return redirect()->route('monday.get.login',compact('msg', 'status'));
+                        }else{
+                            $msg    = "Thank you, Your account has already been verified.";
+                            $status = "success";
+                            return redirect()->route('monday.get.login',compact('msg', 'status'));
+                        }
+                    }elseif($userInDb->status = '1'){
+                        $msg    = "Thank you, Your Account is already verified.";
+                        $status = "success";
+                        return redirect()->route('monday.get.login',compact('msg', 'status'));
+                    }
+                }else {
+                    $msg    = "This user ".$decryptedData['email']." record does not exist in our database.";
+                    $status = "danger";
+                    return redirect()->route('monday.get.login',compact('msg', 'status'));
+                }
+            }else{
+                $msg    = "Something went wrong. Your account verification link is not valid.";
+                $status = "danger";
+                return redirect()->route('monday.get.login',compact('msg', 'status'));
+            }
+        }else{
+            $msg    = "Your account verification link is not exist.";
+            $status = "danger";
+            return redirect()->route('monday.get.login',compact('msg', 'status'));
+        }
     }
 }
