@@ -199,7 +199,7 @@ class AuthController extends Controller
                 <body>
                     <div class="container">
                         <div class="logo" style="width: 100%; justify-content:center">
-                            <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : 'https://onboardify.tasc360.com/uploads/onboardify.png')).' alt="TASC Logo">
+                            <img src="https://onboardify.tasc360.com/uploads/onboardify.png" alt="TASC Logo">
                         </div>
                         <div class="message">
                             <p>Hello ' . $verificationData['name'] . ',</p>
@@ -207,6 +207,7 @@ class AuthController extends Controller
                             <p>To reset your password, click the button below:</p>
                             <p><a style="color:#ffff;" href="' .$verificationData['link']  . '" class="button">Reset Password</a></p>
                             <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
+                            <p> ' .$verificationData['link']. ' </p>
                             <p>This link will expire in 1 hr for security reasons.</p>
                             <p>If you have any questions, please contact us at KSAAutomation@tascoutsourcing.com</p>
                         </div>
@@ -555,7 +556,7 @@ class AuthController extends Controller
         <body>
             <div class="container">
                 <div class="logo" style="width: 100%; justify-content:center">
-                    <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : 'https://onboardify.tasc360.com/uploads/onboardify.png')).' alt="TASC Logo">
+                    <img src="https://onboardify.tasc360.com/uploads/onboardify.png" alt="TASC Logo">
                 </div>
                 <div class="message">
                     <p>Hello ' . $verificationData['name'] . ',</p>
@@ -563,6 +564,7 @@ class AuthController extends Controller
                     <p>To verify your account, click the button below:</p>
                     <p><a style="color:#ffff;" href="' .$verificationData['link']  . '" class="button">Verify Account</a></p>
                     <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
+                    <p> ' .$verificationData['link']. ' </p>
                     <p>If you have any questions, please contact us at KSAAutomation@tascoutsourcing.com</p>
                 </div>
             </div>
