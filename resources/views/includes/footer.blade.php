@@ -10,7 +10,7 @@
     </div>
     <style>
         .rotating-img {
-            animation: rotate 4s linear infinite;
+            animation: rotate 2s linear infinite;
             /* Adjust duration as needed */
         }
 
