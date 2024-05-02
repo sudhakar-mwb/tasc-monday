@@ -33,3 +33,19 @@ if (!empty($active)) {
 
     </ol>
 </nav>
+<style>
+    @media (max-width: 767px) {
+        .breadcrumb {
+            justify-content: space-around;
+            gap: 10px
+        }
+
+        .breadcrumb-item::before {
+            display: none
+        }
+
+        .breadcrumb-item+.breadcrumb-item {
+            padding-left: 0px
+        }
+    }
+</style>
