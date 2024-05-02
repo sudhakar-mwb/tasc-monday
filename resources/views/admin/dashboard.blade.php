@@ -226,7 +226,7 @@ $settings = Session::get('settings');
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
   .container{
-    max-width: 80% !important;
+    max-width: 90% !important;
  }
   p.card-desc{
     font-size: 1rem !important;
