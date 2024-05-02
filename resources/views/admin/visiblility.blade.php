@@ -85,6 +85,17 @@
                             <select id="card-column-2" class="form-select" aria-label="Default select example">
                             </select>
                         </div>
+                        <h5 class="text-secondary mt-5 mb-3 pb-2 border-bottom">Required Columns (For Search & Filter):</h5>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Profession column</label>
+                            <select id="profession_column" class="form-select" aria-label="Default select example" required>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Overall Status column</label>
+                            <select id="overall_status" class="form-select" aria-label="Default select example" required>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="d-grid gap-2 mt-5"> <button id="columns_details_submit" type="submit"

@@ -27,7 +27,6 @@ function countryFlag($countryCode)
     return $flag;
 }
 $status_color = $data['status_color'];
-// print_r($status_color);
 $candidate_coulmns = $data['candidate_coulmns'];
 $onboarding_columns = $data['onboarding_columns'];
 $sub_headings_column = $data['sub_headings_column'];
@@ -129,7 +128,6 @@ function initiatedDate($activityLog, $detail)
         if ($activity['data'] !== null) {
             foreach ($activity_data as $key => $value) {
                 if ($key == 'column_title' && $value == $detail) {
-                    // dd($activity['created_at']);
                     return date('F j, Y', $activity['created_at'] / 10000000);
                 }
             }
@@ -146,7 +144,6 @@ $VisaIssuanceValue = json_decode(findElementByTitle('Visa Issuance', $columns, $
 $VisaIssuancestatus = findElementByTitle('Visa Issuance', $columns, $trackdata, 'label');
 $joiningDate = $trackdata['created_at'];
 if ($joiningDate !== null && validText($joiningDate)) {
-    // dd($joiningDate);
     $joiningDate = dateFormater($joiningDate);
 } else {
     $joiningDate = 'NA';

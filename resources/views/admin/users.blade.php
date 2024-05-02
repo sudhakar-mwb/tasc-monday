@@ -118,7 +118,7 @@ if( isset($_GET['success'])) {
 </div>
     <div>
         <div class="card-footer clearfix">
-            {{ $mondayUsers->links() }}
+            {{-- {{ $mondayUsers->links() }} --}}
         </div>
     </div>
     <style>
