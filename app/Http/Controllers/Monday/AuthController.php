@@ -199,7 +199,7 @@ class AuthController extends Controller
                 <body>
                     <div class="container">
                         <div class="logo" style="width: 100%; justify-content:center">
-                            <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : '')).' alt="TASC Logo">
+                            <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : 'https://onboardify.tasc360.com/uploads/onboardify.png')).' alt="TASC Logo">
                         </div>
                         <div class="message">
                             <p>Hello ' . $verificationData['name'] . ',</p>
@@ -555,7 +555,7 @@ class AuthController extends Controller
         <body>
             <div class="container">
                 <div class="logo" style="width: 100%; justify-content:center">
-                    <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : '')).' alt="TASC Logo">
+                    <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : 'https://onboardify.tasc360.com/uploads/onboardify.png')).' alt="TASC Logo">
                 </div>
                 <div class="message">
                     <p>Hello ' . $verificationData['name'] . ',</p>
