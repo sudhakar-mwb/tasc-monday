@@ -277,7 +277,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                                             </svg>
                                             {{-- {{ $joiningDate }} --}}
                                             Initiated | {{ $joiningDate }}</span>
-                                        @if ($status != null)
+                                        @if ($status != null&&isset($valued['changed_at']))
                                             <span class="text-secondary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                     fill="currentColor" class="bi bi-arrow-right-short"
