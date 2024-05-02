@@ -246,7 +246,7 @@ $settings = Session::get('settings');
     margin-bottom: 20px !important
   }
 .container{
-  max-width: 1480px !important;
+  /* max-width: 1480px !important; */
  }
 }
                </style>

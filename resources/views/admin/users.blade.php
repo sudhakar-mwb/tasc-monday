@@ -182,9 +182,10 @@ if (isset($_GET['success'])) {
     }
 
     @media(max-width:769px) {
-.dt-info{
-  display: none
-}
+        .dt-info {
+            display: none
+        }
+
         .dt-length>label,
         .dt-search>label {
             display: none
