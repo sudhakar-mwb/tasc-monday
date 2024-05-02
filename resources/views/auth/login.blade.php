@@ -2,6 +2,12 @@
 
 <main class="pt-3">
     @include('admin.headtitle')
+    <?php
+    if (isset($_GET['status'])) {
+        $status = $_GET['status'];
+        $msg = $_GET['msg'];
+    }
+    ?>
     @if ($status != '')
         <div class="d-flex justify-content-center">
             <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }}</div>

@@ -49,11 +49,11 @@ class MondayUsers extends Model
         ->where(array('email' => $params[ 'email' ]))->first();
         if( !empty( $if_exists ) ) {
             if( Hash::check($params[ 'password' ], $if_exists->password) ) {
-                // if ($if_exists->status == '1') {
+                if ($if_exists->status == '1') {
                     $data = array( 'id' => $if_exists->id );
                     return array( 'status' => 'success', 'data' => $data );
-                // }
-                // return array( 'status' => 'not_verified' );
+                }
+                return array( 'status' => 'not_verified' );
             }
             return array( 'status' => 'wrong_pass' );
         }
