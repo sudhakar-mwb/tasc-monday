@@ -87,7 +87,7 @@
             $("#full-loader").show();
             setTimeout(() => {
                 $("#full-loader").hide();
-            }, 5000);
+            }, 6000);
         });
     })
 </script>
