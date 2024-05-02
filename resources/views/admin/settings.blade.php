@@ -9,7 +9,7 @@
             <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }} </div>
         </div>
     @endif
-    <div class="w-100 d-flex flex-column align-items-center">
+    <div class="w-100 d-flex flex-column align-items-center p-2">
         <div class="col-md-7 col-lg-8 text-start">
             <h4 class="mb-3"><i class="bi bi-gear-fill"></i><span class="mt-1 ms-2">General Settings</h4>
             <hr>
@@ -158,5 +158,13 @@
         // 		});
         // 	});
     </script>
+    <style>
+
+        .onboarding-flrx-direction-column{
+            flex-direction:column;
+        }
+
+
+    </style>
 </main>
 @include('includes.footer')

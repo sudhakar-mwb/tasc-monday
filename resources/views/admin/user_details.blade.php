@@ -11,20 +11,6 @@ function countryFlag($countryCode)
     } else {
         return '';
     }
-    // Convert each letter of the country code to its corresponding regional indicator symbol
-    $flag = '';
-    foreach (str_split($countryCode) as $char) {
-        // Check if the character is an uppercase letter
-        if (ctype_upper($char)) {
-            // Convert the letter to its corresponding Unicode regional indicator symbol
-            $flag .= mb_convert_encoding('&#' . (ord($char) + 127397) . ';', 'UTF-8', 'HTML-ENTITIES');
-        } else {
-            // If the character is not an uppercase letter, append it as is
-            $flag .= $char;
-        }
-    }
-
-    return $flag;
 }
 $status_color = $data['status_color'];
 $candidate_coulmns = $data['candidate_coulmns'];
@@ -153,7 +139,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
 <main class="px-3 pt-2 onboarding-paddingtop">
     <div class="w-100 mt-3">
         <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-            <ol class="breadcrumb onboarding-fs-14">
+            <ol class="breadcrumb onboarding-fs-14 onboardin-padding-24">
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
                         href="/onboardify/form"><u> {{ ucwords('Home') }}</u></a></li>
                 <li class="breadcrumb-item active"> <a class="inactive link-secondary text-decoration-none"
@@ -167,9 +153,9 @@ if ($joiningDate !== null && validText($joiningDate)) {
     <div class="w-100">
         <div class="d-flex mt-5 w-100 onboarding-flexcolumn" style="gap:20px">
             <div class="col-6 d-flex flex-column onboarding-width" style="gap:30px">
-                <div class="d-flex mb-2" style="gap:16px">
-                    <div
-                        class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
+
+                <div class="d-flex mb-2 onboardin-padding-24" style="gap:16px">
+                    <div class="rounded-circle bg-{{ getClass($profileStatus, $status_color) }} p-4 onboarding-rounded-circle">
                         <div class="icon-size text-light" style="height: 50px;width:50px;">
                             <svg xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
                                 xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"

@@ -142,28 +142,7 @@ $(document).ready(function () {
 				updateSelectedInOrder("#onboarding_columns", "onboarding_columns");
 			}
 		});
-	//
 
-	// $("#documents_columns")
-	// 	.on("select2:select", function (e) {
-	// 		const el = e.params.data;
-	// 		data.documents_columns.push({
-	// 			id: el.id,
-	// 			name: el.text,
-	// 			icon: "",
-	// 			custom_title: "",
-	// 		});
-	// 		updateSelectedInOrder("#documents_columns", "documents_columns");
-	// 	})
-	// 	.on("select2:unselect", function (e) {
-	// 		var index = data.documents_columns.findIndex(function (item) {
-	// 			return item.id === e.params.data.id;
-	// 		});
-	// 		if (index !== -1) {
-	// 			data.documents_columns.splice(index, 1); // Remove unselected value
-	// 			updateSelectedInOrder("#documents_columns", "documents_columns");
-	// 		}
-	// 	});
 	/**
 	 * on select candidate columns
 	 */
