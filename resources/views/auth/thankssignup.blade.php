@@ -22,7 +22,7 @@
     </h2>
 
     @include('admin.headtitle')
-    <button class="btn btn-secondary btn-gradiant mt-2" onclick="window.history.back()">
+    <a class="btn btn-secondary btn-gradiant mt-2" href="/">
         <span class="fs-6">Back</span> &nbsp;
         <span style="float:right;transform: rotate(180deg);"><svg height="25px" xmlns="http://www.w3.org/2000/svg"
                 xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 100 100"
