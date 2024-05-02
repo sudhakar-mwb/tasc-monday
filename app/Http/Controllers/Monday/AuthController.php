@@ -198,7 +198,7 @@ class AuthController extends Controller
                 </head>
                 <body>
                     <div class="container">
-                        <div class="logo" style="width: 100%; display:flex; justify-content:center">
+                        <div class="logo" style="width: 100%; justify-content:center">
                             <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : '')).' alt="TASC Logo">
                         </div>
                         <div class="message">
@@ -554,7 +554,7 @@ class AuthController extends Controller
         </head>
         <body>
             <div class="container">
-                <div class="logo" style="width: 100%; display:flex; justify-content:center">
+                <div class="logo" style="width: 100%; justify-content:center">
                     <img src='.asset('uploads/' . (!empty($logo_image->logo_image) ? ($logo_image->logo_image) : '')).' alt="TASC Logo">
                 </div>
                 <div class="message">
