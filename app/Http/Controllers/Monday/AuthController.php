@@ -19,6 +19,8 @@ use App\Models\SiteSettings;
 use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Expr\YieldFrom;
 use \Mailjet\Resources;
+use App\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     use MondayApis;
@@ -46,6 +48,18 @@ class AuthController extends Controller
            if ($userInDb['status'] == 'success') {
             $userCredential = $request->only('email','password');
             if(Auth::attempt($userCredential)){
+                // JWTAuth
+                $token = JWTAuth::attempt([
+                    "email" => $request->email,
+                    "password" => $request->password
+                ]);
+                if(!empty($token)){
+                    return response()->json([
+                        "status" => true,
+                        "message" => "User logged in succcessfully",
+                        "token" => $token
+                    ]);
+                }
                 $route = $this->redirectDash();
                 return redirect($route);
             }

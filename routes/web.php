@@ -7,6 +7,7 @@ use App\Http\Controllers\Monday\TrackOnboardingController;
 use App\Http\Controllers\Monday\StatusOnboardingController;
 use App\Http\Controllers\Monday\DashboardController;
 use App\Http\Controllers\Monday\AuthController;
+use App\Http\Controllers\Incorpify\DashboardController as IncorpifyDashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,6 +105,13 @@ Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], 
     Route::post('/status-onboarding-hiring-type', [StatusOnboardingController::class, 'statusOnboardingHiringType'])->name('monday.statusOnboardingHiringType');
     // });
 
+});
+
+Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function () {
+    Route::get('/', [IncorpifyDashboard::class, 'dashboard'])->name('incorpify.dashboard');
+    Route::get('/profile', [IncorpifyDashboard::class, 'profile'])->name('incorpify.profile');
+    Route::get('/refreshToken', [IncorpifyDashboard::class, 'refreshToken'])->name('incorpify.refreshToken');
+    Route::get('/logout', [IncorpifyDashboard::class, 'logout'])->name('incorpify.logout');
 });
 
 require __DIR__ . '/auth.php';
