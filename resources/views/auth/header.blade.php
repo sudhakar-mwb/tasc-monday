@@ -7,7 +7,9 @@
     <title>Onboardify</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
@@ -16,33 +18,25 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-NG8DTJXP');</script>
+    @include('headerscriptgoggle');
 </head>
 
 <body class=" container d-flex h-100 text-center">
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NG8DTJXP"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
+    @include('bodyscriptgoogle')
     <?php
     $settings = Session::get('settings');
     // dd($settings);
     echo " <style>
-                        .btn-gradiant,.btn-custom {
-                              background: {$settings->button_bg} !important;
-                          }
-                        .custom-banner {
-                          background: {$settings->banner_bg} !important;
-                        }
-                        .site-bg{
-                          background: {$settings->site_bg} !important;
-                        }
-                          </style>";
+                                .btn-gradiant,.btn-custom {
+                                      background: {$settings->button_bg} !important;
+                                  }
+                                .custom-banner {
+                                  background: {$settings->banner_bg} !important;
+                                }
+                                .site-bg{
+                                  background: {$settings->site_bg} !important;
+                                }
+                                  </style>";
     ?>
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
         <header class="mb-auto pb-3 pt-3">
