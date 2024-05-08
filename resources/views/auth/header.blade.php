@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    @include('headerscriptgoggle');
+    @include('headerscriptgoggle')
 </head>
 
 <body class=" container d-flex h-100 text-center">
