@@ -6,6 +6,7 @@ $settings = Session::get('settings');
 <html lang="en">
 
 <head>
+  @include('headerscriptgoggle')
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Onboardify</title>
@@ -25,6 +26,7 @@ $settings = Session::get('settings');
 </head>
 
 <body>
+  @include('bodyscriptgoogle')
     <style>
         * {
             padding: 0px;
