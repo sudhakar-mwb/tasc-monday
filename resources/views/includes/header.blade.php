@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    @include('headerscriptgoggle')
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Onboardify</title>
@@ -18,7 +19,7 @@
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    @include('headerscriptgoggle')
+
 
 </head>
 
@@ -27,16 +28,16 @@
     <?php
     $settings = Session::get('settings');
     echo " <style>
-                              .btn-gradiant,.btn-custom {
-                                    background: {$settings->button_bg} !important;
-                                }
-                              .custom-banner {
-                                background: {$settings->banner_bg} !important;
-                              }
-                              .site-bg{
-                                background: {$settings->site_bg} !important;
-                              }
-                                </style>";
+                                      .btn-gradiant,.btn-custom {
+                                            background: {$settings->button_bg} !important;
+                                        }
+                                      .custom-banner {
+                                        background: {$settings->banner_bg} !important;
+                                      }
+                                      .site-bg{
+                                        background: {$settings->site_bg} !important;
+                                      }
+                                        </style>";
     ?>
 
     <?php 
