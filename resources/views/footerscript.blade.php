@@ -4,28 +4,28 @@
         app_id: "wk35gw8g",
         name: <?php
         if (isset(auth()->user()->name)) {
-            echo auth()->user()->name;
+            echo json_encode((string) auth()->user()->name);
         } else {
             echo '';
         }
         ?>, // Full name
         user_id: <?php
         if (isset(auth()->user()->id)) {
-            echo auth()->user()->id;
+            echo json_encode((string) auth()->user()->id);
         } else {
             echo '';
         }
         ?>, // a UUID for your user
         email: <?php
         if (isset(auth()->user()->email)) {
-            echo auth()->user()->email;
+            echo json_encode((string) auth()->user()->email);
         } else {
             echo '';
         }
         ?>, // the email for your user
         created_at: <?php
         if (isset(auth()->user()->created_at)) {
-            echo strtotime(auth()->user()->created_at);
+            echo json_encode(strtotime(auth()->user()->created_at));
         } else {
             echo '';
         }
