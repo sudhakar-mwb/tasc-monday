@@ -292,5 +292,4 @@ $settings = Session::get('settings');
                 </style>
 
             </main>
-
             @include('includes.footer')

@@ -38,8 +38,7 @@
     </style>
 </footer>
 </div>
-
-
+@include('footerscript')
 </body>
 <script>
     // Function to check if an element is visible in the viewport
