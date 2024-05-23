@@ -49,6 +49,27 @@ class DashboardController extends Controller
                                   update_id
                                }
                            }
+                           subitems {
+                            created_at
+                            creator_id
+                            email
+                            id
+                            name
+                            relative_link
+                            state
+                            updated_at
+                            url
+                            column_values {
+                            id
+                            value
+                            type
+                            text
+                            ... on StatusValue  {
+                               label
+                               update_id
+                                    }
+                                }
+                            }
                         }
                     }
               owners {
@@ -100,5 +121,73 @@ class DashboardController extends Controller
             "status" => true,
             "message" => "User logged out successfully"
         ]);
+    }
+
+    public function incorpifyById ($id){
+        $query = 'query {
+            boards(limit: 500, ids: 1472103835) {
+            id
+            name
+            state
+            permissions
+            board_kind
+            columns {
+                      title
+                      id
+                      archived
+                      description
+                      settings_str
+                      title
+                      type
+                      width
+                  }}
+                  #items_page (limit: 3, cursor:null,  query_params: {} ){
+                   #   cursor,
+                   items (ids: [' . $id . ']) {
+                          created_at
+                          creator_id
+                          email
+                          id
+                          name
+                          relative_link
+                          state
+                          updated_at
+                          url
+                          column_values {
+                             id
+                             value
+                             type
+                             text
+                             ... on StatusValue  {
+                                label
+                                update_id
+                             }
+                         }
+                         subitems {
+                          created_at
+                          creator_id
+                          email
+                          id
+                          name
+                          relative_link
+                          state
+                          updated_at
+                          url
+                          column_values {
+                          id
+                          value
+                          type
+                          text
+                          ... on StatusValue  {
+                             label
+                             update_id
+                                  }
+                              }
+                          }
+                      }
+                 # }
+               # }
+            }';
+       return $boardsData = $this->_getMondayData($query);
     }
 }

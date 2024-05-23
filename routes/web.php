@@ -8,6 +8,8 @@ use App\Http\Controllers\Monday\StatusOnboardingController;
 use App\Http\Controllers\Monday\DashboardController;
 use App\Http\Controllers\Monday\AuthController;
 use App\Http\Controllers\Incorpify\DashboardController as IncorpifyDashboard;
+use App\Http\Controllers\Governify\Admin\ServiceCategoriesController;
+use App\Http\Controllers\Governify\Admin\ServiceRequestsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,9 +111,26 @@ Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], 
 
 Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function () {
     Route::get('/', [IncorpifyDashboard::class, 'dashboard'])->name('incorpify.dashboard');
+    Route::get('/{id}', [IncorpifyDashboard::class, 'incorpifyById'])->name('incorpify.incorpifyById');
     Route::get('/profile', [IncorpifyDashboard::class, 'profile'])->name('incorpify.profile');
     Route::get('/refreshToken', [IncorpifyDashboard::class, 'refreshToken'])->name('incorpify.refreshToken');
     Route::get('/logout', [IncorpifyDashboard::class, 'logout'])->name('incorpify.logout');
+});
+
+Route::group(['prefix' => "governify", "middleware" => ["auth:api"]], function () {
+    // serviceCategories API
+    Route::get('/serviceCategories',  [ServiceCategoriesController::class, 'index'])->name('serviceCategories.index');
+    Route::get('/serviceCategories/{id}',  [ServiceCategoriesController::class, 'showServiceCategoriesById'])->name('serviceCategories.showServiceCategoriesById');
+    Route::post('/serviceCategories/create', [ServiceCategoriesController::class, 'createServiceCategories'])->name('serviceCategories.createServiceCategories');
+    Route::put('/serviceCategories/{id}', [ServiceCategoriesController::class, 'updateServiceCategories'])->name('serviceCategories.updateServiceCategories');
+    Route::delete('/serviceCategories/{id}', [ServiceCategoriesController::class, 'destroy'])->name('serviceCategories.destroy');
+
+    //  serviceCategories API
+    Route::get('/serviceRequests',  [ServiceRequestsController::class, 'index'])->name('serviceRequests.index');
+    Route::get('/serviceRequests/{id}',  [ServiceRequestsController::class, 'showServiceRequestsById'])->name('serviceRequests.showServiceRequestsById');
+    Route::post('/serviceRequests/create', [ServiceRequestsController::class, 'createServiceRequests'])->name('serviceRequests.createServiceRequests');
+    Route::put('/serviceRequests/{id}', [ServiceRequestsController::class, 'updateServiceRequests'])->name('serviceRequests.updateServiceRequests');
+    Route::delete('/serviceRequests/{id}', [ServiceRequestsController::class, 'destroy'])->name('serviceRequests.destroy');
 });
 
 require __DIR__ . '/auth.php';

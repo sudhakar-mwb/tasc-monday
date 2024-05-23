@@ -63,4 +63,12 @@ trait MondayApis
         $curl_errors = curl_error($curl);
         return ['status_code' => $status_code, 'response' => json_decode($response, true), 'errors' => $curl_errors];
     }
+
+    public function verifyToken() {
+        return response()->json(auth()->user());
+    }
+
+    public function refreshToken() {
+        return $this->respondWithToken(auth()->refresh());
+    }
 }
