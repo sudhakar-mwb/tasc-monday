@@ -20,14 +20,13 @@ class ServiceRequestsController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $dataToRender = array( 'serviceRequests' => GovernifyServiceRequest::with('serviceCategorie')->whereNull('deleted_at')->orderByDesc('id')->get()
-                );
-                return $dataToRender;
+                $dataToRender =  GovernifyServiceRequest::with('serviceCategorie')->whereNull('deleted_at')->orderByDesc('id')->get();
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Request Data.")));
             } else {
-                return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
         } catch (\Exception $e) {
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => $e->getMessage())));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
 
@@ -80,15 +79,15 @@ class ServiceRequestsController extends Controller
                 // $insert = GovernifyServiceCategorie::insertTableData("governify_service_categories", $insert_array);
                 $insert = GovernifyServiceRequest::create($insert_array);
                 if ($insert) {
-                    return response(json_encode(array('response' => true, 'status' => true, 'message' => "Service Request Created Successfully.")));
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Service Request Created Successfully.")));
                 } else {
-                    return response(json_encode(array('response' => true, 'status' => false, 'message' => "Service Request Not Created.")));
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Request Not Created.")));
                 }
             } catch (\Exception $e) {
-                return response(json_encode(array('response' => true, 'status' => false, 'message' => $e->getMessage())));
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
             }
         } else {
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
         }
     }
 
@@ -99,18 +98,17 @@ class ServiceRequestsController extends Controller
     {
         $userId = $this->verifyToken()->getData()->id;
         if (!empty($userId)) {
-            $dataToRender = array( 
-                'serviceRequests' => GovernifyServiceRequest::with('serviceCategorie')->whereNull('deleted_at')->find($id)
-            );
-            if (!empty($dataToRender['serviceRequests'])) {
+            $dataToRender = GovernifyServiceRequest::with('serviceCategorie')->whereNull('deleted_at')->find($id);
+
+            if (!empty($dataToRender)) {
                 // $responseData = array(
                 //     'access_token' => $this->refreshToken()->original[ 'access_token' ]
                 // );
-                return $dataToRender;
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Request Data.")));
             }
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => "Service Request Data Not Found. Invalid Service Request Id Provided.")));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Request Data Not Found. Invalid Service Request Id Provided.")));
         }
-        return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
     }
 
     /**
@@ -169,15 +167,15 @@ class ServiceRequestsController extends Controller
                 // $insert = GovernifyServiceCategorie::insertTableData("governify_service_categories", $insert_array);
                 $insert = GovernifyServiceRequest::create($insert_array);
                 if ($insert) {
-                    return response(json_encode(array('response' => true, 'status' => true, 'message' => "Service Request Created Successfully.")));
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Service Request Created Successfully.")));
                 } else {
-                    return response(json_encode(array('response' => true, 'status' => false, 'message' => "Service Request Not Created.")));
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Request Not Created.")));
                 }
             } catch (\Exception $e) {
-                return response(json_encode(array('response' => true, 'status' => false, 'message' => $e->getMessage())));
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
             }
         } else {
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
         }
     }
 
@@ -211,14 +209,14 @@ class ServiceRequestsController extends Controller
                     // $responseData = array(
                     //     'access_token' => $this->refreshToken()->original[ 'access_token' ]
                     // );
-                    return response(json_encode(array('response' => true, 'status' => true, 'message' =>  "Service Request Deleted Successfully.")));
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Request Deleted Successfully.")));
                 } else {
-                    return response(json_encode(array('response' => true, 'status' => false, 'message' =>  "Service Request Not Deleted.")));
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Request Not Deleted.")));
                 }
             }
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => "Service Request Data Not Found. Invalid Service Request Id Provided.")));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Request Data Not Found. Invalid Service Request Id Provided.")));
         }
-        return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
     }
 
     function getErrorMessages()
