@@ -23,15 +23,13 @@ class ServiceCategoriesController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $dataToRender = array(
-                    'serviceCategorieData' => GovernifyServiceCategorie::whereNull('deleted_at')->orderByDesc('id')->get()
-                );
-                return $dataToRender;
+                $dataToRender = GovernifyServiceCategorie::whereNull('deleted_at')->orderByDesc('id')->get();
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Categorie Data.")));
             } else {
-                return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
         } catch (\Exception $e) {
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => $e->getMessage())));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
 
@@ -64,15 +62,15 @@ class ServiceCategoriesController extends Controller
                 //     'access_token' => $this->refreshToken()->original[ 'access_token' ]
                 // );
                 if ($insert['status'] == 'success') {
-                    return response(json_encode(array('response' => true, 'status' => true, 'message' => "Service Category Created Successfully.")));
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Service Category Created Successfully.")));
                 } else {
-                    return response(json_encode(array('response' => true, 'status' => false, 'message' => "Service Category Not Created.")));
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Category Not Created.")));
                 }
             } catch (\Exception $e) {
-                return response(json_encode(array('response' => true, 'status' => false, 'message' => $e->getMessage())));
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
             }
         } else {
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
         }
     }
 
@@ -91,18 +89,16 @@ class ServiceCategoriesController extends Controller
     {
         $userId = $this->verifyToken()->getData()->id;
         if (!empty($userId)) {
-            $dataToRender = array(
-                'serviceCategorieData' => GovernifyServiceCategorie::whereNull('deleted_at')->find($id)
-            );
-            if (!empty($dataToRender['serviceCategorieData'])) {
+            $dataToRender = GovernifyServiceCategorie::whereNull('deleted_at')->find($id);
+            if (!empty($dataToRender)) {
                 // $responseData = array(
                 //     'access_token' => $this->refreshToken()->original[ 'access_token' ]
                 // );
-                return $dataToRender;
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Categorie Data.")));
             }
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
         }
-        return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
     }
 
     /**
@@ -122,7 +118,7 @@ class ServiceCategoriesController extends Controller
                 ], $this->getErrorMessages());
                 $checkStoreExits = GovernifyServiceCategorie::getTableData("governify_service_categories", array('id' => $id));
                 if (empty($checkStoreExits)) {
-                    return response(json_encode(array('response' => true, 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
                 }
                 $update_array = array(
                     'icon'        => $input['icon'],
@@ -138,14 +134,14 @@ class ServiceCategoriesController extends Controller
                 // );
 
                 if ($update['status'] == 'success') {
-                    return response(json_encode(array('response' => true, 'status' => true, 'message' =>  "Service Category Updated Successfully.")));
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Category Updated Successfully.")));
                 } else {
-                    return response(json_encode(array('response' => true, 'status' => false, 'message' => "Service Category Not Updated.")));
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Category Not Updated.")));
                 }
             }
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
         } catch (\Exception $e) {
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => $e->getMessage())));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
 
@@ -178,14 +174,14 @@ class ServiceCategoriesController extends Controller
                     // $responseData = array(
                     //     'access_token' => $this->refreshToken()->original[ 'access_token' ]
                     // );
-                    return response(json_encode(array('response' => true, 'status' => true, 'message' =>  "Service Category Deleted Successfully.")));
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Category Deleted Successfully.")));
                 } else {
-                    return response(json_encode(array('response' => true, 'status' => false, 'message' =>  "Service Category Not Deleted.")));
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Category Not Deleted.")));
                 }
             }
-            return response(json_encode(array('response' => true, 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
         }
-        return response(json_encode(array('response' => true, 'status' => false, 'message' => "Invalid User.")));
+        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
     }
 
     function getErrorMessages()
