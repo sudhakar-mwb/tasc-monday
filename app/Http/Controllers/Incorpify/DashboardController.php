@@ -214,7 +214,7 @@ class DashboardController extends Controller
                   id
                   body
                 }
-            }}';        
+            }}';
         } else {
             $query = 'mutation {
                 create_update(item_id: '.$payload['item_id'].' body: "'.$payload['text_body'].'") {
@@ -225,6 +225,49 @@ class DashboardController extends Controller
         }
 
         //run the prepared graphQL query
+        return $this->_getMondayData($query);
+    }
+
+    public function updateReplyOrLike(Request $request){
+
+        $payload = $request->json()->all();
+
+        //validate the request
+        $validator = Validator::make($request->all(), [
+            'mode' => 'required|in:like,reply',
+            'update_id' => 'required',
+            'text_body' => $request->mode == 'reply' ? 'required_if:mode,reply' : '',
+            'item_id' => $request->mode == 'reply' ? 'required_if:mode,reply' : '',
+        ]);
+
+        // Custom error messages
+        $validator->setAttributeNames([
+            'mode' => 'Mode',
+            'update_id' => 'Update ID',
+            'item_id' => 'Item ID',
+            'text_body' => 'Text Body',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        //preparing query
+        $query = "";
+        if($payload['mode']=='like'){
+            $query = 'mutation {
+                like_update (update_id: '.$payload['update_id'].') {
+                  id
+                }
+            }';
+        } else {
+            $query = 'mutation {
+                create_update(item_id : '.$payload['item_id'].' parent_id:'.$payload['update_id'].' body: "'.$payload['text_body'].'") {
+                  id
+                }
+            }';
+        }
+
         return $this->_getMondayData($query);
     }
 
