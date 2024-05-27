@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Incorpify;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
+use Illuminate\Support\Facades\Validator;
 
 class DashboardController extends Controller
 {
@@ -190,4 +191,41 @@ class DashboardController extends Controller
             }';
        return $boardsData = $this->_getMondayData($query);
     }
+
+    public function update(Request $request){
+        
+        $payload = $request->json()->all();
+
+        //validate the request
+        $validator = Validator::make($request->all(), [
+            'item_id' => 'required|filled',
+            'text_body' => 'required|filled',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+
+        $query = [];
+        if(!empty($payload['parent_id'])){
+            $query = '{mutation {
+                create_update(item_id: '.$payload['item_id'].' parent_id: '.$payload['parent_id'].' body: "'.$payload['text_body'].'") {
+                  id
+                  body
+                }
+            }}';        
+        } else {
+            $query = 'mutation {
+                create_update(item_id: '.$payload['item_id'].' body: "'.$payload['text_body'].'") {
+                  id
+                  body
+                }
+            }';
+        }
+
+        //run the prepared graphQL query
+        return $this->_getMondayData($query);
+    }
+
 }

@@ -111,7 +111,8 @@ Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], 
 
 Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function () {
     Route::get('/', [IncorpifyDashboard::class, 'dashboard'])->name('incorpify.dashboard');
-    Route::get('/{id}', [IncorpifyDashboard::class, 'incorpifyById'])->name('incorpify.incorpifyById');
+    Route::get('/incorpifyById/{id}', [IncorpifyDashboard::class, 'incorpifyById'])->name('incorpify.incorpifyById');
+    Route::post('/update', [IncorpifyDashboard::class, 'update'])->name('incorpify.update');
     Route::get('/profile', [IncorpifyDashboard::class, 'profile'])->name('incorpify.profile');
     Route::get('/refreshToken', [IncorpifyDashboard::class, 'refreshToken'])->name('incorpify.refreshToken');
     Route::get('/logout', [IncorpifyDashboard::class, 'logout'])->name('incorpify.logout');
