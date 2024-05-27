@@ -9,6 +9,7 @@ use App\Http\Controllers\Monday\DashboardController;
 use App\Http\Controllers\Monday\AuthController;
 use App\Http\Controllers\Incorpify\DashboardController as IncorpifyDashboard;
 use App\Http\Controllers\Governify\Admin\ServiceCategoriesController;
+use App\Http\Controllers\Governify\Admin\ServiceRequestFormsController;
 use App\Http\Controllers\Governify\Admin\ServiceRequestsController;
 
 /*
@@ -125,12 +126,17 @@ Route::group(['prefix' => "governify", "middleware" => ["auth:api"]], function (
     Route::put('/serviceCategories/{id}', [ServiceCategoriesController::class, 'updateServiceCategories'])->name('serviceCategories.updateServiceCategories');
     Route::delete('/serviceCategories/{id}', [ServiceCategoriesController::class, 'destroy'])->name('serviceCategories.destroy');
 
-    //  serviceCategories API
+    //  serviceRequests API
     Route::get('/serviceRequests',  [ServiceRequestsController::class, 'index'])->name('serviceRequests.index');
     Route::get('/serviceRequests/{id}',  [ServiceRequestsController::class, 'showServiceRequestsById'])->name('serviceRequests.showServiceRequestsById');
     Route::post('/serviceRequests/create', [ServiceRequestsController::class, 'createServiceRequests'])->name('serviceRequests.createServiceRequests');
     Route::put('/serviceRequests/{id}', [ServiceRequestsController::class, 'updateServiceRequests'])->name('serviceRequests.updateServiceRequests');
     Route::delete('/serviceRequests/{id}', [ServiceRequestsController::class, 'destroy'])->name('serviceRequests.destroy');
+
+    //  serviceRequests Form API
+    Route::get('/serviceRequestForms',   [ServiceRequestFormsController::class, 'index'])->name('serviceRequestForms.index');
+    Route::get('/fetchServiceRequestForms',   [ServiceRequestFormsController::class, 'fetchServiceRequestFormSchema'])->name('serviceRequestForms.fetchServiceRequestFormSchema');
+    Route::post('/serviceRequestForms',  [ServiceRequestFormsController::class, 'createServiceRequestForms'])->name('serviceRequestForms.createServiceRequestForms');
 });
 
 require __DIR__ . '/auth.php';

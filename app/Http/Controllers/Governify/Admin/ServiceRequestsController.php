@@ -8,7 +8,7 @@ use App\Traits\MondayApis;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use App\Models\GovernifyServiceRequest;
-
+use Illuminate\Validation\Rule;
 class ServiceRequestsController extends Controller
 {
     use MondayApis;
@@ -41,7 +41,7 @@ class ServiceRequestsController extends Controller
                 $input = $request->json()->all();
 
                 $this->validate($request, [
-                    'title'       => "required|string",
+                    'title'       => "required|string|unique:governify_service_requests",
                     'description' => "required|string",
                     'image'       => "required|image|mimes:jpeg,jpg,png|max:10000",
                     'form'        => "required|integer",
@@ -130,7 +130,7 @@ class ServiceRequestsController extends Controller
                 $input = $request->json()->all();
 
                 $this->validate($request, [
-                    'title'       => "required|string",
+                    'title'       => [ 'required','string',Rule::unique('governify_service_requests')->ignore($id)],
                     'description' => "required|string",
                     'image'       => "required|image|mimes:jpeg,jpg,png|max:10000",
                     'form'        => "required|integer",

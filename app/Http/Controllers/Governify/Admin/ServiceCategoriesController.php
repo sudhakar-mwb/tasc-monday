@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use App\Models\GovernifyServiceCategorie;
-
+use Illuminate\Validation\Rule;
 class ServiceCategoriesController extends Controller
 {
     use MondayApis;
@@ -44,7 +44,7 @@ class ServiceCategoriesController extends Controller
                 $input = $request->json()->all();
                 $this->validate($request, [
                     'icon'        => "required|string",
-                    'title'       => "required|string",
+                    'title'       => "required|string|unique:governify_service_categories",
                     'subtitle'    => "required|string",
                     'description' => "required|string",
                 ], $this->getErrorMessages());
@@ -110,13 +110,16 @@ class ServiceCategoriesController extends Controller
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
                 $input = $request->json()->all();
+                $checkStoreExits = GovernifyServiceCategorie::getTableData("governify_service_categories", array('id' => $id));
+
                 $this->validate($request, [
                     'icon'        => "required|string",
-                    'title'       => "required|string",
+                    // 'title'       => [ 'required','string',Rule::unique('governify_service_categories')->ignore($checkStoreExits[0]->id)],
+                    'title'       => "required|string|unique:governify_service_categories,title," . $checkStoreExits[0]->id,
                     'subtitle'    => "required|string",
                     'description' => "required|string",
                 ], $this->getErrorMessages());
-                $checkStoreExits = GovernifyServiceCategorie::getTableData("governify_service_categories", array('id' => $id));
+
                 if (empty($checkStoreExits)) {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
                 }
