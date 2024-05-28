@@ -271,4 +271,70 @@ class DashboardController extends Controller
         return $this->_getMondayData($query);
     }
 
+    public function getSubItemByEmail(Request $request){
+        
+        $payload = $request->json()->all();
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|min:0',
+            'limit' => 'int|min:0',
+            'skip' => 'int|min:0',
+        ]);
+
+        // Custom error messages
+        $validator->setAttributeNames([
+            'email' => 'Email',
+            'limit' => 'Limit',
+            'skip' => 'Skip'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        //search the subitems of the items by email address
+        $column_id = "contact_email";
+        $status_id = "dropdown";
+        $query = '{
+            boards(ids: 1873211678) {
+              items_page(
+                query_params: {rules: [{column_id: "'.$column_id.'", compare_value: ["'.$payload['email'].'"], operator: contains_text}]}
+              ) {
+                items {
+                  id
+                  name
+                  subitems {
+                    name
+                    id
+                    created_at
+                    updated_at
+                    column_values(ids: "'.$status_id.'"){
+                      id text
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ';
+        
+        
+        $response = $this->_getMondayData($query);
+        $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'];
+        $total_subitem = count($subitems);
+        $limit = $payload['limit'];
+        $skip = $payload['skip'];
+
+        $send_response = [];
+        
+        if($limit> $total_subitem){
+            $send_response = array_slice($subitems,$skip, $total_subitem);
+        } else {
+            $send_response = array_slice($subitems,$skip, $limit);
+        }
+
+        $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] = $send_response;
+        return $response;
+    }
+
 }
