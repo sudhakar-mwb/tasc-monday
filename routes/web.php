@@ -118,7 +118,7 @@ Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function (
     Route::get('/logout', [IncorpifyDashboard::class, 'logout'])->name('incorpify.logout');
 });
 
-Route::group(['prefix' => "governify", "middleware" => ["auth:api"]], function () {
+Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSuperAdmin","isAdmin"]], function () {
     // serviceCategories API
     Route::get('/serviceCategories',  [ServiceCategoriesController::class, 'index'])->name('serviceCategories.index');
     Route::get('/serviceCategories/{id}',  [ServiceCategoriesController::class, 'showServiceCategoriesById'])->name('serviceCategories.showServiceCategoriesById');
@@ -130,13 +130,15 @@ Route::group(['prefix' => "governify", "middleware" => ["auth:api"]], function (
     Route::get('/serviceRequests',  [ServiceRequestsController::class, 'index'])->name('serviceRequests.index');
     Route::get('/serviceRequests/{id}',  [ServiceRequestsController::class, 'showServiceRequestsById'])->name('serviceRequests.showServiceRequestsById');
     Route::post('/serviceRequests/create', [ServiceRequestsController::class, 'createServiceRequests'])->name('serviceRequests.createServiceRequests');
-    Route::put('/serviceRequests/{id}', [ServiceRequestsController::class, 'updateServiceRequests'])->name('serviceRequests.updateServiceRequests');
+    Route::post('/serviceRequests/{id}', [ServiceRequestsController::class, 'updateServiceRequests'])->name('serviceRequests.updateServiceRequests');
     Route::delete('/serviceRequests/{id}', [ServiceRequestsController::class, 'destroy'])->name('serviceRequests.destroy');
 
     //  serviceRequests Form API
     Route::get('/serviceRequestForms',   [ServiceRequestFormsController::class, 'index'])->name('serviceRequestForms.index');
     Route::get('/fetchServiceRequestForms',   [ServiceRequestFormsController::class, 'fetchServiceRequestFormSchema'])->name('serviceRequestForms.fetchServiceRequestFormSchema');
     Route::post('/serviceRequestForms',  [ServiceRequestFormsController::class, 'createServiceRequestForms'])->name('serviceRequestForms.createServiceRequestForms');
+    Route::put('/serviceRequestForms/{id}', [ServiceRequestFormsController::class, 'updateServiceRequestForms'])->name('serviceRequestForms.updateServiceRequestForms');
+    Route::delete('/serviceRequestForms/{id}',   [ServiceRequestFormsController::class, 'destroy'])->name('serviceRequestForms.destroy');
 });
 
 require __DIR__ . '/auth.php';

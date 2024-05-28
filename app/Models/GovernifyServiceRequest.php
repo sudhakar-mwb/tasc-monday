@@ -17,4 +17,9 @@ class GovernifyServiceRequest extends Model
     {
         return $this->belongsTo(GovernifyServiceCategorie::class);
     }
+
+    public function form()
+    {
+        return $this->belongsTo(GovernifyServiceRequestForms::class, 'form', 'id');
+    }
 }

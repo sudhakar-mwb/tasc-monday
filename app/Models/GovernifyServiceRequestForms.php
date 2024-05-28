@@ -16,4 +16,9 @@ class GovernifyServiceRequestForms extends Model
     protected $casts = [
         'form_data' => 'array', // Automatically cast form_data to array
     ];
+
+    public function serviceRequests()
+    {
+        return $this->hasMany(GovernifyServiceRequest::class, 'form', 'id');
+    }
 }

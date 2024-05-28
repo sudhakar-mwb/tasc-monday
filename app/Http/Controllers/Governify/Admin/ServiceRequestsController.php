@@ -20,7 +20,7 @@ class ServiceRequestsController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $dataToRender =  GovernifyServiceRequest::with('serviceCategorie')->whereNull('deleted_at')->orderByDesc('id')->get();
+                $dataToRender =  GovernifyServiceRequest::with(['serviceCategorie','form'])->whereNull('deleted_at')->orderByDesc('id')->get();
                 return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Request Data.")));
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
@@ -98,7 +98,7 @@ class ServiceRequestsController extends Controller
     {
         $userId = $this->verifyToken()->getData()->id;
         if (!empty($userId)) {
-            $dataToRender = GovernifyServiceRequest::with('serviceCategorie')->whereNull('deleted_at')->find($id);
+            $dataToRender = GovernifyServiceRequest::with(['serviceCategorie', 'form'])->whereNull('deleted_at')->find($id);
 
             if (!empty($dataToRender)) {
                 // $responseData = array(
@@ -129,47 +129,52 @@ class ServiceRequestsController extends Controller
             try {
                 $input = $request->json()->all();
 
-                $this->validate($request, [
-                    'title'       => [ 'required','string',Rule::unique('governify_service_requests')->ignore($id)],
-                    'description' => "required|string",
-                    'image'       => "required|image|mimes:jpeg,jpg,png|max:10000",
-                    'form'        => "required|integer",
-                    'service_categorie_id' => 'required|exists:governify_service_categories,id',
-                ], $this->getErrorMessages());
+                $serviceRequest = GovernifyServiceRequest::find($id);
 
-                // Check if the validation fails
-                // if ($validator->fails()) {
-                //     return response(json_encode(array('response' => true, 'status' => false, 'message' => $validator->errors())));
-                // }
+                if (!empty($serviceRequest)) {
+                    $this->validate($request, [
+                        'title'       => ['required', 'string', Rule::unique('governify_service_requests')->ignore($id)],
+                        'description' => "required|string",
+                        'image'       => "required|image|mimes:jpeg,jpg,png|max:10000",
+                        'form'        => "required|integer",
+                        'service_categorie_id' => 'required|exists:governify_service_categories,id',
+                    ], $this->getErrorMessages());
 
-                $insert_array = array(
-                    "title"       => $request->title,
-                    "description" => $request->description,
-                    "form"        => $request->form,
-                    "service_categorie_id" => $request->service_categorie_id,
-                    "updated_at" => date("Y-m-d H:i:s")
-                );
+                    // Check if the validation fails
+                    // if ($validator->fails()) {
+                    //     return response(json_encode(array('response' => true, 'status' => false, 'message' => $validator->errors())));
+                    // }
 
-                if ($request->hasFile('image')) {
-                    $file      = $request->file('image');
-                    $timestamp = now()->timestamp;
-                    $fileName  = $file->getClientOriginalName();
-                    $updateFileName  = $timestamp . '_' . $fileName;
-                    $file->move(public_path('uploads/governify'), $updateFileName);
-                    $imagePath = '/uploads/governify/' . $updateFileName;
+                    $insert_array = array(
+                        "title"       => $request->title,
+                        "description" => $request->description,
+                        "form"        => $request->form,
+                        "service_categorie_id" => $request->service_categorie_id,
+                        "updated_at" => date("Y-m-d H:i:s")
+                    );
 
-                    $insert_array['image']         = $updateFileName;
-                    $insert_array['file_location'] =  URL::to("/") . $imagePath;
-                }
-                // else {
-                //     return response(json_encode(array('response' => true, 'status' => false, 'message' => 'Image upload failed')));
-                // }
-                // $insert = GovernifyServiceCategorie::insertTableData("governify_service_categories", $insert_array);
-                $insert = GovernifyServiceRequest::create($insert_array);
-                if ($insert) {
-                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Service Request Created Successfully.")));
-                } else {
-                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Request Not Created.")));
+                    if ($request->hasFile('image')) {
+                        $file      = $request->file('image');
+                        $timestamp = now()->timestamp;
+                        $fileName  = $file->getClientOriginalName();
+                        $updateFileName  = $timestamp . '_' . $fileName;
+                        $file->move(public_path('uploads/governify'), $updateFileName);
+                        $imagePath = '/uploads/governify/' . $updateFileName;
+
+                        $insert_array['image']         = $updateFileName;
+                        $insert_array['file_location'] =  URL::to("/") . $imagePath;
+                    }
+                    // else {
+                    //     return response(json_encode(array('response' => true, 'status' => false, 'message' => 'Image upload failed')));
+                    // }
+                    $update = $serviceRequest->update($insert_array);
+                    if ($update) {
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Service Request Updated Successfully.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Request Not Updated.")));
+                    }
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Request Data Not Found. Invalid Service Request Id Provided.")));
                 }
             } catch (\Exception $e) {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
