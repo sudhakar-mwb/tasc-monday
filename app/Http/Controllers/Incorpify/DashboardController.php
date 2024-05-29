@@ -294,29 +294,51 @@ class DashboardController extends Controller
 
         //search the subitems of the items by email address
         $column_id = "contact_email";
-        $status_id = "dropdown";
+        $description = "text";
+        $required_action = "text2";
+        $assignee = "dropdown7";
+        $overall_status = "overall_status";
+
         $query = '{
             boards(ids: 1873211678) {
               items_page(
                 query_params: {rules: [{column_id: "'.$column_id.'", compare_value: ["'.$payload['email'].'"], operator: contains_text}]}
               ) {
                 items {
-                  id
-                  name
-                  subitems {
-                    name
                     id
-                    created_at
-                    updated_at
-                    column_values(ids: "'.$status_id.'"){
-                      id text
+                    name
+                    subitems {
+                      name
+                      id
+                      created_at
+                      updated_at
+                      column_values(ids: ["'.$description.'", "'.$required_action.'", "'.$assignee.'", "'.$overall_status.'"]) {
+                        id
+                        text
+                     }
+                       updates {
+                        id
+                        text_body
+                        
+                        replies {
+                          id text_body
+                        }
+                     }
+                    
+                    assets {
+                      id
+                      url
+                    }
                     }
                   }
-                }
               }
             }
           }
         ';
+
+        // echo '<pre>';
+        //  print_r($query);
+        //  die;
         
         
         $response = $this->_getMondayData($query);
