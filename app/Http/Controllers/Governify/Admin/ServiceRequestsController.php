@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use App\Models\GovernifyServiceRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 class ServiceRequestsController extends Controller
 {
     use MondayApis;
@@ -43,7 +45,8 @@ class ServiceRequestsController extends Controller
                 $this->validate($request, [
                     'title'       => "required|string|unique:governify_service_requests",
                     'description' => "required|string",
-                    'image'       => "required|image|mimes:jpeg,jpg,png|max:10000",
+                    'image'       => "required|string",
+                    'image_name'  => "required|string",
                     'form'        => "required|integer",
                     'service_categorie_id' => 'required|exists:governify_service_categories,id',
                 ], $this->getErrorMessages());
@@ -52,6 +55,11 @@ class ServiceRequestsController extends Controller
                 // if ($validator->fails()) {
                 //     return response(json_encode(array('response' => true, 'status' => false, 'message' => $validator->errors())));
                 // }
+
+                 // Additional validation for base64 image
+                if (!$this->isValidBase64Image($request->image)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                }
 
                 $insert_array = array(
                     "title"       => $request->title,
@@ -62,15 +70,18 @@ class ServiceRequestsController extends Controller
                     "updated_at" => date("Y-m-d H:i:s")
                 );
 
-                if ($request->hasFile('image')) {
-                    $file      = $request->file('image');
+                if ($request->input('image')) {
+                    $imageData = $request->input('image');
+                    list($type, $data) = explode(';', $imageData);
+                    list(, $data)      = explode(',', $data);
+                    $data      = base64_decode($data);
+                    $extension = explode('/', mime_content_type($imageData))[1];
                     $timestamp = now()->timestamp;
-                    $fileName  = $file->getClientOriginalName();
-                    $updateFileName  = $timestamp . '_' . $fileName;
-                    $file->move(public_path('uploads/governify'), $updateFileName);
-                    $imagePath = '/uploads/governify/' . $updateFileName;
 
+                    $updateFileName = $timestamp. '_'.$request->input('image_name');
+                    File::put(public_path('uploads/governify/' . $updateFileName), $data);
                     $insert_array['image']         = $updateFileName;
+                    $imagePath = '/uploads/governify/' . $updateFileName;
                     $insert_array['file_location'] =  URL::to("/") . $imagePath;
                 }
                 // else {
@@ -135,7 +146,8 @@ class ServiceRequestsController extends Controller
                     $this->validate($request, [
                         'title'       => ['required', 'string', Rule::unique('governify_service_requests')->ignore($id)],
                         'description' => "required|string",
-                        'image'       => "required|image|mimes:jpeg,jpg,png|max:10000",
+                        'image'       => "required|string",
+                        'image_name'  => "required|string",
                         'form'        => "required|integer",
                         'service_categorie_id' => 'required|exists:governify_service_categories,id',
                     ], $this->getErrorMessages());
@@ -153,6 +165,12 @@ class ServiceRequestsController extends Controller
                         "updated_at" => date("Y-m-d H:i:s")
                     );
 
+                    // Additional validation for base64 image
+                    if (!$this->isValidBase64Image($request->image)) {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                    }
+
+                    /*
                     if ($request->hasFile('image')) {
                         $file      = $request->file('image');
                         $timestamp = now()->timestamp;
@@ -164,6 +182,30 @@ class ServiceRequestsController extends Controller
                         $insert_array['image']         = $updateFileName;
                         $insert_array['file_location'] =  URL::to("/") . $imagePath;
                     }
+                    */
+                    if ($request->input('image')) {
+                        $imageData = $request->input('image');
+                        list($type, $data) = explode(';', $imageData);
+                        list(, $data)      = explode(',', $data);
+                        $data      = base64_decode($data);
+                        $extension = explode('/', mime_content_type($imageData))[1];
+                        $timestamp = now()->timestamp;
+    
+                        $updateFileName = $timestamp. '_'.$request->input('image_name');
+                        File::put(public_path('uploads/governify/' . $updateFileName), $data);
+                        $insert_array['image']         = $updateFileName;
+                        $imagePath = '/uploads/governify/' . $updateFileName;
+                        $insert_array['file_location'] =  URL::to("/") . $imagePath;
+
+                        // $uploadedImagePath = $serviceRequest->file_location;
+                        $uploadedImagePath = public_path('uploads/governify/'. $serviceRequest->image);
+                        // Check if the image file exists
+                        if (File::exists($uploadedImagePath)) {
+                            // Delete the image file
+                            File::delete($uploadedImagePath);
+                        }
+                    }
+
                     // else {
                     //     return response(json_encode(array('response' => true, 'status' => false, 'message' => 'Image upload failed')));
                     // }
@@ -231,5 +273,22 @@ class ServiceRequestsController extends Controller
             "max"   => ":attribute should not be more then :max characters.",
             "min"   => ":attribute should not be less then :min characters."
         ];
+    }
+
+    private function isValidBase64Image($base64Image)
+    {
+        $pattern = '/^data:image\/(jpeg|jpg|png);base64,/';
+        if (preg_match($pattern, $base64Image)) {
+            $data = substr($base64Image, strpos($base64Image, ',') + 1);
+            if (base64_decode($data, true) === false) {
+                return false;
+            }
+            $image = imagecreatefromstring(base64_decode($data));
+            if (!$image) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }
