@@ -6,7 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use App\Models\GovernifyServiceCategorie;
+use App\Models\GovernifySiteSetting;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\URL;
+
 class ServiceCategoriesController extends Controller
 {
     use MondayApis;
@@ -194,5 +199,96 @@ class ServiceCategoriesController extends Controller
             "max"   => ":attribute should not be more then :max characters.",
             "min"   => ":attribute should not be less then :min characters."
         ];
+    }
+
+
+    public function governifySiteSetting(Request $request)
+    {
+        $userId = $this->verifyToken()->getData()->id;
+        if ($userId) {
+            try {
+                $input = $request->json()->all();
+                $criteria = ['status' => 0];
+                $get_data = GovernifySiteSetting::where('id', '=', 1)->first();
+
+                // $this->validate($request, [
+                //     'ui_settings' => 'required|json',
+                // ], $this->getErrorMessages());
+
+                // Additional validation for base64 image
+                if (!$this->isValidBase64Image($request->logo_image)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                }
+
+                $insert_array = array(
+                    "ui_settings" => $request->ui_settings,
+                    "created_at"  => date("Y-m-d H:i:s"),
+                    "updated_at"  => date("Y-m-d H:i:s")
+                );
+
+                if ($request->input('logo_image')) {
+                    $imageData = $request->input('logo_image');
+                    list($type, $data) = explode(';', $imageData);
+                    list(, $data)      = explode(',', $data);
+                    $data      = base64_decode($data);
+                    $extension = explode('/', mime_content_type($imageData))[1];
+                    $timestamp = now()->timestamp;
+
+                    $updateFileName = $timestamp . '_' . $request->input('logo_name');
+                    File::put(public_path('uploads/governify/' . $updateFileName), $data);
+                    $insert_array['logo_name']         = $updateFileName;
+                    $imagePath = '/uploads/governify/' . $updateFileName;
+                    $insert_array['file_location'] =  URL::to("/") . $imagePath;
+
+                    // $uploadedImagePath = $serviceRequest->file_location;
+                    $uploadedImagePath = public_path('uploads/governify/' . $get_data->logo_name);
+                    // Check if the image file exists
+                    if (File::exists($uploadedImagePath)) {
+                        // Delete the image file
+                        File::delete($uploadedImagePath);
+                    }
+                }
+
+                $datatoUpdate = [
+                    'ui_settings' => json_encode(!empty($insert_array['ui_settings']) ? $insert_array['ui_settings'] : ''),
+                    'status'      => 0,
+                    'logo_name'     => !empty($insert_array['logo_name'])     ? $insert_array['logo_name']     : "",
+                    'logo_location' => !empty($insert_array['file_location']) ? $insert_array['file_location'] : "",
+                ];
+
+                if (empty($get_data)) {
+                    $insert = GovernifySiteSetting::where($criteria)->create($datatoUpdate);
+                } else {
+                    $insert = GovernifySiteSetting::where($criteria)->update($datatoUpdate);
+                }
+
+                if ($insert) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Governify Site Setting Updated Successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify Site Setting Not Created.")));
+                }
+            } catch (\Exception $e) {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+            }
+        } else {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+        }
+    }
+
+    private function isValidBase64Image($base64Image)
+    {
+        $pattern = '/^data:image\/(jpeg|jpg|png);base64,/';
+        if (preg_match($pattern, $base64Image)) {
+            $data = substr($base64Image, strpos($base64Image, ',') + 1);
+            if (base64_decode($data, true) === false) {
+                return false;
+            }
+            $image = imagecreatefromstring(base64_decode($data));
+            if (!$image) {
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }
