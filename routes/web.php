@@ -12,6 +12,7 @@ use App\Http\Controllers\Governify\Admin\ServiceCategoriesController;
 use App\Http\Controllers\Governify\Admin\ServiceRequestFormsController;
 use App\Http\Controllers\Governify\Admin\ServiceRequestsController;
 use App\Http\Controllers\Governify\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Governify\Customer\GovernifyRequestTrackingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -144,6 +145,7 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSupe
 
 Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api","isUser"]], function () {
     Route::get('/dashboard',   [CustomerDashboardController::class, 'dashboard']);
+    Route::get('/requestTracking',   [GovernifyRequestTrackingController::class, 'requestTracking']);
 });
 
 require __DIR__ . '/auth.php';

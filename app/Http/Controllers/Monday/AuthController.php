@@ -53,11 +53,25 @@ class AuthController extends Controller
                     "email" => $request->email,
                     "password" => $request->password
                 ]);
+
+                if (!empty($userInDb['data']['user_data'])) {
+                    if (!empty($userInDb['data']['user_data']->role) && ($userInDb['data']['user_data']->role == 1) ) {
+                        $role = 'superAdmin';
+                    }
+                    elseif (!empty($userInDb['data']['user_data']->role ) && ($userInDb['data']['user_data']->role  == 2) ) {
+                        $role = 'admin';
+                    }
+                    else  {
+                        $role = 'customer';
+                    }
+                }
+
                 if(!empty($token)){
                     return response()->json([
                         "status" => true,
                         "message" => "User logged in succcessfully",
-                        "token" => $token
+                        "token" => $token,
+                        "role"  => $role
                     ]);
                 }
                 $route = $this->redirectDash();
