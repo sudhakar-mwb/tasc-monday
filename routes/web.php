@@ -111,7 +111,12 @@ Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], 
 
 Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function () {
     Route::get('/', [IncorpifyDashboard::class, 'dashboard'])->name('incorpify.dashboard');
-    Route::get('/{id}', [IncorpifyDashboard::class, 'incorpifyById'])->name('incorpify.incorpifyById');
+    Route::get('/incorpifyById/{id}', [IncorpifyDashboard::class, 'incorpifyById'])->name('incorpify.incorpifyById');
+    Route::post('/update', [IncorpifyDashboard::class, 'update'])->name('incorpify.update');
+    Route::post('/updateReplyOrLike', [IncorpifyDashboard::class, 'updateReplyOrLike'])->name('incorpify.updateReplyOrLike');
+    Route::post('/uploadFiles', [IncorpifyDashboard::class, 'uploadFiles'])->name('incorpify.uploadFiles');
+    Route::post('/createItem', [IncorpifyDashboard::class, 'createItem'])->name('incorpify.createItem');
+    Route::post('/getSubItemByEmail', [IncorpifyDashboard::class, 'getSubItemByEmail'])->name('incorpify.getSubItemByEmail');
     Route::get('/profile', [IncorpifyDashboard::class, 'profile'])->name('incorpify.profile');
     Route::get('/refreshToken', [IncorpifyDashboard::class, 'refreshToken'])->name('incorpify.refreshToken');
     Route::get('/logout', [IncorpifyDashboard::class, 'logout'])->name('incorpify.logout');
