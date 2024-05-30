@@ -13,7 +13,7 @@ class DashboardController extends Controller
     use MondayApis;
     public function dashboard () {
         $query = 'query {
-              boards(limit: 500, ids: 1472103835) {
+              boards(limit: 500, ids: '.env("BOARD_ID_INCORPIFY").') {
               id
               name
               state
@@ -127,7 +127,7 @@ class DashboardController extends Controller
 
     public function incorpifyById ($id){
         $query = 'query {
-            boards(limit: 500, ids: 1472103835) {
+            boards(limit: 500, ids: '.env("BOARD_ID_INCORPIFY").') {
             id
             name
             state
@@ -301,7 +301,7 @@ class DashboardController extends Controller
         $overall_status = "overall_status";
 
         $query = '{
-            boards(ids: 1873211678) {
+            boards(ids: '.env("BOARD_ID_INCORPIFY").') {
               items_page(
                 query_params: {rules: [{column_id: "'.$column_id.'", compare_value: ["'.$payload['email'].'"], operator: contains_text}]}
               ) {
@@ -428,17 +428,52 @@ class DashboardController extends Controller
 
     public function createItem(Request $request) { 
 
-        $payload = $request->all();
 
-        echo '<pre>';
-        print_r($payload);
-        echo '[Line]:     ' . __LINE__ . "\n";
-        echo '[Function]: ' . __FUNCTION__ . "\n";
-        echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
-        echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
-        echo '[File]:     ' . __FILE__ . "\n";
-        die;
-        
+        $payload = $request->json()->all();
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|min:0',
+            'your_company_name' => 'string|min:0',
+            'type_of_license' => 'string|min:0',
+        ]);
+
+        // Custom error messages
+        $validator->setAttributeNames([
+            'email' => 'Email',
+            'your_company_name' => 'Company Name',
+            'type_of_license' => 'Type of License',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $column_values = json_encode(
+            json_encode(
+                [
+                "email" => $payload['email'],
+                "single_select3__1" => $payload['type_of_license']  
+                ],
+            true),
+        true);
+
+        $group_id = "topics";
+
+
+        $query = 'mutation {
+            create_item(
+              board_id: '.env("BOARD_ID_INCORPIFY").'
+              group_id: "'.$group_id.'"
+              item_name: "'.$payload['your_company_name'].'"
+              column_values: '.$column_values.'
+            ) {
+              id
+            }
+        }';
+
+        $response = $this->_getMondayData($query);
+
+        return $response;
         
     }
 
