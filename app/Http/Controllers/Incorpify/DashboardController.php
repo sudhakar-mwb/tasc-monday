@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use Illuminate\Support\Facades\Validator;
+use CURLFile;
 
 class DashboardController extends Controller
 {
@@ -335,11 +336,6 @@ class DashboardController extends Controller
             }
           }
         ';
-
-        // echo '<pre>';
-        //  print_r($query);
-        //  die;
-        
         
         $response = $this->_getMondayData($query);
         $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'];
@@ -357,6 +353,93 @@ class DashboardController extends Controller
 
         $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] = $send_response;
         return $response;
+    }
+
+    public function uploadFiles(Request $request) { 
+
+
+        $payload = $request->all();
+
+        echo '<pre>';
+        print_r($payload);
+        echo '[Line]:     ' . __LINE__ . "\n";
+        echo '[Function]: ' . __FUNCTION__ . "\n";
+        echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
+        echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
+        echo '[File]:     ' . __FILE__ . "\n";
+        die;
+        
+        
+        $column_id = "files";
+
+        // The ID of the item to which the file will be uploaded
+        $itemId = '1873224195';
+        
+        // The file you want to upload
+        $filePath = '/home/cedcoss/Desktop/notes.gif';
+        $fileMimeType = mime_content_type($filePath);
+        $fileName = basename($filePath);
+        
+        // The GraphQL query
+        $query = 'mutation ($file: File!) {
+        add_file_to_column (item_id: ' . $itemId . ' column_id: "'.$column_id.'", file: $file) {
+            id
+        }
+        }';
+        
+        // Prepare the variables
+        $variables = [
+            'file' => new CURLFile($filePath, $fileMimeType, $fileName)
+        ];
+        
+        // Initialize cURL
+        $ch = curl_init();
+        
+        // Set the cURL options
+        curl_setopt($ch, CURLOPT_URL, 'https://api.monday.com/v2/file');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: ' . env('MONDAY_API_KEY'),
+            'Content-Type: multipart/form-data'
+        ]);
+        
+        curl_setopt($ch, CURLOPT_POSTFIELDS, [
+            'query' => $query,
+            'variables[file]' => $variables['file']
+        ]);
+
+        
+        // Execute the cURL request
+        $response = curl_exec($ch);
+        
+        // Check for errors
+        if (curl_errno($ch)) {
+            $error_msg = curl_error($ch);
+            return $error_msg;
+        } else {
+            return $response;
+        }
+        
+        curl_close($ch);
+
+        
+    }
+
+    public function createItem(Request $request) { 
+
+        $payload = $request->all();
+
+        echo '<pre>';
+        print_r($payload);
+        echo '[Line]:     ' . __LINE__ . "\n";
+        echo '[Function]: ' . __FUNCTION__ . "\n";
+        echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
+        echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
+        echo '[File]:     ' . __FILE__ . "\n";
+        die;
+        
+        
     }
 
 }
