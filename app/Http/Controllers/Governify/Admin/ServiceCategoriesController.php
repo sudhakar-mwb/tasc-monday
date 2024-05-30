@@ -215,11 +215,6 @@ class ServiceCategoriesController extends Controller
                 //     'ui_settings' => 'required|json',
                 // ], $this->getErrorMessages());
 
-                // Additional validation for base64 image
-                if (!$this->isValidBase64Image($request->logo_image)) {
-                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
-                }
-
                 $insert_array = array(
                     "ui_settings" => $request->ui_settings,
                     "created_at"  => date("Y-m-d H:i:s"),
@@ -227,6 +222,11 @@ class ServiceCategoriesController extends Controller
                 );
 
                 if ($request->input('logo_image')) {
+                    // Additional validation for base64 image
+                    if (!$this->isValidBase64Image($request->logo_image)) {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                    }
+
                     $imageData = $request->input('logo_image');
                     list($type, $data) = explode(';', $imageData);
                     list(, $data)      = explode(',', $data);
