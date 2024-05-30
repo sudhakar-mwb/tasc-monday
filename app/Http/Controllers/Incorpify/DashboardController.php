@@ -359,16 +359,6 @@ class DashboardController extends Controller
 
 
         $payload = $request->all();
-
-        echo '<pre>';
-        print_r($payload);
-        echo '[Line]:     ' . __LINE__ . "\n";
-        echo '[Function]: ' . __FUNCTION__ . "\n";
-        echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
-        echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
-        echo '[File]:     ' . __FILE__ . "\n";
-        die;
-        
         
         $column_id = "files";
 
