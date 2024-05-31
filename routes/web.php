@@ -129,6 +129,7 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSupe
     Route::delete('/serviceCategories/{id}', [ServiceCategoriesController::class, 'destroy'])->name('serviceCategories.destroy');
 
     Route::post('/governifySiteSetting', [ServiceCategoriesController::class, 'governifySiteSetting'])->name('serviceCategories.governifySiteSetting');
+    Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
 
     //  serviceRequests API
     Route::get('/serviceRequests',  [ServiceRequestsController::class, 'index'])->name('serviceRequests.index');
@@ -148,6 +149,8 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSupe
 Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api","isUser"]], function () {
     Route::get('/dashboard',   [CustomerDashboardController::class, 'dashboard']);
     Route::get('/requestTracking',   [GovernifyRequestTrackingController::class, 'requestTracking']);
+
+    Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
 });
 
 require __DIR__ . '/auth.php';

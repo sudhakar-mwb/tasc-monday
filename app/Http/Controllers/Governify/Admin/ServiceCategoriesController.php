@@ -291,4 +291,19 @@ class ServiceCategoriesController extends Controller
         }
         return false;
     }
+
+    public function getGovernifySiteSetting () {
+
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $dataToRender = GovernifySiteSetting::where('id', '=', 1)->first();
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Site Setting Data.")));
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }
