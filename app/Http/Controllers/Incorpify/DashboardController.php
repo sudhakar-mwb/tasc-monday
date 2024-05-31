@@ -204,7 +204,7 @@ class DashboardController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->returnData($validator->errors(), false);
         }
 
 
@@ -226,7 +226,13 @@ class DashboardController extends Controller
         }
 
         //run the prepared graphQL query
-        return $this->_getMondayData($query);
+        $response = $this->_getMondayData($query);
+        if(isset($response['response']['data']['create_update']['id']))
+        {
+            return $this->returnData($response);
+        }
+
+        return $this->returnData($response, false);
     }
 
     public function updateReplyOrLike(Request $request){
@@ -250,7 +256,7 @@ class DashboardController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->returnData($validator->errors(), false);
         }
 
         //preparing query
@@ -269,7 +275,15 @@ class DashboardController extends Controller
             }';
         }
 
-        return $this->_getMondayData($query);
+        $response = $this->_getMondayData($query);
+
+        if(isset($response['response']['data']['create_update']['id']) || isset($response['response']['data']['like_update']['id']))
+        {
+            return $this->returnData($response);
+        }
+
+        return $this->returnData($response, false);
+
     }
 
     public function getSubItemByEmail(Request $request){
@@ -290,15 +304,15 @@ class DashboardController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->returnData($validator->errors(), false);
         }
 
         //search the subitems of the items by email address
-        $column_id = "contact_email";
+        $column_id = "email__1";
         $description = "text";
-        $required_action = "text2";
-        $assignee = "dropdown7";
-        $overall_status = "overall_status";
+        $required_action = "dup__of_description__1";
+        $assignee = "assigness__1";
+        $overall_status = "status__1";
 
         $query = '{
             boards(ids: '.env("BOARD_ID_INCORPIFY").') {
@@ -338,7 +352,12 @@ class DashboardController extends Controller
         ';
         
         $response = $this->_getMondayData($query);
-        $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'];
+        $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems']??[];
+
+        if(empty($subitems)){
+            return $this->returnData("no data found", false);
+        }
+
         $total_subitem = count($subitems);
         $limit = $payload['limit'];
         $skip = $payload['skip'];
@@ -352,7 +371,7 @@ class DashboardController extends Controller
         }
 
         $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] = $send_response;
-        return $response;
+        return $this->returnData($response);
     }
 
     public function uploadFiles(Request $request) { 
@@ -435,7 +454,7 @@ class DashboardController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return $this->returnData($validator->errors(), false);
         }
 
         $column_values = json_encode(
@@ -463,8 +482,27 @@ class DashboardController extends Controller
 
         $response = $this->_getMondayData($query);
 
-        return $response;
+        if(isset($response['response']['data']['create_item'])){
+            return $this->returnData($response);
+        }
+
+        return $this->returnData($response, false);
         
+    }
+
+    public function returnData($data, $success = true) {
+
+        if($success){
+            return [
+                "success" => $success,
+                "data" => $data
+            ];
+        }
+
+        return [
+            "success" => $success,
+            "message" => $data
+        ];
     }
 
 }
