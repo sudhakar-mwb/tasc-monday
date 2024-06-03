@@ -21,4 +21,9 @@ class GovernifyServiceRequestForms extends Model
     {
         return $this->hasMany(GovernifyServiceRequest::class, 'form', 'id');
     }
+
+    // public function serviceRequests()
+    // {
+    //     return $this->hasMany(ServiceRequest::class, 'form_id', 'id');
+    // }
 }

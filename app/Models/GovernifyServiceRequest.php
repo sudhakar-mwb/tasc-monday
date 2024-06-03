@@ -11,7 +11,7 @@ class GovernifyServiceRequest extends Model
 
     protected $table = 'governify_service_requests';
     
-    protected $fillable = ['title', 'description', 'image', 'file_location', 'form','service_categorie_id', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['title', 'description', 'image', 'file_location', 'form','service_categorie_id', 'created_at', 'updated_at', 'deleted_at', 'service_categories_request_index'];
 
     public function serviceCategorie()
     {
@@ -22,4 +22,9 @@ class GovernifyServiceRequest extends Model
     {
         return $this->belongsTo(GovernifyServiceRequestForms::class, 'form', 'id');
     }
+
+    // public function serviceRequests()
+    // {
+    //     return $this->belongsTo(GovernifyServiceCategorie::class);
+    // }
 }

@@ -22,7 +22,7 @@ class ServiceRequestsController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $dataToRender =  GovernifyServiceRequest::with(['serviceCategorie','form'])->whereNull('deleted_at')->orderByDesc('id')->get();
+                $dataToRender =  GovernifyServiceRequest::with(['serviceCategorie','form'])->whereNull('deleted_at')->orderBy('service_categories_request_index')->get();
                 return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Request Data.")));
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
@@ -290,5 +290,52 @@ class ServiceRequestsController extends Controller
             return true;
         }
         return false;
+    }
+
+    public function swapServiceRequests (Request $request ){
+
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $request->validate([
+                    'service_request'        => 'required|array',
+                    'service_request.*.from' => 'required|integer|exists:governify_service_requests,id',
+                    'service_request.*.to'   => 'required|integer|exists:governify_service_requests,id',
+                ]);
+
+                // Extract the array of IDs from the request
+                $fromIds     = array_column($request->input('service_request'), 'from');
+                $toPositions = array_column($request->input('service_request'), 'to');
+
+                // Check for duplicate `to` positions in the input
+                if (count($toPositions) !== count(array_unique($toPositions))) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Duplicate `to` IDs found in the input.")));
+                }
+
+                if (count($fromIds) !== count(array_unique($fromIds))) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Duplicate `from` IDs found in the input.")));
+                }
+
+                // Check if all `from` IDs exist in the service_categorie table
+                $existingCategoryIds = GovernifyServiceRequest::whereIn('id', $fromIds)->pluck('id')->toArray();
+
+                if (count($fromIds) !== count($existingCategoryIds)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "One or more IDs do not exist in the Service Categorie Request table")));
+                }
+
+                // Extract the order array from the request
+                $categories = $request->input('service_request');
+
+                // Update the service_categories_request_index for each service_categorie
+                foreach ($categories as $category) {
+                    GovernifyServiceRequest::where('id', $category['from'])->update(['service_categories_request_index' => $category['to']]);
+                }
+                return response()->json(['message' => 'Service categories request order updated successfully']);
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
     }
 }

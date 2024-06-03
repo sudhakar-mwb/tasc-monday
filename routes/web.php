@@ -127,6 +127,8 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSupe
     Route::post('/serviceCategories/create', [ServiceCategoriesController::class, 'createServiceCategories'])->name('serviceCategories.createServiceCategories');
     Route::put('/serviceCategories/{id}', [ServiceCategoriesController::class, 'updateServiceCategories'])->name('serviceCategories.updateServiceCategories');
     Route::delete('/serviceCategories/{id}', [ServiceCategoriesController::class, 'destroy'])->name('serviceCategories.destroy');
+    //swap
+    Route::post('/serviceCategories/swap',  [ServiceCategoriesController::class, 'swapServiceCategories']);
 
     Route::post('/governifySiteSetting', [ServiceCategoriesController::class, 'governifySiteSetting'])->name('serviceCategories.governifySiteSetting');
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
@@ -137,6 +139,8 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSupe
     Route::post('/serviceRequests/create', [ServiceRequestsController::class, 'createServiceRequests'])->name('serviceRequests.createServiceRequests');
     Route::put('/serviceRequests/{id}', [ServiceRequestsController::class, 'updateServiceRequests'])->name('serviceRequests.updateServiceRequests');
     Route::delete('/serviceRequests/{id}', [ServiceRequestsController::class, 'destroy'])->name('serviceRequests.destroy');
+    //swap
+    Route::post('/serviceRequests/swap',  [ServiceRequestsController::class, 'swapServiceRequests']);
 
     //  serviceRequests Form API
     Route::get('/serviceRequestForms',   [ServiceRequestFormsController::class, 'index'])->name('serviceRequestForms.index');

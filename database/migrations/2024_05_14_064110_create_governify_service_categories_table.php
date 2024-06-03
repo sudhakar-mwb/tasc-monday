@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('subtitle');
             $table->text('description');
+            $table->integer('service_categories_index')->nullable();
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
         });
