@@ -315,7 +315,7 @@ class ServiceCategoriesController extends Controller
                 $request->validate([
                     'service_categorie'        => 'required|array',
                     'service_categorie.*.from' => 'required|integer|exists:governify_service_categories,id',
-                    'service_categorie.*.to'   => 'required|integer|exists:governify_service_categories,id',
+                    'service_categorie.*.to'   => 'required|integer',
                 ]);
 
                 // Extract the array of IDs from the request
@@ -345,7 +345,8 @@ class ServiceCategoriesController extends Controller
                 foreach ($categories as $category) {
                     GovernifyServiceCategorie::where('id', $category['from'])->update(['service_categories_index' => $category['to']]);
                 }
-                return response()->json(['message' => 'Service categories order updated successfully']);
+                $dataToRender = GovernifyServiceCategorie::whereNull('deleted_at')->orderBy('service_categories_index')->get();
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Service categories order updated successfully.")));
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
