@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use DB;
+use Illuminate\Support\Facades\Cache;
 use App\Models\SiteSettings;
 use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Expr\YieldFrom;
@@ -53,7 +54,12 @@ class AuthController extends Controller
                     "email" => $request->email,
                     "password" => $request->password
                 ]);
+
                 if(!empty($token)){
+                    
+                    $userData = MondayUsers::getUser(['email' => trim($input['email'])]);
+                    $cacheUserDetails = Cache::forever('loginUserDetails', $userData);
+
                     return response()->json([
                         "status" => true,
                         "message" => "User logged in succcessfully",
@@ -690,6 +696,34 @@ class AuthController extends Controller
             $msg    = "Your account verification link is not exist.";
             $status = "danger";
             return redirect()->route('monday.get.login',compact('msg', 'status'));
+        }
+    }
+
+    public function loginUserDetails()
+    {
+        // Retrieve user details from the cache
+        $userDetails = Cache::get('loginUserDetails');
+
+        // Check if user details exist
+        if ($userDetails) {
+
+            $userDetails = json_decode(json_encode($userDetails), true);
+            
+            // Return success response with user details
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'email' => $userDetails['email'],
+                    'name' => $userDetails['name'],
+                ],
+                'message' => 'User details retrieved successfully.'
+            ]);
+        } else {
+            // Return failure response indicating user not found
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ]);
         }
     }
 }
