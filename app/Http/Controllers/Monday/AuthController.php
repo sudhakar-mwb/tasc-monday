@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Expr\YieldFrom;
 use \Mailjet\Resources;
 use App\Models\User;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
@@ -699,31 +701,47 @@ class AuthController extends Controller
         }
     }
 
-    public function loginUserDetails()
+    public function loginUserDetails(Request $request)
     {
-        // Retrieve user details from the cache
-        $userDetails = Cache::get('loginUserDetails');
+        
+        $bearerToken = $request->header('Authorization');
 
-        // Check if user details exist
-        if ($userDetails) {
+        if (strpos($bearerToken, 'Bearer ') === 0) {
+            $bearerToken = substr($bearerToken, 7);
+        }
 
-            $userDetails = json_decode(json_encode($userDetails), true);
+        // Decode the JWT token
+        $secretKey = env('JWT_SECRET'); // Replace with your actual secret key
+        try {
+            $decoded = JWT::class::decode($bearerToken, new Key($secretKey, 'HS256'));
+            $userId = $decoded->sub;
+            $getUser = MondayUsers::getUser(['id' => $userId]);
+            $getUser = json_decode(json_encode($getUser, true), true);
             
-            // Return success response with user details
+            if(empty($getUser)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found.'
+                ]);
+            }
+
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'email' => $userDetails['email'],
-                    'name' => $userDetails['name'],
+                    'email' => $getUser['email']??"",
+                    'name' => $getUser['name']??"",
                 ],
                 'message' => 'User details retrieved successfully.'
             ]);
-        } else {
-            // Return failure response indicating user not found
+            
+        } catch (Exception $e) {
+
             return response()->json([
                 'success' => false,
                 'message' => 'User not found.'
             ]);
+
         }
+
     }
 }
