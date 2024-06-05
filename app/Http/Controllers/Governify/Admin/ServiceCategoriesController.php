@@ -221,6 +221,7 @@ class ServiceCategoriesController extends Controller
                     "updated_at"  => date("Y-m-d H:i:s")
                 );
 
+                $datatoUpdate = [];
                 if ($request->input('logo_image')) {
                     // Additional validation for base64 image
                     if (!$this->isValidBase64Image($request->logo_image)) {
@@ -236,9 +237,9 @@ class ServiceCategoriesController extends Controller
 
                     $updateFileName = $timestamp . '_' . $request->input('logo_name');
                     File::put(public_path('uploads/governify/' . $updateFileName), $data);
-                    $insert_array['logo_name']         = $updateFileName;
+                    $datatoUpdate['logo_name']         = $updateFileName;
                     $imagePath = '/uploads/governify/' . $updateFileName;
-                    $insert_array['file_location'] =  URL::to("/") . $imagePath;
+                    $datatoUpdate['logo_location'] =  URL::to("/") . $imagePath;
 
                     // $uploadedImagePath = $serviceRequest->file_location;
                     $uploadedImagePath = public_path('uploads/governify/' . $get_data->logo_name);
@@ -249,12 +250,8 @@ class ServiceCategoriesController extends Controller
                     }
                 }
 
-                $datatoUpdate = [
-                    'ui_settings' => json_encode(!empty($insert_array['ui_settings']) ? $insert_array['ui_settings'] : ''),
-                    'status'      => 0,
-                    'logo_name'     => !empty($insert_array['logo_name'])     ? $insert_array['logo_name']     : "",
-                    'logo_location' => !empty($insert_array['file_location']) ? $insert_array['file_location'] : "",
-                ];
+                $datatoUpdate['ui_settings'] = json_encode(!empty($insert_array['ui_settings']) ? $insert_array['ui_settings'] : '');
+                $datatoUpdate['status'] = 0;
 
                 if (empty($get_data)) {
                     $insert = GovernifySiteSetting::where($criteria)->create($datatoUpdate);
