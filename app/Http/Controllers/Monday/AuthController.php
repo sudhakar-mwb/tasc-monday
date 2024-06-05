@@ -97,7 +97,7 @@ class AuthController extends Controller
                     'created_at'   => date("Y-m-d H:i:s"),
                     'updated_at'   => date("Y-m-d H:i:s"),
                     'password'     => Hash::make(trim($input['password'])),
-                    'board_id'     => 1472085729,
+                    'board_id'     => 1393670128,
                 );
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
                 if ($insertUserInDB['status'] == "success") {
