@@ -703,8 +703,16 @@ class AuthController extends Controller
 
     public function loginUserDetails(Request $request)
     {
+
         
-        $bearerToken = $request->header('Authorization');
+        if(!isset($request->id) && empty($request->id)){
+            return [
+                "success"=> false,
+                "message"=> "user token is not found"
+            ];
+        }
+        
+        $bearerToken = $request->id;
 
         if (strpos($bearerToken, 'Bearer ') === 0) {
             $bearerToken = substr($bearerToken, 7);
