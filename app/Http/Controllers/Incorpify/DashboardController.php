@@ -336,9 +336,10 @@ class DashboardController extends Controller
                        updates {
                         id
                         text_body
+                        body
                         
                         replies {
-                          id text_body
+                          id text_body body
                         }
                      }
                     
