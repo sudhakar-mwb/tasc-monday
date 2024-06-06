@@ -506,5 +506,60 @@ class DashboardController extends Controller
             "message" => $data
         ];
     }
+    
+    public function updateSubitemStatus(Request $request) {
+
+        $payload = $request->json()->all();
+
+        $validator = Validator::make($request->all(), [
+            'subitem_id' => 'required|min:0',
+            'status_to_update' => 'required|string|min:0'
+        ]);
+
+        // Custom error messages
+        $validator->setAttributeNames([
+            'subitem_id' => 'Subitem Id ',
+            'status_to_update' => 'Update Status'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->returnData($validator->errors(), false);
+        }
+
+        $board_id_query = 'query {items (ids: ['.$payload['subitem_id'].']) {
+                 board { id }
+               }
+            }
+        ';
+
+        $getBoardId = $this->_getMondayData($board_id_query);
+        $getBoardId = $getBoardId['response']['data']['items'][0]['board']['id']??"";
+
+        if(empty($getBoardId)){
+            return [
+                "success"=> false,
+                "message"=> "item id is invalid"
+            ];
+        }
+
+        $update_query = 'mutation{
+            change_column_value(
+              board_id: '.$getBoardId.',
+              item_id: '.$payload['subitem_id'].',
+              column_id: "status__1",
+              value: "{\"label\": \"In Progress\"}") {
+            id
+            }
+        }';
+
+
+        $response = $this->_getMondayData($update_query);
+
+        if($response['response']['data']['change_column_value']['id']){
+            return $this->returnData($response);
+        }
+
+        return $this->returnData($response, false);
+    }
 
 }

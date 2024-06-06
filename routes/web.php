@@ -120,6 +120,7 @@ Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function (
     Route::post('/uploadFiles', [IncorpifyDashboard::class, 'uploadFiles'])->name('incorpify.uploadFiles');
     Route::post('/createItem', [IncorpifyDashboard::class, 'createItem'])->name('incorpify.createItem');
     Route::post('/getSubItemByEmail', [IncorpifyDashboard::class, 'getSubItemByEmail'])->name('incorpify.getSubItemByEmail');
+    Route::post('/updateSubitemStatus', [IncorpifyDashboard::class, 'updateSubitemStatus'])->name('incorpify.updateSubitemStatus');
     Route::get('/profile', [IncorpifyDashboard::class, 'profile'])->name('incorpify.profile');
     Route::get('/refreshToken', [IncorpifyDashboard::class, 'refreshToken'])->name('incorpify.refreshToken');
     Route::get('/logout', [IncorpifyDashboard::class, 'logout'])->name('incorpify.logout');
