@@ -463,8 +463,11 @@ class DashboardController extends Controller
         $column_values = json_encode(
             json_encode(
                 [
-                "email" => $payload['email'],
-                "single_select3__1" => $payload['type_of_license']  
+                    "email__1" => [
+                        "email"=>$payload['email'],
+                        "text"=>$payload['email']
+                    ],
+                    "single_select3__1" => $payload['type_of_license']
                 ],
             true),
         true);
