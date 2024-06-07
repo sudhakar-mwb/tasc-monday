@@ -130,7 +130,7 @@ class GovernifyRequestTrackingController extends Controller
                              state
                              permissions
                              board_kind
-                             activity_logs (from: "'. $request->from.'", to: "'.$request->to.'", column_ids:["'.$request->column_id.'"], item_ids : [' . $request->pulse_id . ']) {
+                             activity_logs (from: "' . $request->from . '", to: "' . $request->to . '", column_ids:["' . $request->column_id . '"], item_ids : [' . $request->pulse_id . ']) {
                                 account_id
                                 id
                                 data
@@ -203,5 +203,102 @@ class GovernifyRequestTrackingController extends Controller
         } catch (\Exception $e) {
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
+    }
+
+    public function exportGovernifyData(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $boardId = 1493464821;
+
+                return $this->fetchMondayData($boardId);
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function addGovernifyComment(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function fetchMondayData($boardId)
+    {
+        $after      = 'ddd';
+        $tolalData  = 500;
+        $cursor     = 'null';
+        do {
+            $query = 'query {
+                        boards( ids: ' . $boardId . ') {
+                        id
+                        name
+                        state
+                        permissions
+                        board_kind
+                        columns {
+                                  title
+                                  id
+                                  archived
+                                  description
+                                  settings_str
+                                  title
+                                  type
+                                  width
+                              }
+                              items_page (limit: ' . $tolalData . ', cursor:' . $cursor . '){
+                                  cursor,
+                                  items {
+                                      created_at
+                                      creator_id
+                                      email
+                                      id
+                                      name
+                                      relative_link
+                                      state
+                                      updated_at
+                                      url
+                                      column_values {
+                                         id
+                                         value
+                                         type
+                                         text
+                                         ... on StatusValue  {
+                                            label
+                                            update_id
+                                         }
+                                     }
+                                  }
+                              }
+                      }
+                    }';
+            $boardsData = $this->_getMondayData($query);
+
+            if (!empty($boardsData['response']['data']['boards'][0]['items_page']['cursor'])) {
+                $cursor =  "\"" . $boardsData['response']['data']['boards'][0]['items_page']['cursor'] . "\"";
+            } else {
+                $after = '';
+            }
+            $curr_data = isset($boardsData['response']['data']['boards'][0]['items_page']['items']) ? $boardsData['response']['data']['boards'][0]['items_page']['items'] : [];
+            if (!empty($curr_data)) {
+                if (count($curr_data))
+                    foreach ($curr_data as $item) {
+                        $mondayData[] = $item;
+                    }
+            }
+            $newResponse = $boardsData;
+        } while (!empty($after));
+        $totalMondayData = count($mondayData);
+
+        unset($newResponse['response']['data']['boards'][0]['items_page']['items']);
+        $newResponse['response']['data']['boards'][0]['items_page']['items'] = $mondayData;
+        return $newResponse;
     }
 }
