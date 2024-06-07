@@ -566,4 +566,65 @@ class DashboardController extends Controller
         return $this->returnData($response, false);
     }
 
+    public function getUpdateAndReply(Request $request) {
+
+        $data = [
+            "id"=> $request->id
+        ];
+
+        $rules = [
+            "id" => "required|min:0|integer"
+        ];
+
+        $message = [
+            'id.requried'=> "id is an required field"
+        ];
+
+        $attribute = [
+            "id" => "Item id or Subitem id"
+        ];
+
+        
+        $validator = Validator::make($data, $rules, $message, $attribute);
+
+        if($validator->fails()){
+            return $this->returnData($validator->errors(), false);
+        }
+
+        $query = '{
+            items(ids: '.$data['id'].') {
+              name
+              id
+              updates {
+                id
+                body
+                created_at
+                creator {
+                  name
+                  email
+                }
+                replies {
+                  id
+                  body
+                  created_at
+                  creator {
+                    name
+                    email
+                  }
+                }
+              }
+            }
+        }';
+
+        $response = $this->_getMondayData($query);
+
+        if(!isset($response['response']['data']['items'][0]))
+        {
+            return $this->returnData($response, false);
+        }
+
+        return $this->returnData($response);
+        
+    }
+
 }
