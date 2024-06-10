@@ -8,6 +8,7 @@ use App\Traits\MondayApis;
 use Illuminate\Support\Facades\Validator;
 use CURLFile;
 use Illuminate\Support\Facades\Cache;
+use GuzzleHttp\Client;
 
 
 class DashboardController extends Controller
@@ -626,5 +627,66 @@ class DashboardController extends Controller
         return $this->returnData($response);
         
     }
+
+    //upload file to the monday.com function 
+    function uploadFileToMonday($itemId, $columnId, $fileData, $fileName)
+    {
+        $fileContent = base64_decode($fileData);
+        $client = new Client();
+        
+        $response = $client->post('https://api.monday.com/v2/file', [
+            'headers' => [
+                'Authorization' => env('MONDAY_API_KEY')
+            ],
+            'multipart' => [
+                [
+                    'name'     => 'query',
+                    'contents' => "mutation (\$file: File!) {
+                        add_file_to_column (item_id: $itemId, column_id: \"$columnId\", file: \$file) {
+                            id
+                        }
+                    }"
+                ],
+                [
+                    'name'     => 'variables[file]',
+                    'contents' => $fileContent,
+                    'filename' => $fileName
+                ]
+            ]
+        ]);
+
+        return json_decode($response->getBody()->getContents(),true);
+    }
+
+
+    public function uploadMondayFiles(Request $request)
+    {
+        // Validate the incoming request data
+        $validator = Validator::make($request->all(), [
+            'item_id' => 'required|integer',
+            'file' => 'required|string',
+            'file_name' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // Get validated data
+        $itemId = $request->input('item_id');
+        $columnId = 'files';
+        $base64Data = $request->input('file');
+        $fileName = $request->input('file_name');
+
+        // Upload file to Monday.com
+        $response = $this->uploadFileToMonday($itemId, $columnId, $base64Data, $fileName);
+
+        if(!isset($response['data']['add_file_to_column']['id'])){
+            return $this->returnData($response, false);
+        }
+
+        return $this->returnData($response);
+    }
+
 
 }
