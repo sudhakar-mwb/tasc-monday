@@ -153,11 +153,13 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSupe
 Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api","isUser"]], function () {
     Route::get('/dashboard',   [CustomerDashboardController::class, 'dashboard']);
     Route::post('/createRequestDashboard',   [CustomerDashboardController::class, 'createRequestDashboard']);
-    Route::get('/requestTracking',   [GovernifyRequestTrackingController::class, 'requestTracking']);
-    Route::get('/cancelRequest',   [GovernifyRequestTrackingController::class, 'cancelRequest']);
-    Route::get('/reverseCancelRequest',   [GovernifyRequestTrackingController::class, 'reverseCancelRequest']);
+    Route::post('/requestTracking',   [GovernifyRequestTrackingController::class, 'requestTracking']);
+    Route::post('/cancelRequest',   [GovernifyRequestTrackingController::class, 'cancelRequest']);
+    Route::post('/reverseCancelRequest',   [GovernifyRequestTrackingController::class, 'reverseCancelRequest']);
     Route::get('/exportGovernifyData',   [GovernifyRequestTrackingController::class, 'exportGovernifyData']);
     Route::get('/addGovernifyComment',   [GovernifyRequestTrackingController::class, 'addGovernifyComment']);
+    Route::get('/addGovernifyLike',   [GovernifyRequestTrackingController::class, 'addGovernifyLike']);
+    Route::get('/uploadGovernifyDocument',   [GovernifyRequestTrackingController::class, 'uploadGovernifyDocument']);
 
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
 });

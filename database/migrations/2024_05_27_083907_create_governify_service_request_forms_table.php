@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('governify_service_request_forms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('form_data');
+            $table->longText('form_data');
             $table->string('description');
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();

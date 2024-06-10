@@ -146,8 +146,8 @@ class ServiceRequestsController extends Controller
                     $this->validate($request, [
                         'title'       => ['required', 'string', Rule::unique('governify_service_requests')->ignore($id)],
                         'description' => "required|string",
-                        'image'       => "required|string",
-                        'image_name'  => "required|string",
+                        // 'image'       => "required|string",
+                        // 'image_name'  => "required|string",
                         'form'        => "required|integer",
                         'service_categorie_id' => 'required|exists:governify_service_categories,id',
                     ], $this->getErrorMessages());
@@ -165,10 +165,7 @@ class ServiceRequestsController extends Controller
                         "updated_at" => date("Y-m-d H:i:s")
                     );
 
-                    // Additional validation for base64 image
-                    if (!$this->isValidBase64Image($request->image)) {
-                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
-                    }
+
 
                     /*
                     if ($request->hasFile('image')) {
@@ -184,6 +181,12 @@ class ServiceRequestsController extends Controller
                     }
                     */
                     if ($request->input('image')) {
+
+                        // Additional validation for base64 image
+                        if (!$this->isValidBase64Image($request->image)) {
+                            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                        }
+
                         $imageData = $request->input('image');
                         list($type, $data) = explode(';', $imageData);
                         list(, $data)      = explode(',', $data);
