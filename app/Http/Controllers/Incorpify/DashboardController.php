@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use Illuminate\Support\Facades\Validator;
 use CURLFile;
+use Illuminate\Support\Facades\Cache;
+use GuzzleHttp\Client;
+
 
 class DashboardController extends Controller
 {
@@ -334,9 +337,10 @@ class DashboardController extends Controller
                        updates {
                         id
                         text_body
+                        body
                         
                         replies {
-                          id text_body
+                          id text_body body
                         }
                      }
                     
@@ -460,8 +464,11 @@ class DashboardController extends Controller
         $column_values = json_encode(
             json_encode(
                 [
-                "email" => $payload['email'],
-                "single_select3__1" => $payload['type_of_license']  
+                    "email__1" => [
+                        "email"=>$payload['email'],
+                        "text"=>$payload['email']
+                    ],
+                    "single_select3__1" => $payload['type_of_license']
                 ],
             true),
         true);
@@ -504,5 +511,182 @@ class DashboardController extends Controller
             "message" => $data
         ];
     }
+    
+    public function updateSubitemStatus(Request $request) {
+
+        $payload = $request->json()->all();
+
+        $validator = Validator::make($request->all(), [
+            'subitem_id' => 'required|min:0',
+            'status_to_update' => 'required|string|min:0'
+        ]);
+
+        // Custom error messages
+        $validator->setAttributeNames([
+            'subitem_id' => 'Subitem Id ',
+            'status_to_update' => 'Update Status'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->returnData($validator->errors(), false);
+        }
+
+        $board_id_query = 'query {items (ids: ['.$payload['subitem_id'].']) {
+                 board { id }
+               }
+            }
+        ';
+
+        $getBoardId = $this->_getMondayData($board_id_query);
+        $getBoardId = $getBoardId['response']['data']['items'][0]['board']['id']??"";
+
+        if(empty($getBoardId)){
+            return [
+                "success"=> false,
+                "message"=> "item id is invalid"
+            ];
+        }
+
+        $update_query = 'mutation{
+            change_column_value(
+              board_id: '.$getBoardId.',
+              item_id: '.$payload['subitem_id'].',
+              column_id: "status__1",
+              value: "{\"label\": \"In Progress\"}") {
+            id
+            }
+        }';
+
+
+        $response = $this->_getMondayData($update_query);
+
+        if($response['response']['data']['change_column_value']['id']){
+            return $this->returnData($response);
+        }
+
+        return $this->returnData($response, false);
+    }
+
+    public function getUpdateAndReply(Request $request) {
+
+        $data = [
+            "id"=> $request->id
+        ];
+
+        $rules = [
+            "id" => "required|min:0|integer"
+        ];
+
+        $message = [
+            'id.requried'=> "id is an required field"
+        ];
+
+        $attribute = [
+            "id" => "Item id or Subitem id"
+        ];
+
+        
+        $validator = Validator::make($data, $rules, $message, $attribute);
+
+        if($validator->fails()){
+            return $this->returnData($validator->errors(), false);
+        }
+
+        $query = '{
+            items(ids: '.$data['id'].') {
+              name
+              id
+              updates {
+                id
+                body
+                created_at
+                creator {
+                  name
+                  email
+                }
+                replies {
+                  id
+                  body
+                  created_at
+                  creator {
+                    name
+                    email
+                  }
+                }
+              }
+            }
+        }';
+
+        $response = $this->_getMondayData($query);
+
+        if(!isset($response['response']['data']['items'][0]))
+        {
+            return $this->returnData($response, false);
+        }
+
+        return $this->returnData($response);
+        
+    }
+
+    //upload file to the monday.com function 
+    function uploadFileToMonday($itemId, $columnId, $fileData, $fileName)
+    {
+        $fileContent = base64_decode($fileData);
+        $client = new Client();
+        
+        $response = $client->post('https://api.monday.com/v2/file', [
+            'headers' => [
+                'Authorization' => env('MONDAY_API_KEY')
+            ],
+            'multipart' => [
+                [
+                    'name'     => 'query',
+                    'contents' => "mutation (\$file: File!) {
+                        add_file_to_column (item_id: $itemId, column_id: \"$columnId\", file: \$file) {
+                            id
+                        }
+                    }"
+                ],
+                [
+                    'name'     => 'variables[file]',
+                    'contents' => $fileContent,
+                    'filename' => $fileName
+                ]
+            ]
+        ]);
+
+        return json_decode($response->getBody()->getContents(),true);
+    }
+
+
+    public function uploadMondayFiles(Request $request)
+    {
+        // Validate the incoming request data
+        $validator = Validator::make($request->all(), [
+            'item_id' => 'required|integer',
+            'file' => 'required|string',
+            'file_name' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // Get validated data
+        $itemId = $request->input('item_id');
+        $columnId = 'files';
+        $base64Data = $request->input('file');
+        $fileName = $request->input('file_name');
+
+        // Upload file to Monday.com
+        $response = $this->uploadFileToMonday($itemId, $columnId, $base64Data, $fileName);
+
+        if(!isset($response['data']['add_file_to_column']['id'])){
+            return $this->returnData($response, false);
+        }
+
+        return $this->returnData($response);
+    }
+
 
 }
