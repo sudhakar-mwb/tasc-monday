@@ -334,20 +334,6 @@ class DashboardController extends Controller
                         id
                         text
                      }
-                       updates {
-                        id
-                        text_body
-                        body
-                        
-                        replies {
-                          id text_body body
-                        }
-                     }
-                    
-                    assets {
-                      id
-                      url
-                    }
                     }
                   }
               }
@@ -567,7 +553,7 @@ class DashboardController extends Controller
         return $this->returnData($response, false);
     }
 
-    public function getUpdateAndReply(Request $request) {
+    public function getSubItemDetailsById(Request $request) {
 
         $data = [
             "id"=> $request->id
@@ -592,10 +578,38 @@ class DashboardController extends Controller
             return $this->returnData($validator->errors(), false);
         }
 
+        $description = "text";
+        $required_action = "dup__of_description__1";
+        $assignee = "assigness__1";
+        $overall_status = "status__1";
+
         $query = '{
-            items(ids: '.$data['id'].') {
-              name
+            items(ids: 1529100318) {
               id
+              name
+              created_at
+              updated_at
+              column_values(
+                ids: ["'.$description.'", "'.$required_action.'", "'.$assignee.'", "'.$overall_status.'"]
+              ) {
+                id
+                text
+              }
+              updates {
+                id
+                text_body
+                body
+                replies {
+                  id
+                  text_body
+                  body
+                }
+              }
+              assets {
+                id
+                url
+                name
+              }
               updates {
                 id
                 body
@@ -615,7 +629,7 @@ class DashboardController extends Controller
                 }
               }
             }
-        }';
+          }';
 
         $response = $this->_getMondayData($query);
 
@@ -674,7 +688,7 @@ class DashboardController extends Controller
 
         // Get validated data
         $itemId = $request->input('item_id');
-        $columnId = 'files';
+        $columnId = 'files__1';
         $base64Data = $request->input('file');
         $fileName = $request->input('file_name');
 
