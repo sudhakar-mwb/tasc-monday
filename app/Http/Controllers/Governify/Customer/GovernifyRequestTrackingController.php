@@ -20,11 +20,14 @@ class GovernifyRequestTrackingController extends Controller
         $validatedData = $request->validate([
             'query_params'          => 'array',
             'query_params.order_by' => 'nullable|array',
+            'limit'  => 'nullable|string',
+            'cursor' => 'nullable|string',
             'query_params.order_by.*.direction' => 'required_with:in:asc,desc',
             'query_params.order_by.*.column_id' => 'required_with:query_params.order_by|string',
             'query_params.rules' => 'nullable|array',
             'query_params.rules.*.column_id' => 'required_with:query_params.rules|string',
             'query_params.rules.*.compare_value' => 'required_with:query_params.rules|array',
+            'query_params.rules.*.operator' => 'nullable|string',
             'query_params.operator' => 'nullable|string|in:and,or'
         ]);
 
@@ -39,11 +42,12 @@ class GovernifyRequestTrackingController extends Controller
             // $queryParams = str_replace(['"{', '}"'], ['{', '}'], $queryParams);
             // $queryParams = preg_replace('/"(\w+)":/u', '$1:', $queryParams);
             // Specifically replace the values for direction to be unquoted
-            $queryParams = str_replace(['"asc"', '"desc"', '"and"'], ['asc', 'desc', 'and'], $queryParams);
+            $queryParams = str_replace(['"asc"', '"desc"', '"and"', '"contains_text"'], ['asc', 'desc', 'and', 'contains_text'], $queryParams);
         }
 
-
-
+        $limit  = !empty($request->limit)  ? $request->limit  : 10;
+        $cursor = !empty($request->cursor) ? '"'.$request->cursor.'"' : 'null';
+        //Invalid request: You must provide either a 'query_params' or a 'cursor', but not both. Use 'query_params' for the initial request and 'cursor' for paginated requests.
         $query = 'query {
             boards(limit: 500, ids: 1493464821) {
             id
@@ -61,7 +65,7 @@ class GovernifyRequestTrackingController extends Controller
                       type
                       width
                   }
-                  items_page (limit: 3, cursor:null,  query_params: ' . (!empty($queryParams) ? $queryParams : '{}') . '  ){
+                  items_page (limit: ' . $limit . ', cursor:'.$cursor.',  query_params: ' . (!empty($queryParams) ? $queryParams : '{}') . '  ){
                       cursor,
                       items {
                           created_at
@@ -446,21 +450,25 @@ class GovernifyRequestTrackingController extends Controller
                 // $filePath =  URL::to("/") . $imagePath;
                 $filePath =   $imagePath;
 
-                $query = 'mutation add_file($file: File!) { add_file_to_column (item_id: ' . $request->item_id . ', column_id: "files__1", file: $file) { id } }';
+                $query = 'mutation add_file($file: File!) { add_file_to_update (update_id: ' . $request->item_id . ', file: $file) { id } }'; // working for updated items 
                 $map = '{"image": "variables.file"}';
                 $postFields = [
                     'query' => $query,
                     'map'   => $map,
                     'image' => new CURLFile($filePath)
                 ];
-                $fileUploadResponse = $this->imageUpload($postFields);
+                return $fileUploadResponse = $this->imageUpload($postFields);
 
-                if (isset($fileUploadResponse['response']['errors'])) {
+                if (!empty($fileUploadResponse['response']['errors'])) {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => $fileUploadResponse['response']['errors'])));
                 }
 
-                if ($fileUploadResponse['response']['data']['id']['add_file_to_column']) {
-                    return response(json_encode(array('response' => [], 'status' => true, 'message' => 'Image Updated Successfully')));
+                if (!empty($fileUploadResponse['response']['error_message'])) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => $fileUploadResponse['response']['error_message'])));
+                }
+
+                if (!empty($fileUploadResponse['response']['data']['add_file_to_update']['id'])) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => 'Image Uploaded Successfully.')));
                 } else {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' => 'Something Went Wrong. Image Not Uploaded. Please Try To Re-Upload')));
                 }
