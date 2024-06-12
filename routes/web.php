@@ -9,7 +9,10 @@ use App\Http\Controllers\Monday\DashboardController;
 use App\Http\Controllers\Monday\AuthController;
 use App\Http\Controllers\Incorpify\DashboardController as IncorpifyDashboard;
 use App\Http\Controllers\Governify\Admin\ServiceCategoriesController;
+use App\Http\Controllers\Governify\Admin\ServiceRequestFormsController;
 use App\Http\Controllers\Governify\Admin\ServiceRequestsController;
+use App\Http\Controllers\Governify\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Governify\Customer\GovernifyRequestTrackingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,9 +47,13 @@ Route::get('/', [AuthController::class, 'login'])->name('monday.get.login');
 //Monday.com
 
 Route::post('/', [AuthController::class, 'login'])->name('monday.post.login');
+
+Route::post('/commom-login', [AuthController::class, 'userLogin']);
+
 Route::get('/loginUserDetails/{id}', [AuthController::class, 'loginUserDetails'])->name('monday.get.loginUserDetails')->middleware('auth:api');
 
 //loginUserDetails
+
 Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], function () {
     // Route::middleware('monday.auth')->group(function () {
     // Route::group(['middleware' => 'monday.auth'], function(){
@@ -56,8 +63,8 @@ Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], 
    
     Route::group(['prefix' => "form", 'middleware'=>['web','isUser']], function () {
         Route::get('/', [DashboardController::class, 'dashboard'])->name('monday.dashboard');
-        Route::get('/track-request', [DashboardController::class, 'trackRequest'])->name('monday.track_request');
-        Route::post('/track-request', [DashboardController::class, 'trackRequest'])->name('monday.track_request');
+        Route::get('/track-request', [DashboardController::class, 'trackRequest'])->name('monday.get.track_request');
+        Route::post('/track-request', [DashboardController::class, 'trackRequest'])->name('monday.post.track_request');
         Route::get('/candidate-form', [DashboardController::class, 'mobilityform'])->name('monday.mobilityform'); // monday-form
         Route::get('/candidate-stats', [DashboardController::class, 'stats'])->name('monday.stats'); // chart
         Route::get('/track-request/{id}/{userName}', [DashboardController::class, 'manageById'])->name('user.show');
@@ -130,20 +137,48 @@ Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function (
     Route::get('/logout', [IncorpifyDashboard::class, 'logout'])->name('incorpify.logout');
 });
 
-Route::group(['prefix' => "governify", "middleware" => ["auth:api"]], function () {
+Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSuperAdmin","isAdmin"]], function () {
     // serviceCategories API
     Route::get('/serviceCategories',  [ServiceCategoriesController::class, 'index'])->name('serviceCategories.index');
     Route::get('/serviceCategories/{id}',  [ServiceCategoriesController::class, 'showServiceCategoriesById'])->name('serviceCategories.showServiceCategoriesById');
     Route::post('/serviceCategories/create', [ServiceCategoriesController::class, 'createServiceCategories'])->name('serviceCategories.createServiceCategories');
     Route::put('/serviceCategories/{id}', [ServiceCategoriesController::class, 'updateServiceCategories'])->name('serviceCategories.updateServiceCategories');
     Route::delete('/serviceCategories/{id}', [ServiceCategoriesController::class, 'destroy'])->name('serviceCategories.destroy');
+    //swap
+    Route::post('/serviceCategories/swap',  [ServiceCategoriesController::class, 'swapServiceCategories']);
 
-    //  serviceCategories API
+    Route::post('/governifySiteSetting', [ServiceCategoriesController::class, 'governifySiteSetting'])->name('serviceCategories.governifySiteSetting');
+    Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
+
+    //  serviceRequests API
     Route::get('/serviceRequests',  [ServiceRequestsController::class, 'index'])->name('serviceRequests.index');
     Route::get('/serviceRequests/{id}',  [ServiceRequestsController::class, 'showServiceRequestsById'])->name('serviceRequests.showServiceRequestsById');
     Route::post('/serviceRequests/create', [ServiceRequestsController::class, 'createServiceRequests'])->name('serviceRequests.createServiceRequests');
     Route::put('/serviceRequests/{id}', [ServiceRequestsController::class, 'updateServiceRequests'])->name('serviceRequests.updateServiceRequests');
     Route::delete('/serviceRequests/{id}', [ServiceRequestsController::class, 'destroy'])->name('serviceRequests.destroy');
+    //swap
+    Route::post('/serviceRequests/swap',  [ServiceRequestsController::class, 'swapServiceRequests']);
+
+    //  serviceRequests Form API
+    Route::get('/serviceRequestForms',   [ServiceRequestFormsController::class, 'index'])->name('serviceRequestForms.index');
+    Route::get('/fetchServiceRequestForms',   [ServiceRequestFormsController::class, 'fetchServiceRequestFormSchema'])->name('serviceRequestForms.fetchServiceRequestFormSchema');
+    Route::post('/serviceRequestForms',  [ServiceRequestFormsController::class, 'createServiceRequestForms'])->name('serviceRequestForms.createServiceRequestForms');
+    Route::put('/serviceRequestForms/{id}', [ServiceRequestFormsController::class, 'updateServiceRequestForms'])->name('serviceRequestForms.updateServiceRequestForms');
+    Route::delete('/serviceRequestForms/{id}',   [ServiceRequestFormsController::class, 'destroy'])->name('serviceRequestForms.destroy');
+});
+
+Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api","isUser"]], function () {
+    Route::get('/dashboard',   [CustomerDashboardController::class, 'dashboard']);
+    Route::post('/createRequestDashboard',   [CustomerDashboardController::class, 'createRequestDashboard']);
+    Route::post('/requestTracking',   [GovernifyRequestTrackingController::class, 'requestTracking']);
+    Route::post('/cancelRequest',   [GovernifyRequestTrackingController::class, 'cancelRequest']);
+    Route::post('/reverseCancelRequest',   [GovernifyRequestTrackingController::class, 'reverseCancelRequest']);
+    Route::get('/exportGovernifyData',   [GovernifyRequestTrackingController::class, 'exportGovernifyData']);
+    Route::get('/addGovernifyComment',   [GovernifyRequestTrackingController::class, 'addGovernifyComment']);
+    Route::get('/addGovernifyLike',   [GovernifyRequestTrackingController::class, 'addGovernifyLike']);
+    Route::get('/uploadGovernifyDocument',   [GovernifyRequestTrackingController::class, 'uploadGovernifyDocument']);
+
+    Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
 });
 
 require __DIR__ . '/auth.php';

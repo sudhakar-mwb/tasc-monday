@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('governify_service_categories', function (Blueprint $table) {
+        Schema::create('governify_service_request_forms', function (Blueprint $table) {
             $table->id();
-            $table->string('icon');
-            $table->string('title');
-            $table->string('subtitle');
-            $table->text('description');
-            $table->integer('service_categories_index')->nullable();
+            $table->string('name');
+            $table->longText('form_data');
+            $table->string('description');
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
         });
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('governify_service_categories');
+        Schema::dropIfExists('governify_service_request_forms');
     }
 };

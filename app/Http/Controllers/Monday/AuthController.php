@@ -57,17 +57,28 @@ class AuthController extends Controller
                     "password" => $request->password
                 ]);
 
-                if(!empty($token)){
-                    
-                    $userData = MondayUsers::getUser(['email' => trim($input['email'])]);
-                    $cacheUserDetails = Cache::forever('loginUserDetails', $userData);
 
-                    return response()->json([
-                        "status" => true,
-                        "message" => "User logged in succcessfully",
-                        "token" => $token
-                    ]);
+                if (!empty($userInDb['data']['user_data'])) {
+                    if (!empty($userInDb['data']['user_data']->role) && ($userInDb['data']['user_data']->role == 1) ) {
+                        $role = 'superAdmin';
+                    }
+                    elseif (!empty($userInDb['data']['user_data']->role ) && ($userInDb['data']['user_data']->role  == 2) ) {
+                        $role = 'admin';
+                    }
+                    else  {
+                        $role = 'customer';
+                    }
+
                 }
+
+                // if(!empty($token)){
+                //     return response()->json([
+                //         "status" => true,
+                //         "message" => "User logged in succcessfully",
+                //         "token" => $token,
+                //         "role"  => $role
+                //     ]);
+                // }
                 $route = $this->redirectDash();
                 return redirect($route);
             }
@@ -701,6 +712,73 @@ class AuthController extends Controller
         }
     }
 
+
+    public function userLogin(Request $request)
+    {
+        $msg        = '';
+        $status     = '';
+        $heading    = "Log In";
+        $subheading = "";
+        $this->setSetting();
+        if ($request->isMethod('post')) {
+            $input = $request->all();
+            $this->validate($request, [
+                'email' => 'required|email',
+                'password' => 'required|min:6|max:100'
+            ], $this->getErrorMessages());
+
+           $userInDb = MondayUsers::loginUser(array( 'email' => trim($input['email']), 'password' =>  trim($input['password'])));
+           if ($userInDb['status'] == 'success') {
+            $userCredential = $request->only('email','password');
+            if(Auth::attempt($userCredential)){
+                // JWTAuth
+                $token = JWTAuth::attempt([
+                    "email" => $request->email,
+                    "password" => $request->password
+                ]);
+
+                if (!empty($userInDb['data']['user_data'])) {
+                    if (!empty($userInDb['data']['user_data']->role) && ($userInDb['data']['user_data']->role == 1) ) {
+                        $role = 'superAdmin';
+                    }
+                    elseif (!empty($userInDb['data']['user_data']->role ) && ($userInDb['data']['user_data']->role  == 2) ) {
+                        $role = 'admin';
+                    }
+                    else  {
+                        $role = 'customer';
+                    }
+                }
+
+                if(!empty($token)){
+                    return response()->json([
+                        "status" => true,
+                        "message" => "User logged in succcessfully",
+                        "token" => $token,
+                        "role"  => $role
+                    ]);
+                }
+                $route = $this->redirectDash();
+                return redirect($route);
+            }
+           }elseif ($userInDb['status'] == 'not_verified'){
+
+            $msg    = "Your email has not been verified yet. Please check your email inbox";
+            $status = "danger";
+            return view('auth.login',compact('heading','subheading',  'msg', 'status'));
+           }elseif ($userInDb['status'] == 'wrong_pass'){
+
+            $msg    = "Email or Password is incorrect.";
+            $status = "danger";
+            return view('auth.login',compact('heading','subheading',  'msg', 'status'));
+           }elseif ($userInDb['status'] == 'not_found'){
+
+            $msg    = "This user not found in database.";
+            $status = "danger";
+            return view('auth.login',compact('heading','subheading',  'msg', 'status'));
+           }
+        }
+        return view('auth.login', compact('heading', 'subheading', 'msg', 'status'), );
+
     public function loginUserDetails(Request $request)
     {
 
@@ -750,6 +828,7 @@ class AuthController extends Controller
             ]);
 
         }
+
 
     }
 }
