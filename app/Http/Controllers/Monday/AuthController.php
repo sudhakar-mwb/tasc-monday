@@ -15,11 +15,14 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use DB;
+use Illuminate\Support\Facades\Cache;
 use App\Models\SiteSettings;
 use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Expr\YieldFrom;
 use \Mailjet\Resources;
 use App\Models\User;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
@@ -54,6 +57,7 @@ class AuthController extends Controller
                     "password" => $request->password
                 ]);
 
+
                 if (!empty($userInDb['data']['user_data'])) {
                     if (!empty($userInDb['data']['user_data']->role) && ($userInDb['data']['user_data']->role == 1) ) {
                         $role = 'superAdmin';
@@ -64,6 +68,7 @@ class AuthController extends Controller
                     else  {
                         $role = 'customer';
                     }
+
                 }
 
                 // if(!empty($token)){
@@ -707,6 +712,7 @@ class AuthController extends Controller
         }
     }
 
+
     public function userLogin(Request $request)
     {
         $msg        = '';
@@ -772,5 +778,57 @@ class AuthController extends Controller
            }
         }
         return view('auth.login', compact('heading', 'subheading', 'msg', 'status'), );
+
+    public function loginUserDetails(Request $request)
+    {
+
+        
+        if(!isset($request->id) && empty($request->id)){
+            return [
+                "success"=> false,
+                "message"=> "user token is not found"
+            ];
+        }
+        
+        $bearerToken = $request->id;
+
+        if (strpos($bearerToken, 'Bearer ') === 0) {
+            $bearerToken = substr($bearerToken, 7);
+        }
+
+        // Decode the JWT token
+        $secretKey = env('JWT_SECRET'); // Replace with your actual secret key
+        try {
+            $decoded = JWT::class::decode($bearerToken, new Key($secretKey, 'HS256'));
+            $userId = $decoded->sub;
+            $getUser = MondayUsers::getUser(['id' => $userId]);
+            $getUser = json_decode(json_encode($getUser, true), true);
+            
+            if(empty($getUser)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found.'
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'email' => $getUser['email']??"",
+                    'name' => $getUser['name']??"",
+                ],
+                'message' => 'User details retrieved successfully.'
+            ]);
+            
+        } catch (Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ]);
+
+        }
+
+
     }
 }

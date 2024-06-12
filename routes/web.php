@@ -47,7 +47,13 @@ Route::get('/', [AuthController::class, 'login'])->name('monday.get.login');
 //Monday.com
 
 Route::post('/', [AuthController::class, 'login'])->name('monday.post.login');
+
 Route::post('/commom-login', [AuthController::class, 'userLogin']);
+
+Route::get('/loginUserDetails/{id}', [AuthController::class, 'loginUserDetails'])->name('monday.get.loginUserDetails')->middleware('auth:api');
+
+//loginUserDetails
+
 Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], function () {
     // Route::middleware('monday.auth')->group(function () {
     // Route::group(['middleware' => 'monday.auth'], function(){
@@ -115,7 +121,17 @@ Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], 
 
 Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function () {
     Route::get('/', [IncorpifyDashboard::class, 'dashboard'])->name('incorpify.dashboard');
-    Route::get('/{id}', [IncorpifyDashboard::class, 'incorpifyById'])->name('incorpify.incorpifyById');
+    Route::get('/incorpifyById/{id}', [IncorpifyDashboard::class, 'incorpifyById'])->name('incorpify.incorpifyById');
+    Route::get('/getSubItemDetailsById/{id}', [IncorpifyDashboard::class, 'getSubItemDetailsById'])->name('incorpify.getSubItemDetailsById');//getUpdateAndReply
+    Route::post('/update', [IncorpifyDashboard::class, 'update'])->name('incorpify.update');
+    Route::post('/updateReplyOrLike', [IncorpifyDashboard::class, 'updateReplyOrLike'])->name('incorpify.updateReplyOrLike');
+    Route::post('/uploadFiles', [IncorpifyDashboard::class, 'uploadFiles'])->name('incorpify.uploadFiles');
+    
+    Route::post('/uploadMondayFiles', [IncorpifyDashboard::class, 'uploadMondayFiles'])->name('incorpify.uploadMondayFiles');
+
+    Route::post('/createItem', [IncorpifyDashboard::class, 'createItem'])->name('incorpify.createItem');
+    Route::post('/getSubItemByEmail', [IncorpifyDashboard::class, 'getSubItemByEmail'])->name('incorpify.getSubItemByEmail');
+    Route::post('/updateSubitemStatus', [IncorpifyDashboard::class, 'updateSubitemStatus'])->name('incorpify.updateSubitemStatus');
     Route::get('/profile', [IncorpifyDashboard::class, 'profile'])->name('incorpify.profile');
     Route::get('/refreshToken', [IncorpifyDashboard::class, 'refreshToken'])->name('incorpify.refreshToken');
     Route::get('/logout', [IncorpifyDashboard::class, 'logout'])->name('incorpify.logout');
