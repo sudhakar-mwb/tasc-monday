@@ -12,11 +12,21 @@ class GovernifyServiceCategorie extends Model
 
     protected $table = 'governify_service_categories';
 
-    protected $fillable = ['icon', 'title', 'subtitle', 'description', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['icon', 'title', 'subtitle', 'description', 'created_at', 'updated_at', 'deleted_at', 'service_categories_index'];
 
     public function serviceRequest()
     {
         return $this->hasMany(GovernifyServiceRequest::class);
+    }
+
+    public function service_category_request()
+    {
+        return $this->hasMany(GovernifyServiceRequest::class, 'service_categorie_id');
+    }
+
+    public function requestForm()
+    {
+        return $this->belongsTo(GovernifyServiceRequestForms::class, 'form');
     }
 
     public static function insertTableData(string $table_name, array $inputData)

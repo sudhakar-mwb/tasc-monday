@@ -50,7 +50,7 @@ class MondayUsers extends Model
         if( !empty( $if_exists ) ) {
             if( Hash::check($params[ 'password' ], $if_exists->password) ) {
                 if ($if_exists->status == '1') {
-                    $data = array( 'id' => $if_exists->id );
+                    $data = array( 'id' => $if_exists->id, 'user_data' =>  $if_exists);
                     return array( 'status' => 'success', 'data' => $data );
                 }
                 return array( 'status' => 'not_verified' );

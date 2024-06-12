@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('image');
             $table->string('file_location')->nullable();
             $table->string('form');
+            $table->integer('service_categories_request_index')->nullable();
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
             $table->unsignedBigInteger('service_categorie_id');

@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use App\Models\GovernifyServiceCategorie;
+use App\Models\GovernifySiteSetting;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\URL;
 
 class ServiceCategoriesController extends Controller
 {
@@ -23,7 +28,7 @@ class ServiceCategoriesController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $dataToRender = GovernifyServiceCategorie::whereNull('deleted_at')->orderByDesc('id')->get();
+                $dataToRender = GovernifyServiceCategorie::whereNull('deleted_at')->orderBy('service_categories_index')->get();
                 return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Categorie Data.")));
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
@@ -44,7 +49,7 @@ class ServiceCategoriesController extends Controller
                 $input = $request->json()->all();
                 $this->validate($request, [
                     'icon'        => "required|string",
-                    'title'       => "required|string",
+                    'title'       => "required|string|unique:governify_service_categories",
                     'subtitle'    => "required|string",
                     'description' => "required|string",
                 ], $this->getErrorMessages());
@@ -110,13 +115,16 @@ class ServiceCategoriesController extends Controller
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
                 $input = $request->json()->all();
+                $checkStoreExits = GovernifyServiceCategorie::getTableData("governify_service_categories", array('id' => $id));
+
                 $this->validate($request, [
                     'icon'        => "required|string",
-                    'title'       => "required|string",
+                    // 'title'       => [ 'required','string',Rule::unique('governify_service_categories')->ignore($checkStoreExits[0]->id)],
+                    'title'       => "required|string|unique:governify_service_categories,title," . $checkStoreExits[0]->id,
                     'subtitle'    => "required|string",
                     'description' => "required|string",
                 ], $this->getErrorMessages());
-                $checkStoreExits = GovernifyServiceCategorie::getTableData("governify_service_categories", array('id' => $id));
+
                 if (empty($checkStoreExits)) {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
                 }
@@ -191,5 +199,156 @@ class ServiceCategoriesController extends Controller
             "max"   => ":attribute should not be more then :max characters.",
             "min"   => ":attribute should not be less then :min characters."
         ];
+    }
+
+
+    public function governifySiteSetting(Request $request)
+    {
+        $userId = $this->verifyToken()->getData()->id;
+        if ($userId) {
+            try {
+                $input = $request->json()->all();
+                $criteria = ['status' => 0];
+                $get_data = GovernifySiteSetting::where('id', '=', 1)->first();
+
+                // $this->validate($request, [
+                //     'ui_settings' => 'required|json',
+                // ], $this->getErrorMessages());
+
+                $insert_array = array(
+                    "ui_settings" => $request->ui_settings,
+                    "created_at"  => date("Y-m-d H:i:s"),
+                    "updated_at"  => date("Y-m-d H:i:s")
+                );
+
+                $datatoUpdate = [];
+                if ($request->input('logo_image')) {
+                    // Additional validation for base64 image
+                    if (!$this->isValidBase64Image($request->logo_image)) {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                    }
+
+                    $imageData = $request->input('logo_image');
+                    list($type, $data) = explode(';', $imageData);
+                    list(, $data)      = explode(',', $data);
+                    $data      = base64_decode($data);
+                    $extension = explode('/', mime_content_type($imageData))[1];
+                    $timestamp = now()->timestamp;
+
+                    $updateFileName = $timestamp . '_' . $request->input('logo_name');
+                    File::put(public_path('uploads/governify/' . $updateFileName), $data);
+                    $datatoUpdate['logo_name']         = $updateFileName;
+                    $imagePath = '/uploads/governify/' . $updateFileName;
+                    $datatoUpdate['logo_location'] =  URL::to("/") . $imagePath;
+
+                    // $uploadedImagePath = $serviceRequest->file_location;
+                    $uploadedImagePath = public_path('uploads/governify/' . $get_data->logo_name);
+                    // Check if the image file exists
+                    if (File::exists($uploadedImagePath)) {
+                        // Delete the image file
+                        File::delete($uploadedImagePath);
+                    }
+                }
+
+                $datatoUpdate['ui_settings'] = json_encode(!empty($insert_array['ui_settings']) ? $insert_array['ui_settings'] : '');
+                $datatoUpdate['status'] = 0;
+
+                if (empty($get_data)) {
+                    $insert = GovernifySiteSetting::where($criteria)->create($datatoUpdate);
+                } else {
+                    $insert = GovernifySiteSetting::where($criteria)->update($datatoUpdate);
+                }
+
+                if ($insert) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Governify Site Setting Updated Successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify Site Setting Not Created.")));
+                }
+            } catch (\Exception $e) {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+            }
+        } else {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+        }
+    }
+
+    private function isValidBase64Image($base64Image)
+    {
+        $pattern = '/^data:image\/(jpeg|jpg|png);base64,/';
+        if (preg_match($pattern, $base64Image)) {
+            $data = substr($base64Image, strpos($base64Image, ',') + 1);
+            if (base64_decode($data, true) === false) {
+                return false;
+            }
+            $image = imagecreatefromstring(base64_decode($data));
+            if (!$image) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function getGovernifySiteSetting () {
+
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $dataToRender = GovernifySiteSetting::where('id', '=', 1)->first();
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Site Setting Data.")));
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function swapServiceCategories (Request $request){
+
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $request->validate([
+                    'service_categorie'        => 'required|array',
+                    'service_categorie.*.from' => 'required|integer|exists:governify_service_categories,id',
+                    'service_categorie.*.to'   => 'required|integer',
+                ]);
+
+                // Extract the array of IDs from the request
+                $fromIds     = array_column($request->input('service_categorie'), 'from');
+                $toPositions = array_column($request->input('service_categorie'), 'to');
+
+                // Check for duplicate `to` positions in the input
+                if (count($toPositions) !== count(array_unique($toPositions))) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Duplicate `to` IDs found in the input.")));
+                }
+
+                if (count($fromIds) !== count(array_unique($fromIds))) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Duplicate `from` IDs found in the input.")));
+                }
+
+                // Check if all `from` IDs exist in the service_categorie table
+                $existingCategoryIds = GovernifyServiceCategorie::whereIn('id', $fromIds)->pluck('id')->toArray();
+
+                if (count($fromIds) !== count($existingCategoryIds)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "One or more IDs do not exist in the Service Categorie table")));
+                }
+
+                // Extract the order array from the request
+                $categories = $request->input('service_categorie');
+
+                // Update the service_categories_index for each service_categorie
+                foreach ($categories as $category) {
+                    GovernifyServiceCategorie::where('id', $category['from'])->update(['service_categories_index' => $category['to']]);
+                }
+                $dataToRender = GovernifyServiceCategorie::whereNull('deleted_at')->orderBy('service_categories_index')->get();
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Service categories order updated successfully.")));
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
     }
 }
