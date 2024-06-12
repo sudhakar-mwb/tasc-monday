@@ -10,13 +10,15 @@ use CURLFile;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
 
-
+    
 class DashboardController extends Controller
 {
+    protected static $BOARD_ID_INCORPIFY = 1472103835;
+
     use MondayApis;
     public function dashboard () {
         $query = 'query {
-              boards(limit: 500, ids: '.env("BOARD_ID_INCORPIFY").') {
+              boards(limit: 500, ids: '.$this->BOARD_ID_INCORPIFY.') {
               id
               name
               state
@@ -130,7 +132,7 @@ class DashboardController extends Controller
 
     public function incorpifyById ($id){
         $query = 'query {
-            boards(limit: 500, ids: '.env("BOARD_ID_INCORPIFY").') {
+            boards(limit: 500, ids: '.$this->BOARD_ID_INCORPIFY.') {
             id
             name
             state
@@ -318,7 +320,7 @@ class DashboardController extends Controller
         $overall_status = "status__1";
 
         $query = '{
-            boards(ids: '.env("BOARD_ID_INCORPIFY").') {
+            boards(ids: '.$this->BOARD_ID_INCORPIFY.') {
               items_page(
                 query_params: {rules: [{column_id: "'.$column_id.'", compare_value: ["'.$payload['email'].'"], operator: contains_text}]}
               ) {
@@ -464,7 +466,7 @@ class DashboardController extends Controller
 
         $query = 'mutation {
             create_item(
-              board_id: '.env("BOARD_ID_INCORPIFY").'
+              board_id: '.$this->BOARD_ID_INCORPIFY.'
               group_id: "'.$group_id.'"
               item_name: "'.$payload['your_company_name'].'"
               column_values: '.$column_values.'
@@ -584,7 +586,7 @@ class DashboardController extends Controller
         $overall_status = "status__1";
 
         $query = '{
-            items(ids: 1529100318) {
+            items(ids: '.$request->id.') {
               id
               name
               created_at
