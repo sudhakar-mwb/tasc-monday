@@ -778,7 +778,7 @@ class AuthController extends Controller
            }
         }
         return view('auth.login', compact('heading', 'subheading', 'msg', 'status'), );
-
+    }
     public function loginUserDetails(Request $request)
     {
 
