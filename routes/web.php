@@ -47,6 +47,7 @@ Route::get('/', [AuthController::class, 'login'])->name('monday.get.login');
 //Monday.com
 
 Route::post('/', [AuthController::class, 'login'])->name('monday.post.login');
+Route::post('/commom-login', [AuthController::class, 'userLogin']);
 Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], function () {
     // Route::middleware('monday.auth')->group(function () {
     // Route::group(['middleware' => 'monday.auth'], function(){
