@@ -15,10 +15,15 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use DB;
+use Illuminate\Support\Facades\Cache;
 use App\Models\SiteSettings;
 use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Expr\YieldFrom;
 use \Mailjet\Resources;
+use App\Models\User;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     use MondayApis;
@@ -46,6 +51,23 @@ class AuthController extends Controller
            if ($userInDb['status'] == 'success') {
             $userCredential = $request->only('email','password');
             if(Auth::attempt($userCredential)){
+                // JWTAuth
+                $token = JWTAuth::attempt([
+                    "email" => $request->email,
+                    "password" => $request->password
+                ]);
+
+                if(!empty($token)){
+                    
+                    $userData = MondayUsers::getUser(['email' => trim($input['email'])]);
+                    $cacheUserDetails = Cache::forever('loginUserDetails', $userData);
+
+                    return response()->json([
+                        "status" => true,
+                        "message" => "User logged in succcessfully",
+                        "token" => $token
+                    ]);
+                }
                 $route = $this->redirectDash();
                 return redirect($route);
             }
@@ -677,5 +699,57 @@ class AuthController extends Controller
             $status = "danger";
             return redirect()->route('monday.get.login',compact('msg', 'status'));
         }
+    }
+
+    public function loginUserDetails(Request $request)
+    {
+
+        
+        if(!isset($request->id) && empty($request->id)){
+            return [
+                "success"=> false,
+                "message"=> "user token is not found"
+            ];
+        }
+        
+        $bearerToken = $request->id;
+
+        if (strpos($bearerToken, 'Bearer ') === 0) {
+            $bearerToken = substr($bearerToken, 7);
+        }
+
+        // Decode the JWT token
+        $secretKey = env('JWT_SECRET'); // Replace with your actual secret key
+        try {
+            $decoded = JWT::class::decode($bearerToken, new Key($secretKey, 'HS256'));
+            $userId = $decoded->sub;
+            $getUser = MondayUsers::getUser(['id' => $userId]);
+            $getUser = json_decode(json_encode($getUser, true), true);
+            
+            if(empty($getUser)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found.'
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'email' => $getUser['email']??"",
+                    'name' => $getUser['name']??"",
+                ],
+                'message' => 'User details retrieved successfully.'
+            ]);
+            
+        } catch (Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found.'
+            ]);
+
+        }
+
     }
 }
