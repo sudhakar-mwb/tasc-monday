@@ -327,7 +327,7 @@ class GovernifyRequestTrackingController extends Controller
                     // Open file pointer
                     $output = fopen('php://output', 'w');
 
-                    $csvHeader = ["Name Of Service", "Created Date", "Status", "Form Information"];
+                    $csvHeader = ["Name Of Service", "Category Of Service", "Created Date", "Status", "Form Information"];
                     fputcsv($output, $csvHeader);
 
                     $rowData = [];
@@ -335,16 +335,18 @@ class GovernifyRequestTrackingController extends Controller
                         if (!empty($item['column_values'])) {
                             $rowData = [
                                 !empty($item['name']) ? $item['name'] : '',
+                                !empty($item['column_values'][1]['text'] ) ? $item['column_values'][1]['text'] : '',
                                 !empty($item['created_at']) ? $item['created_at'] : '',
-                                !empty($item['column_values'][1]['label']) ? $item['column_values'][1]['label'] : '',
-                                !empty($item['column_values'][3]['text']) ? $item['column_values'][3]['text'] : '',
+                                !empty($item['column_values'][2]['text']) ? $item['column_values'][2]['text'] : '',
+                                !empty($item['column_values'][4]['text']) ? $item['column_values'][4]['text'] : '',
                             ];
                         }
 
                         fputcsv($output, $rowData);
                     }
                     fclose($output);
-                    return true;
+                    // return true;
+                    exit;
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => 'Governify Board Items Not Found.')));
                 }
