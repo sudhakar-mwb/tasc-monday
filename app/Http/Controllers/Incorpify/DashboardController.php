@@ -202,42 +202,43 @@ class DashboardController extends Controller
     public function update(Request $request){
         
         $payload = $request->json()->all();
-
-        //validate the request
+    
+        // Validate the request
         $validator = Validator::make($request->all(), [
             'item_id' => 'required|filled',
             'text_body' => 'required|filled',
         ]);
-
+    
         if ($validator->fails()) {
             return $this->returnData($validator->errors(), false);
         }
-
-
-        $query = [];
+    
+        // Escape the text body content
+        $textBody = addslashes((string) $payload['text_body']);
+    
+        // Build the query based on the presence of parent_id
         if(!empty($payload['parent_id'])){
-            $query = '{mutation {
-                create_update(item_id: '.$payload['item_id'].' parent_id: '.$payload['parent_id'].' body: "'.$payload['text_body'].'") {
-                  id
-                  body
+            $query = 'mutation {
+                create_update(item_id: ' . $payload['item_id'] . ', parent_id: ' . $payload['parent_id'] . ', body: "' . $textBody . '") {
+                    id
+                    body
                 }
-            }}';
+            }';
         } else {
             $query = 'mutation {
-                create_update(item_id: '.$payload['item_id'].' body: "'.$payload['text_body'].'") {
-                  id
-                  body
+                create_update(item_id: ' . $payload['item_id'] . ', body: "' . $textBody . '") {
+                    id
+                    body
                 }
             }';
         }
-
-        //run the prepared graphQL query
+    
+        // Run the prepared GraphQL query
         $response = $this->_getMondayData($query);
-        if(isset($response['response']['data']['create_update']['id']))
-        {
+        if(isset($response['response']['data']['create_update']['id'])) {
             return $this->returnData($response);
         }
-
+    
         return $this->returnData($response, false);
     }
 
