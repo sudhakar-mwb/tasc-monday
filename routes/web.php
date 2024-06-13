@@ -128,6 +128,8 @@ Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function (
     Route::post('/uploadFiles', [IncorpifyDashboard::class, 'uploadFiles'])->name('incorpify.uploadFiles');
     
     Route::post('/uploadMondayFiles', [IncorpifyDashboard::class, 'uploadMondayFiles'])->name('incorpify.uploadMondayFiles');
+    Route::post('/saveSiteSettings', [IncorpifyDashboard::class, 'saveSiteSettings'])->name('incorpify.saveSiteSettings');
+    Route::get('/saveSiteSettings', [IncorpifyDashboard::class, 'saveSiteSettings']);
 
     Route::post('/createItem', [IncorpifyDashboard::class, 'createItem'])->name('incorpify.createItem');
     Route::post('/getSubItemByEmail', [IncorpifyDashboard::class, 'getSubItemByEmail'])->name('incorpify.getSubItemByEmail');

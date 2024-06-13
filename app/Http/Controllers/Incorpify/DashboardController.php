@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use CURLFile;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
+use App\Models\IncorpifySiteSettings;
 
     
 class DashboardController extends Controller
@@ -18,7 +19,7 @@ class DashboardController extends Controller
     use MondayApis;
     public function dashboard () {
         $query = 'query {
-              boards(limit: 500, ids: '.$this->BOARD_ID_INCORPIFY.') {
+              boards(limit: 500, ids: 1472103835) {
               id
               name
               state
@@ -132,7 +133,7 @@ class DashboardController extends Controller
 
     public function incorpifyById ($id){
         $query = 'query {
-            boards(limit: 500, ids: '.$this->BOARD_ID_INCORPIFY.') {
+            boards(limit: 500, ids: 1472103835) {
             id
             name
             state
@@ -201,42 +202,43 @@ class DashboardController extends Controller
     public function update(Request $request){
         
         $payload = $request->json()->all();
-
-        //validate the request
+    
+        // Validate the request
         $validator = Validator::make($request->all(), [
             'item_id' => 'required|filled',
             'text_body' => 'required|filled',
         ]);
-
+    
         if ($validator->fails()) {
             return $this->returnData($validator->errors(), false);
         }
-
-
-        $query = [];
+    
+        // Escape the text body content
+        $textBody = addslashes((string) $payload['text_body']);
+    
+        // Build the query based on the presence of parent_id
         if(!empty($payload['parent_id'])){
-            $query = '{mutation {
-                create_update(item_id: '.$payload['item_id'].' parent_id: '.$payload['parent_id'].' body: "'.$payload['text_body'].'") {
-                  id
-                  body
+            $query = 'mutation {
+                create_update(item_id: ' . $payload['item_id'] . ', parent_id: ' . $payload['parent_id'] . ', body: "' . $textBody . '") {
+                    id
+                    body
                 }
-            }}';
+            }';
         } else {
             $query = 'mutation {
-                create_update(item_id: '.$payload['item_id'].' body: "'.$payload['text_body'].'") {
-                  id
-                  body
+                create_update(item_id: ' . $payload['item_id'] . ', body: "' . $textBody . '") {
+                    id
+                    body
                 }
             }';
         }
-
-        //run the prepared graphQL query
+    
+        // Run the prepared GraphQL query
         $response = $this->_getMondayData($query);
-        if(isset($response['response']['data']['create_update']['id']))
-        {
+        if(isset($response['response']['data']['create_update']['id'])) {
             return $this->returnData($response);
         }
-
+    
         return $this->returnData($response, false);
     }
 
@@ -320,7 +322,7 @@ class DashboardController extends Controller
         $overall_status = "status__1";
 
         $query = '{
-            boards(ids: '.$this->BOARD_ID_INCORPIFY.') {
+            boards(ids: 1472103835) {
               items_page(
                 query_params: {rules: [{column_id: "'.$column_id.'", compare_value: ["'.$payload['email'].'"], operator: contains_text}]}
               ) {
@@ -466,7 +468,7 @@ class DashboardController extends Controller
 
         $query = 'mutation {
             create_item(
-              board_id: '.$this->BOARD_ID_INCORPIFY.'
+              board_id: 1472103835
               group_id: "'.$group_id.'"
               item_name: "'.$payload['your_company_name'].'"
               column_values: '.$column_values.'
@@ -660,6 +662,8 @@ class DashboardController extends Controller
                     'contents' => "mutation (\$file: File!) {
                         add_file_to_column (item_id: $itemId, column_id: \"$columnId\", file: \$file) {
                             id
+                            name
+                            url
                         }
                     }"
                 ],
@@ -702,6 +706,93 @@ class DashboardController extends Controller
         }
 
         return $this->returnData($response);
+    }
+
+    // Helper function to validate base64 image
+    private function isValidBase64Image($base64Image)
+    {
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $data = substr($base64Image, strpos($base64Image, ',') + 1);
+            $data = base64_decode($data);
+            if ($data === false) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function saveSiteSettings(Request $request)
+    {
+        
+        $userId = $this->verifyToken()->getData()->id;
+        if ($userId) {
+            try {
+                $input = $request->json()->all();
+                $criteria = ['status' => 0];
+                $get_data = IncorpifySiteSettings::where('id', '=', 1)->first();
+    
+                $insert_array = [
+                    "ui_settings" => json_encode($input['ui_settings']),
+                    "meeting_link" => $input['meeting_link'] ?? null,
+                    "created_at"  => date("Y-m-d H:i:s"),
+                    "updated_at"  => date("Y-m-d H:i:s")
+                ];
+    
+                $datatoUpdate = [];
+                if (isset($input['logo_image']) && $input['logo_image']) {
+                    // Additional validation for base64 image
+                    if (!$this->isValidBase64Image($input['logo_image'])) {
+                        return response()->json(['response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png)."]);
+                    }
+    
+                    $imageData = $input['logo_image'];
+                    list($type, $data) = explode(';', $imageData);
+                    list(, $data)      = explode(',', $data);
+                    $data      = base64_decode($data);
+                    $extension = explode('/', mime_content_type($imageData))[1];
+                    $timestamp = now()->timestamp;
+    
+                    $updateFileName = $timestamp . '_' . $input['logo_name'];
+                    \File::put(public_path('uploads/incorpify/' . $updateFileName), $data);
+    
+                    $datatoUpdate['logo_name'] = $updateFileName;
+                    $imagePath = '/uploads/incorpify/' . $updateFileName;
+                    $datatoUpdate['logo_location'] = \URL::to("/") . $imagePath;
+    
+                    if ($get_data && $get_data->logo_name) {
+                        $uploadedImagePath = public_path('uploads/incorpify/' . $get_data->logo_name);
+                        // Check if the image file exists
+                        if (\File::exists($uploadedImagePath)) {
+                            // Delete the image file
+                            \File::delete($uploadedImagePath);
+                        }
+                    }
+                }
+    
+                $datatoUpdate['ui_settings'] = $insert_array['ui_settings'];
+                $datatoUpdate['meeting_link'] = $insert_array['meeting_link'];
+                $datatoUpdate['status'] = 0;
+                $datatoUpdate['updated_at'] = date("Y-m-d H:i:s");
+    
+                if (empty($get_data)) {
+                    $datatoUpdate['created_at'] = date("Y-m-d H:i:s");
+                    $insert = IncorpifySiteSettings::create($datatoUpdate);
+                } else {
+                    $insert = IncorpifySiteSettings::where('id', '=', 1)->update($datatoUpdate);
+                }
+    
+                if ($insert) {
+                    return response()->json(['response' => [], 'status' => true, 'message' => "Incorpify Site Setting Updated Successfully."]);
+                } else {
+                    return response()->json(['response' => [], 'status' => false, 'message' => "Incorpify Site Setting Not Created."]);
+                }
+            } catch (\Exception $e) {
+                return response()->json(['response' => [], 'status' => false, 'message' => $e->getMessage()]);
+            }
+        } else {
+            return response()->json(['response' => [], 'status' => false, 'message' => "Invalid User."]);
+        }
     }
 
 
