@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use CURLFile;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
+use App\Models\IncorpifySiteSettings;
 
     
 class DashboardController extends Controller
@@ -704,6 +705,93 @@ class DashboardController extends Controller
         }
 
         return $this->returnData($response);
+    }
+
+    // Helper function to validate base64 image
+    private function isValidBase64Image($base64Image)
+    {
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $data = substr($base64Image, strpos($base64Image, ',') + 1);
+            $data = base64_decode($data);
+            if ($data === false) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function saveSiteSettings(Request $request)
+    {
+        
+        $userId = $this->verifyToken()->getData()->id;
+        if ($userId) {
+            try {
+                $input = $request->json()->all();
+                $criteria = ['status' => 0];
+                $get_data = IncorpifySiteSettings::where('id', '=', 1)->first();
+    
+                $insert_array = [
+                    "ui_settings" => json_encode($input['ui_settings']),
+                    "meeting_link" => $input['meeting_link'] ?? null,
+                    "created_at"  => date("Y-m-d H:i:s"),
+                    "updated_at"  => date("Y-m-d H:i:s")
+                ];
+    
+                $datatoUpdate = [];
+                if (isset($input['logo_image']) && $input['logo_image']) {
+                    // Additional validation for base64 image
+                    if (!$this->isValidBase64Image($input['logo_image'])) {
+                        return response()->json(['response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png)."]);
+                    }
+    
+                    $imageData = $input['logo_image'];
+                    list($type, $data) = explode(';', $imageData);
+                    list(, $data)      = explode(',', $data);
+                    $data      = base64_decode($data);
+                    $extension = explode('/', mime_content_type($imageData))[1];
+                    $timestamp = now()->timestamp;
+    
+                    $updateFileName = $timestamp . '_' . $input['logo_name'];
+                    \File::put(public_path('uploads/incorpify/' . $updateFileName), $data);
+    
+                    $datatoUpdate['logo_name'] = $updateFileName;
+                    $imagePath = '/uploads/incorpify/' . $updateFileName;
+                    $datatoUpdate['logo_location'] = \URL::to("/") . $imagePath;
+    
+                    if ($get_data && $get_data->logo_name) {
+                        $uploadedImagePath = public_path('uploads/incorpify/' . $get_data->logo_name);
+                        // Check if the image file exists
+                        if (\File::exists($uploadedImagePath)) {
+                            // Delete the image file
+                            \File::delete($uploadedImagePath);
+                        }
+                    }
+                }
+    
+                $datatoUpdate['ui_settings'] = $insert_array['ui_settings'];
+                $datatoUpdate['meeting_link'] = $insert_array['meeting_link'];
+                $datatoUpdate['status'] = 0;
+                $datatoUpdate['updated_at'] = date("Y-m-d H:i:s");
+    
+                if (empty($get_data)) {
+                    $datatoUpdate['created_at'] = date("Y-m-d H:i:s");
+                    $insert = IncorpifySiteSettings::create($datatoUpdate);
+                } else {
+                    $insert = IncorpifySiteSettings::where('id', '=', 1)->update($datatoUpdate);
+                }
+    
+                if ($insert) {
+                    return response()->json(['response' => [], 'status' => true, 'message' => "Incorpify Site Setting Updated Successfully."]);
+                } else {
+                    return response()->json(['response' => [], 'status' => false, 'message' => "Incorpify Site Setting Not Created."]);
+                }
+            } catch (\Exception $e) {
+                return response()->json(['response' => [], 'status' => false, 'message' => $e->getMessage()]);
+            }
+        } else {
+            return response()->json(['response' => [], 'status' => false, 'message' => "Invalid User."]);
+        }
     }
 
 
