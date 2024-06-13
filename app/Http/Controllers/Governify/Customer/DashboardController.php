@@ -67,7 +67,7 @@ class DashboardController extends Controller
                       board_id: ' . $boardId . '
                       group_id: "topics"
                       item_name: "' . $request->service_request . '"
-                      column_values: "{\"form_infomation__1\":\"' . $formDataString . '\",\"people0__1\":{\"email\":\"' . $getUser->email . '\" ,\"text\":\"' . $getUser->email . '\"}}"
+                      column_values: "{\"service_category__1\":\"' . $request->service_category . '\",\"form_infomation__1\":\"' . $formDataString . '\",\"people0__1\":{\"email\":\"' . $getUser->email . '\" ,\"text\":\"' . $getUser->email . '\"}}"
                     ) {
                       id
                     }

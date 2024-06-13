@@ -175,7 +175,7 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api","isU
     Route::post('/reverseCancelRequest',   [GovernifyRequestTrackingController::class, 'reverseCancelRequest']);
     Route::get('/exportGovernifyData',   [GovernifyRequestTrackingController::class, 'exportGovernifyData']);
     Route::get('/addGovernifyComment',   [GovernifyRequestTrackingController::class, 'addGovernifyComment']);
-    Route::get('/addGovernifyLike',   [GovernifyRequestTrackingController::class, 'addGovernifyLike']);
+    Route::post('/addGovernifyLike',   [GovernifyRequestTrackingController::class, 'addGovernifyLike']);
     Route::get('/uploadGovernifyDocument',   [GovernifyRequestTrackingController::class, 'uploadGovernifyDocument']);
 
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
