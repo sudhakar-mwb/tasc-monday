@@ -723,11 +723,20 @@ class DashboardController extends Controller
     }
 
     public function saveSiteSettings(Request $request)
-    {
-        
-        $userId = $this->verifyToken()->getData()->id;
-        if ($userId) {
-            try {
+{
+    $userId = $this->verifyToken()->getData()->id;
+    if ($userId) {
+        try {
+            if ($request->isMethod('get')) {
+                // Handle GET request to fetch site settings
+                $get_data = IncorpifySiteSettings::where('id', '=', 1)->first();
+                if ($get_data) {
+                    return response()->json(['response' => $get_data, 'status' => true, 'message' => "Incorpify Site Setting Fetched Successfully."]);
+                } else {
+                    return response()->json(['response' => [], 'status' => false, 'message' => "Incorpify Site Setting Not Found."]);
+                }
+            } else if ($request->isMethod('post')) {
+                // Handle POST request to save site settings
                 $input = $request->json()->all();
                 $criteria = ['status' => 0];
                 $get_data = IncorpifySiteSettings::where('id', '=', 1)->first();
@@ -787,13 +796,16 @@ class DashboardController extends Controller
                 } else {
                     return response()->json(['response' => [], 'status' => false, 'message' => "Incorpify Site Setting Not Created."]);
                 }
-            } catch (\Exception $e) {
-                return response()->json(['response' => [], 'status' => false, 'message' => $e->getMessage()]);
+            } else {
+                return response()->json(['response' => [], 'status' => false, 'message' => "Invalid Request Method."]);
             }
-        } else {
-            return response()->json(['response' => [], 'status' => false, 'message' => "Invalid User."]);
+        } catch (\Exception $e) {
+            return response()->json(['response' => [], 'status' => false, 'message' => $e->getMessage()]);
         }
+    } else {
+        return response()->json(['response' => [], 'status' => false, 'message' => "Invalid User."]);
     }
+}
 
 
 }
