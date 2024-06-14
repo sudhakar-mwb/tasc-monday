@@ -35,7 +35,7 @@ class DashboardController extends Controller
                     'service_category_request.form' => function ($query) {
                         $query->where([['governify_service_request_forms.deleted_at', '=', null]]);
                     },
-                ])->whereNull('deleted_at')->orderBy('service_categories_index')->get();
+                ])->whereNull('deleted_at')->orderByRaw('CASE WHEN service_categories_index IS NULL THEN 1 ELSE 0 END, service_categories_index')->get();
 
                 return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Request Data.")));
             } else {
@@ -48,6 +48,8 @@ class DashboardController extends Controller
 
     public function createRequestDashboard(Request $request)
     {
+        // ini_set('post_max_size', '100M');
+        // ini_set('upload_max_filesize', '100M');
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {

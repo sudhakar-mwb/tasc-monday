@@ -22,7 +22,8 @@ class ServiceRequestsController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $dataToRender =  GovernifyServiceRequest::with(['serviceCategorie','form'])->whereNull('deleted_at')->orderBy('service_categories_request_index')->get();
+                // $dataToRender =  GovernifyServiceRequest::with(['serviceCategorie','form'])->whereNull('deleted_at')->orderBy('service_categories_request_index')->get();
+                $dataToRender =  GovernifyServiceRequest::with(['serviceCategorie','form'])->whereNull('deleted_at')->orderByRaw('CASE WHEN service_categories_request_index IS NULL THEN 1 ELSE 0 END, service_categories_request_index')->get();
                 return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Request Data.")));
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
