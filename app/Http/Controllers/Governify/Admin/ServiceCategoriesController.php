@@ -178,7 +178,14 @@ class ServiceCategoriesController extends Controller
                 $dataToUpdate = array(
                     'deleted_at' => date('Y-m-d H:i:s')
                 );
-                $deleteServiceCategorie = GovernifyServiceCategorie::updateTableData('governify_service_categories', $params, $dataToUpdate);
+                // $deleteServiceCategorie = GovernifyServiceCategorie::updateTableData('governify_service_categories', $params, $dataToUpdate);
+                $deleteServiceCategorie = GovernifyServiceCategorie::where('id', $id)->delete();
+                if ($deleteServiceCategorie > 0) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Category Deleted Successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Category Not Deleted.")));
+                }
+
                 if ($deleteServiceCategorie['status'] == "success") {
                     // $responseData = array(
                     //     'access_token' => $this->refreshToken()->original[ 'access_token' ]

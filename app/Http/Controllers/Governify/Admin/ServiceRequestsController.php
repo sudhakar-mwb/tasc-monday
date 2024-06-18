@@ -44,12 +44,20 @@ class ServiceRequestsController extends Controller
                 $input = $request->json()->all();
 
                 $this->validate($request, [
-                    'title'       => "required|string|unique:governify_service_requests",
+                    // 'title'       => "required|string|unique:governify_service_requests",
+                    'title'       => "required|string",
                     'description' => "required|string",
                     'image'       => "required|string",
                     'image_name'  => "required|string",
                     'form'        => "required|integer",
-                    'service_categorie_id' => 'required|exists:governify_service_categories,id',
+                    // 'service_categorie_id' => 'required|exists:governify_service_categories,id',
+                    'service_categorie_id' => [
+                        'required',
+                        Rule::exists('governify_service_categories', 'id'),
+                        Rule::unique('governify_service_requests')->where(function ($query) use ($request) {
+                            return $query->where('title', $request->title);
+                        }),
+                    ],
                 ], $this->getErrorMessages());
 
                 // Check if the validation fails
@@ -145,7 +153,8 @@ class ServiceRequestsController extends Controller
 
                 if (!empty($serviceRequest)) {
                     $this->validate($request, [
-                        'title'       => ['required', 'string', Rule::unique('governify_service_requests')->ignore($id)],
+                        // 'title'       => ['required', 'string', Rule::unique('governify_service_requests')->ignore($id)],
+                        'title'       => ['required', 'string'],
                         'description' => "required|string",
                         // 'image'       => "required|string",
                         // 'image_name'  => "required|string",
@@ -255,7 +264,13 @@ class ServiceRequestsController extends Controller
                     'deleted_at' => date('Y-m-d H:i:s')
                 );
                 
-                $deleteServiceRequest = GovernifyServiceRequest::where('id', $id)->update($dataToUpdate);
+                // $deleteServiceRequest = GovernifyServiceRequest::where('id', $id)->update($dataToUpdate);
+                $deleteServiceRequest = GovernifyServiceRequest::where('id', $id)->delete();
+                if ($deleteServiceRequest > 0) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Request Deleted Successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Request Not Deleted.")));
+                }
                 if ($deleteServiceRequest) {
                     // $responseData = array(
                     //     'access_token' => $this->refreshToken()->original[ 'access_token' ]
