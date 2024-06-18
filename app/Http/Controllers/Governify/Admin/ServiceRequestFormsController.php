@@ -68,13 +68,13 @@ class ServiceRequestFormsController extends Controller
                 $input = $request->json()->all();
                 $this->validate($request, [
                     'name'       => "required|string|unique:governify_service_request_forms",
-                    'description' => "required|string",
+                    // 'description' => "required|string",
                     'form_data'  => "required",
                 ], $this->getErrorMessages());
                 $insert_array = array(
                     "name"        => $request->name,
                     "form_data"   => $request->form_data,
-                    "description" => $request->description,
+                    // "description" => $request->description,
                     "created_at"  => date("Y-m-d H:i:s"),
                     "updated_at"  => date("Y-m-d H:i:s")
                 );
@@ -105,13 +105,13 @@ class ServiceRequestFormsController extends Controller
 
                     $this->validate($request, [
                         'name'        => ['required', 'string', Rule::unique('governify_service_request_forms')->ignore($id)],
-                        'description' => "required|string",
+                        // 'description' => "required|string",
                         'form_data'   => "required",
                     ], $this->getErrorMessages());
 
                     $insert_array = array(
                         "name"        => $request->name,
-                        "description" => $request->description,
+                        // "description" => $request->description,
                         "form_data"   => $request->form_data,
                         "updated_at"  => date("Y-m-d H:i:s")
                     );
@@ -151,7 +151,13 @@ class ServiceRequestFormsController extends Controller
                     'deleted_at' => date('Y-m-d H:i:s')
                 );
 
-                $deleteServiceRequestForm = GovernifyServiceRequestForms::where('id', $id)->update($dataToUpdate);
+                // $deleteServiceRequestForm = GovernifyServiceRequestForms::where('id', $id)->update($dataToUpdate);
+                $deleteServiceRequestForm = GovernifyServiceRequestForms::where('id', $id)->delete();
+                if ($deleteServiceRequestForm > 0) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Request Form Deleted Successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Request Form Not Deleted.")));
+                }
                 if ($deleteServiceRequestForm) {
                     // $responseData = array(
                     //     'access_token' => $this->refreshToken()->original[ 'access_token' ]
