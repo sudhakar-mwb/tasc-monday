@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->longText('form_data');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
         });

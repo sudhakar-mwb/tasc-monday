@@ -49,15 +49,15 @@ class ServiceRequestsController extends Controller
                     'description' => "required|string",
                     'image'       => "required|string",
                     'image_name'  => "required|string",
-                    'form'        => "required|integer",
+                    // 'form'        => "required|integer",
                     // 'service_categorie_id' => 'required|exists:governify_service_categories,id',
-                    'service_categorie_id' => [
-                        'required',
-                        Rule::exists('governify_service_categories', 'id'),
-                        Rule::unique('governify_service_requests')->where(function ($query) use ($request) {
-                            return $query->where('title', $request->title);
-                        }),
-                    ],
+                    // 'service_categorie_id' => [
+                    //     'required',
+                    //     Rule::exists('governify_service_categories', 'id'),
+                    //     Rule::unique('governify_service_requests')->where(function ($query) use ($request) {
+                    //         return $query->where('title', $request->title);
+                    //     }),
+                    // ],
                 ], $this->getErrorMessages());
 
                 // Check if the validation fails
@@ -73,8 +73,8 @@ class ServiceRequestsController extends Controller
                 $insert_array = array(
                     "title"       => $request->title,
                     "description" => $request->description,
-                    "form"        => $request->form,
-                    "service_categorie_id" => $request->service_categorie_id,
+                    // "form"        => $request->form,
+                    // "service_categorie_id" => $request->service_categorie_id,
                     "created_at" => date("Y-m-d H:i:s"),
                     "updated_at" => date("Y-m-d H:i:s")
                 );
@@ -158,8 +158,8 @@ class ServiceRequestsController extends Controller
                         'description' => "required|string",
                         // 'image'       => "required|string",
                         // 'image_name'  => "required|string",
-                        'form'        => "required|integer",
-                        'service_categorie_id' => 'required|exists:governify_service_categories,id',
+                        // 'form'        => "required|integer",
+                        // 'service_categorie_id' => 'required|exists:governify_service_categories,id',
                     ], $this->getErrorMessages());
 
                     // Check if the validation fails
@@ -170,8 +170,8 @@ class ServiceRequestsController extends Controller
                     $insert_array = array(
                         "title"       => $request->title,
                         "description" => $request->description,
-                        "form"        => $request->form,
-                        "service_categorie_id" => $request->service_categorie_id,
+                        // "form"        => $request->form,
+                        // "service_categorie_id" => $request->service_categorie_id,
                         "updated_at" => date("Y-m-d H:i:s")
                     );
 
