@@ -17,12 +17,12 @@ return new class extends Migration
             $table->text('description');
             $table->string('image');
             $table->string('file_location')->nullable();
-            $table->string('form');
+            $table->string('form')->nullable();
             $table->integer('service_categories_request_index')->nullable();
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
             $table->unsignedBigInteger('service_categorie_id');
-            $table->foreign('service_categorie_id')->references('id')->on('governify_service_categories');
+            $table->foreign('service_categorie_id')->references('id')->on('governify_service_categories')->nullable();
             // $table->foreignId('service_categorie_id')->constrained('governify_service_categories')->onDelete('cascade');
         });
     }
