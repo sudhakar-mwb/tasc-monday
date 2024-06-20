@@ -10,6 +10,7 @@ use CURLFile;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
 use App\Models\IncorpifySiteSettings;
+use App\Models\Incorpify_likes;
 
     
 class DashboardController extends Controller
@@ -250,6 +251,7 @@ class DashboardController extends Controller
         $validator = Validator::make($request->all(), [
             'mode' => 'required|in:like,reply',
             'update_id' => 'required',
+            'item_type' => $request->mode == 'like' ? 'required_if:mode,like' : '',
             'text_body' => $request->mode == 'reply' ? 'required_if:mode,reply' : '',
             'item_id' => $request->mode == 'reply' ? 'required_if:mode,reply' : '',
         ]);
@@ -260,6 +262,7 @@ class DashboardController extends Controller
             'update_id' => 'Update ID',
             'item_id' => 'Item ID',
             'text_body' => 'Text Body',
+            'item_type' => 'Item Type',
         ]);
 
         if ($validator->fails()) {
@@ -284,7 +287,21 @@ class DashboardController extends Controller
 
         $response = $this->_getMondayData($query);
 
-        if(isset($response['response']['data']['create_update']['id']) || isset($response['response']['data']['like_update']['id']))
+        if(isset($response['response']['data']['like_update']['id'])){
+
+            //save the liked data to the database
+
+            $data = [
+                "item_type" => $payload['item_type'],
+                "update_id" => $payload['update_id'],
+            ];
+
+            $savedResponse = $this->saveLikeData($data, true);
+            
+            return $this->returnData($response);
+        }
+
+        if(isset($response['response']['data']['create_update']['id']))
         {
             return $this->returnData($response);
         }
@@ -807,5 +824,73 @@ class DashboardController extends Controller
     }
 }
 
+    public function getLikes($item_type_id, $item_type) {
+
+        $likes = MondayLike::where('item_type_id', $item_type_id)
+            ->where('item_type', $item_type)
+            ->get();
+
+        return response()->json($likes, 200);
+    }
+
+    public function saveLikeData($data = [], $like = true) {
+        try {
+            // Validate data
+            if (empty($data['update_id']) || empty($data['item_type'])) {
+                throw new \InvalidArgumentException('update_id and item_type are required.');
+            }
+    
+            // Validate user token
+            $userId = $this->verifyToken()->getData()->id ?? "";
+            if (empty($userId)) {
+                throw new \RuntimeException('User authentication failed.');
+            }
+    
+            // Search for existing like item
+            $existingItem = Incorpify_likes::where('user_id', $userId)
+                ->where('item_type_id', $data['update_id'])
+                ->where('item_type', $data['item_type'])
+                ->first();
+    
+            if ($existingItem) {
+                // Update the existing item
+                $existingItem->liked = $like;
+                $existingItem->save();
+                $item = $existingItem;
+            } else {
+                // Create a new like item
+                $item = Incorpify_likes::create([
+                    'user_id' => $userId,
+                    'item_type_id' => $data['update_id'],
+                    'item_type' => $data['item_type'],
+                    'liked' => $like,
+                ]);
+            }
+    
+            return $this->returnData($item, true); // return the created or updated item
+    
+        } catch (Exception $e) {
+            // Handle the error appropriately
+            return ['error' => $e->getMessage()];
+        }
+    }
+
+    public function listAllLikes() {
+        try {
+            // Fetch all records from the Incorpify_likes table
+            $allLikes = Incorpify_likes::all();
+    
+            // Return the data, potentially formatting it as needed
+            return $this->returnData($allLikes, true);
+    
+        } catch (Exception $e) {
+            // Handle any errors
+            return $this->returnData($e->getMessage(), false);
+        }
+    }
+    
+    
+    
+    
 
 }
