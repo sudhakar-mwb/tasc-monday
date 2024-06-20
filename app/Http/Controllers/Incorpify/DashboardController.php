@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
 use App\Models\IncorpifySiteSettings;
 use App\Models\Incorpify_likes;
+use Illuminate\Support\Facades\DB;
 
     
 class DashboardController extends Controller
@@ -887,6 +888,31 @@ class DashboardController extends Controller
             // Handle any errors
             return $this->returnData($e->getMessage(), false);
         }
+    }
+
+    public function dislikeUpdateOrReply(Request $request) {
+
+
+        if(empty($request->id)) {
+            return $this->returnData("update or reply id is empty", false);
+        }
+
+        $response = DB::table('incorpify_likes')->where('item_type_id', $request->id)->first();
+        $response = json_decode(json_encode($response, true), true);
+
+        if(empty($response)){
+            return $this->returnData("invalid id found {".$request->id."}", false);
+        }
+
+        $delResponse = DB::table('incorpify_likes')->where('item_type_id', $request->id)->delete();
+
+
+        if($delResponse){
+            return $this->returnData("item ".$request->id." deleted successfully", true);
+        }
+        
+        return $this->returnData($delResponse, false);
+        
     }
     
     

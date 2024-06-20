@@ -129,6 +129,7 @@ Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function (
     
     Route::post('/uploadMondayFiles', [IncorpifyDashboard::class, 'uploadMondayFiles'])->name('incorpify.uploadMondayFiles');
     Route::post('/saveSiteSettings', [IncorpifyDashboard::class, 'saveSiteSettings'])->name('incorpify.saveSiteSettings');
+    Route::delete('/dislikeUpdateOrReply/{id}', [IncorpifyDashboard::class, 'dislikeUpdateOrReply'])->name('incorpify.dislikeUpdateOrReply');
     Route::get('/listAllLikes', [IncorpifyDashboard::class, 'listAllLikes'])->name('incorpify.listAllLikes');
     Route::get('/saveSiteSettings', [IncorpifyDashboard::class, 'saveSiteSettings']);
 
