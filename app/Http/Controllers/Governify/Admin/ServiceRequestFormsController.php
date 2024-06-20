@@ -22,7 +22,8 @@ class ServiceRequestFormsController extends Controller
         $userId = $this->verifyToken()->getData()->id;
         if ($userId) {
             try {
-                $dataToRender =  GovernifyServiceRequestForms::whereNull('deleted_at')->orderByDesc('id')->get();
+                 $dataToRender = GovernifyServiceRequestForms::with(['categoryServiceFormMappings.serviceRequest','categoryServiceFormMappings.serviceCategory'])->get();
+                // $dataToRender =  GovernifyServiceRequestForms::whereNull('deleted_at')->orderByDesc('id')->get();
                 return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Request Form Data.")));
             } catch (\Exception $e) {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
