@@ -631,6 +631,7 @@ class DashboardController extends Controller
                 id
                 url
                 name
+                public_url
               }
               updates {
                 id
