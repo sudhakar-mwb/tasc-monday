@@ -44,9 +44,15 @@ class GovernifyRequestTrackingController extends Controller
             // Specifically replace the values for direction to be unquoted
             $queryParams = str_replace(['"asc"', '"desc"', '"and"', '"contains_text"'], ['asc', 'desc', 'and', 'contains_text'], $queryParams);
         }
+        if (!empty($queryParams)) {
+            $queryParamsData = 'query_params: '. $queryParams;
+        }
+        if (!empty($request->cursor)) {
+            $cursorData = !empty($request->cursor) ? 'cursor:'.'"'.$request->cursor.'"' : 'cursor:'.'null';
+        }
 
         $limit  = !empty($request->limit)  ? $request->limit  : 10;
-        $cursor = !empty($request->cursor) ? '"'.$request->cursor.'"' : 'null';
+        $cursor = !empty($cursorData) ? $cursorData : 'cursor:'.'null';
         //Invalid request: You must provide either a 'query_params' or a 'cursor', but not both. Use 'query_params' for the initial request and 'cursor' for paginated requests.
         $query = 'query {
             boards(limit: 500, ids: 1493464821) {
@@ -65,7 +71,7 @@ class GovernifyRequestTrackingController extends Controller
                       type
                       width
                   }
-                  items_page (limit: ' . $limit . ', cursor:'.$cursor.',  query_params: ' . (!empty($queryParams) ? $queryParams : '{}') . '  ){
+                  items_page (limit: ' . $limit . ', '.(!empty($queryParamsData) ? $queryParamsData : $cursor).'  ){
                       cursor,
                       items {
                           created_at

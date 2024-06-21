@@ -47,8 +47,8 @@ class ServiceRequestsController extends Controller
                     // 'title'       => "required|string|unique:governify_service_requests",
                     'title'       => "required|string",
                     'description' => "required|string",
-                    'image'       => "required|string",
-                    'image_name'  => "required|string",
+                    'image'       => "required",
+                    'image_name'  => "required",
                     // 'form'        => "required|integer",
                     // 'service_categorie_id' => 'required|exists:governify_service_categories,id',
                     // 'service_categorie_id' => [
@@ -66,9 +66,9 @@ class ServiceRequestsController extends Controller
                 // }
 
                  // Additional validation for base64 image
-                if (!$this->isValidBase64Image($request->image)) {
-                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
-                }
+                // if (!$this->isValidBase64Image($request->image)) {
+                //     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                // }
 
                 $insert_array = array(
                     "title"       => $request->title,
@@ -79,7 +79,9 @@ class ServiceRequestsController extends Controller
                     "updated_at" => date("Y-m-d H:i:s")
                 );
 
-                if ($request->input('image')) {
+                if ($request->image) {
+                // if ($request->input('image')) {
+                    /*
                     $imageData = $request->input('image');
                     list($type, $data) = explode(';', $imageData);
                     list(, $data)      = explode(',', $data);
@@ -89,6 +91,14 @@ class ServiceRequestsController extends Controller
 
                     $updateFileName = $timestamp. '_'.$request->input('image_name');
                     File::put(public_path('uploads/governify/' . $updateFileName), $data);
+                    $insert_array['image']         = $updateFileName;
+                    $imagePath = '/uploads/governify/' . $updateFileName;
+                    $insert_array['file_location'] =  URL::to("/") . $imagePath;
+                    */
+                    $timestamp    = now()->timestamp;
+                    $imageContent = file_get_contents($request->image);
+                    $updateFileName = $timestamp. '_'.$request->image_name;
+                    File::put(public_path('uploads/governify/' . $updateFileName), $imageContent);
                     $insert_array['image']         = $updateFileName;
                     $imagePath = '/uploads/governify/' . $updateFileName;
                     $insert_array['file_location'] =  URL::to("/") . $imagePath;
@@ -190,13 +200,15 @@ class ServiceRequestsController extends Controller
                         $insert_array['file_location'] =  URL::to("/") . $imagePath;
                     }
                     */
-                    if ($request->input('image')) {
+                    if ($request->image) {
+                    // if ($request->input('image')) {
 
                         // Additional validation for base64 image
-                        if (!$this->isValidBase64Image($request->image)) {
-                            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
-                        }
+                        // if (!$this->isValidBase64Image($request->image)) {
+                        //     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                        // }
 
+                        /*
                         $imageData = $request->input('image');
                         list($type, $data) = explode(';', $imageData);
                         list(, $data)      = explode(',', $data);
@@ -206,6 +218,15 @@ class ServiceRequestsController extends Controller
     
                         $updateFileName = $timestamp. '_'.$request->input('image_name');
                         File::put(public_path('uploads/governify/' . $updateFileName), $data);
+                        $insert_array['image']         = $updateFileName;
+                        $imagePath = '/uploads/governify/' . $updateFileName;
+                        $insert_array['file_location'] =  URL::to("/") . $imagePath;
+                        */
+
+                        $timestamp    = now()->timestamp;
+                        $imageContent = file_get_contents($request->image);
+                        $updateFileName = $timestamp. '_'.$request->image_name;
+                        File::put(public_path('uploads/governify/' . $updateFileName), $imageContent);
                         $insert_array['image']         = $updateFileName;
                         $imagePath = '/uploads/governify/' . $updateFileName;
                         $insert_array['file_location'] =  URL::to("/") . $imagePath;
