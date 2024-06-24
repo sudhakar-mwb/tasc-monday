@@ -51,14 +51,14 @@ class ServiceCategoriesController extends Controller
                 $this->validate($request, [
                     'icon'        => "required|string",
                     'title'       => "required|string|unique:governify_service_categories",
-                    'subtitle'    => "required|string",
+                    // 'subtitle'    => "required|string",
                     'description' => "required|string",
                 ], $this->getErrorMessages());
 
                 $insert_array = array(
                     "icon"       => $input['icon'],
                     "title"      => $input['title'],
-                    "subtitle"   => $input['subtitle'],
+                    // "subtitle"   => $input['subtitle'],
                     "description" => $input['description'],
                     "created_at" => date("Y-m-d H:i:s"),
                     "updated_at" => date("Y-m-d H:i:s")
@@ -122,7 +122,7 @@ class ServiceCategoriesController extends Controller
                     'icon'        => "required|string",
                     // 'title'       => [ 'required','string',Rule::unique('governify_service_categories')->ignore($checkStoreExits[0]->id)],
                     'title'       => "required|string|unique:governify_service_categories,title," . $checkStoreExits[0]->id,
-                    'subtitle'    => "required|string",
+                    // 'subtitle'    => "required|string",
                     'description' => "required|string",
                 ], $this->getErrorMessages());
 
@@ -132,7 +132,7 @@ class ServiceCategoriesController extends Controller
                 $update_array = array(
                     'icon'        => $input['icon'],
                     'title'       => $input['title'],
-                    'subtitle'    => $input['subtitle'],
+                    // 'subtitle'    => $input['subtitle'],
                     'description' => $input['description'],
                     "updated_at"  => date("Y-m-d H:i:s")
                 );

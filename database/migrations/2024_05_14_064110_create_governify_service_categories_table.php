@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('icon');
             $table->string('title');
-            $table->string('subtitle');
+            $table->string('subtitle')->nullable();
             $table->text('description');
             $table->integer('service_categories_index')->nullable();
             $table->timestamps();
