@@ -51,13 +51,13 @@ class ServiceRequestsController extends Controller
                     'image_name'  => "required",
                     // 'form'        => "required|integer",
                     // 'service_categorie_id' => 'required|exists:governify_service_categories,id',
-                    // 'service_categorie_id' => [
-                    //     'required',
-                    //     Rule::exists('governify_service_categories', 'id'),
-                    //     Rule::unique('governify_service_requests')->where(function ($query) use ($request) {
-                    //         return $query->where('title', $request->title);
-                    //     }),
-                    // ],
+                    'service_categorie_id' => [
+                        'required',
+                        Rule::exists('governify_service_categories', 'id'),
+                        Rule::unique('governify_service_requests')->where(function ($query) use ($request) {
+                            return $query->where('title', $request->title);
+                        }),
+                    ],
                 ], $this->getErrorMessages());
 
                 // Check if the validation fails
@@ -66,22 +66,22 @@ class ServiceRequestsController extends Controller
                 // }
 
                  // Additional validation for base64 image
-                // if (!$this->isValidBase64Image($request->image)) {
-                //     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
-                // }
+                if (!$this->isValidBase64Image($request->image)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                }
 
                 $insert_array = array(
                     "title"       => $request->title,
                     "description" => $request->description,
                     // "form"        => $request->form,
-                    // "service_categorie_id" => $request->service_categorie_id,
+                    "service_categorie_id" => $request->service_categorie_id,
                     "created_at" => date("Y-m-d H:i:s"),
                     "updated_at" => date("Y-m-d H:i:s")
                 );
 
                 if ($request->image) {
                 // if ($request->input('image')) {
-                    /*
+
                     $imageData = $request->input('image');
                     list($type, $data) = explode(';', $imageData);
                     list(, $data)      = explode(',', $data);
@@ -94,7 +94,8 @@ class ServiceRequestsController extends Controller
                     $insert_array['image']         = $updateFileName;
                     $imagePath = '/uploads/governify/' . $updateFileName;
                     $insert_array['file_location'] =  URL::to("/") . $imagePath;
-                    */
+
+                    /*
                     $timestamp    = now()->timestamp;
                     $imageContent = file_get_contents($request->image);
                     $updateFileName = $timestamp. '_'.$request->image_name;
@@ -102,6 +103,7 @@ class ServiceRequestsController extends Controller
                     $insert_array['image']         = $updateFileName;
                     $imagePath = '/uploads/governify/' . $updateFileName;
                     $insert_array['file_location'] =  URL::to("/") . $imagePath;
+                    */
                 }
                 // else {
                 //     return response(json_encode(array('response' => true, 'status' => false, 'message' => 'Image upload failed')));
@@ -169,7 +171,7 @@ class ServiceRequestsController extends Controller
                         // 'image'       => "required|string",
                         // 'image_name'  => "required|string",
                         // 'form'        => "required|integer",
-                        // 'service_categorie_id' => 'required|exists:governify_service_categories,id',
+                        'service_categorie_id' => 'required|exists:governify_service_categories,id',
                     ], $this->getErrorMessages());
 
                     // Check if the validation fails
@@ -181,7 +183,7 @@ class ServiceRequestsController extends Controller
                         "title"       => $request->title,
                         "description" => $request->description,
                         // "form"        => $request->form,
-                        // "service_categorie_id" => $request->service_categorie_id,
+                        "service_categorie_id" => $request->service_categorie_id,
                         "updated_at" => date("Y-m-d H:i:s")
                     );
 
