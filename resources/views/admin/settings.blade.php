@@ -64,7 +64,7 @@
                             @enderror
                         </div>
                         <div class="col-sm-6">
-                            <label for="header_bg" class="form-label">Header Backlground Color&nbsp;<i
+                            <label for="header_bg" class="form-label">Header Background Color&nbsp;<i
                                     class="bi bi-pen"></i></label><br>
                             <input type="color" class="w-100" id="header_bg" name="header_bg"
                                 value="{{ $settings->header_bg ?? null }}" required />

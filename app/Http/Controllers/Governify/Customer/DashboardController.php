@@ -108,7 +108,22 @@ class DashboardController extends Controller
                                 'image' => new CURLFile($filePath)
                             ];
                             $fileUploadResponse = $this->imageUpload($postFields);
+
+                            // // Get validated data
+                            // $itemId   = $boardsData['response']['data']['create_item']['id'];
+                            // $columnId = 'files__1';
+                            // $fileData = $fileData['file_image'];
+                            // $fileName = $fileData['file_name'];
+
+                            // // Upload file to Monday.com
+                            // $response = $this->uploadFileToMonday($itemId, $columnId, $fileData, $fileName);
                         }
+
+                        // // After foreach loop
+                        // if (!isset($response['data']['add_file_to_column']['id'])) {
+                        //     return $this->returnData($response, false);
+                        // }
+                        // return $this->returnData($response);
                     }
                     return response(json_encode(array('response' => [], 'status' => true, 'message' => 'Column Updated Successfully')));
                 }
@@ -144,5 +159,54 @@ class DashboardController extends Controller
         $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curl_errors = curl_error($ch);
         return ['status_code' => $status_code, 'response' => json_decode($response, true), 'errors' => $curl_errors];
+    }
+
+    //upload file to the monday.com function 
+    public function uploadFileToMonday($itemId, $columnId, $fileData, $fileName)
+    {
+        // $fileContent = base64_decode($fileData);
+        $fileContent = file_get_contents($fileData);
+        $client = new Client();
+
+        $response = $client->post('https://api.monday.com/v2/file', [
+            'headers' => [
+                'Authorization' => env('MONDAY_API_KEY')
+            ],
+            'multipart' => [
+                [
+                    'name'     => 'query',
+                    'contents' => "mutation (\$file: File!) {
+                            add_file_to_column (item_id: $itemId, column_id: \"$columnId\", file: \$file) {
+                                id
+                                name
+                                url
+                            }
+                        }"
+                ],
+                [
+                    'name'     => 'variables[file]',
+                    'contents' => $fileContent,
+                    'filename' => $fileName
+                ]
+            ]
+        ]);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function returnData($data, $success = true)
+    {
+
+        if ($success) {
+            return [
+                "success" => $success,
+                "data" => $data
+            ];
+        }
+
+        return [
+            "success" => $success,
+            "message" => $data
+        ];
     }
 }

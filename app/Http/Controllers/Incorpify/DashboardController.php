@@ -649,7 +649,8 @@ class DashboardController extends Controller
     //upload file to the monday.com function 
     function uploadFileToMonday($itemId, $columnId, $fileData, $fileName)
     {
-        $fileContent = base64_decode($fileData);
+        // $fileContent = base64_decode($fileData);
+        $fileContent = file_get_contents($fileData);
         $client = new Client();
         
         $response = $client->post('https://api.monday.com/v2/file', [
@@ -683,9 +684,9 @@ class DashboardController extends Controller
     {
         // Validate the incoming request data
         $validator = Validator::make($request->all(), [
-            'item_id' => 'required|integer',
-            'file' => 'required|string',
-            'file_name' => 'required|string',
+            'item_id' => 'required',
+            'file' => 'required',
+            'file_name' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -695,8 +696,8 @@ class DashboardController extends Controller
         // Get validated data
         $itemId = $request->input('item_id');
         $columnId = 'files__1';
-        $base64Data = $request->input('file');
-        $fileName = $request->input('file_name');
+        $base64Data = $request->file;
+        $fileName   = $request->file_name;
 
         // Upload file to Monday.com
         $response = $this->uploadFileToMonday($itemId, $columnId, $base64Data, $fileName);

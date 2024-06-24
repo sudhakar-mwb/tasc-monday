@@ -765,8 +765,8 @@ class DashboardController extends Controller
     $dataToSave = array(
       'name'         => trim($request['name']),
       'email'        => trim($request['email']),
-      'phone'        => '',
-      'company_name' => '',
+      'phone'        => trim($request['phone'] ?? ''),
+      'company_name' => trim($request['company_name'] ?? ''),
       'role'         => trim($request['role']),
       'created_at'   => date("Y-m-d H:i:s"),
       'updated_at'   => date("Y-m-d H:i:s"),
@@ -776,12 +776,18 @@ class DashboardController extends Controller
     $insertUserInDB = MondayUsers::createUser($dataToSave);
 
     if ($insertUserInDB['status'] == "success") {
-
+      MondayUsers::setUser(['email' => $request['email']], ['status' => 1]);
       $msg    = "Admin Created Successfully.";
-      if ($request['role'] == 1)
+      if ($request['role'] == 1) {
         $msg    = "Super admin Created Successfully.";
       $status = "success";
       return view('admin.addAdmin', compact('heading', 'subheading',  'msg', 'status'));
+    } elseif ($request['role'] == 0) {
+
+      $msg    = "User Created Successfully.";
+      $status = "success";
+      return view('admin.addAdmin', compact('heading', 'subheading',  'msg', 'status'));
+    }
     } elseif ($insertUserInDB['status'] == "already") {
       $msg    = "Admin Already Exists.";
       $status = "success";
