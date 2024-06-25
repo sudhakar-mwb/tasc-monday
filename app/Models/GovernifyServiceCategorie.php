@@ -78,4 +78,9 @@ class GovernifyServiceCategorie extends Model
     {
         return $this->hasMany(GovernifyServiceRequest::class, 'service_categorie_id');
     }
+
+    public function serviceFormMappings()
+    {
+        return $this->hasMany(CategoryServiceFormMapping::class, 'categorie_id');
+    }
 }
