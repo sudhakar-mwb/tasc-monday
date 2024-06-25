@@ -27,4 +27,14 @@ class GovernifyServiceRequest extends Model
     // {
     //     return $this->belongsTo(GovernifyServiceCategorie::class);
     // }
+
+    public function serviceCategory()
+    {
+        return $this->belongsTo(GovernifyServiceCategorie::class, 'service_categorie_id');
+    }
+
+    public function serviceFormMappings()
+    {
+        return $this->hasMany(CategoryServiceFormMapping::class, 'service_id');
+    }
 }

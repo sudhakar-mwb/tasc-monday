@@ -209,4 +209,20 @@ class DashboardController extends Controller
             "message" => $data
         ];
     }
+    public function newResponseDashboard (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $dataToRender =  $categories = GovernifyServiceCategorie::with([
+                    'serviceRequests.serviceFormMappings.serviceForm'
+                ])->get();
+
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Request Data.")));
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }  
+    }
 }
