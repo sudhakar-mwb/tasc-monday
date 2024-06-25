@@ -13,7 +13,7 @@ class GovernifyRequestTrackingController extends Controller
 {
     use MondayApis;
 
-    public function requestTracking(Request $request)
+    public function requestTrackingUpdate(Request $request)
     {
 
         // Validate the input
@@ -510,5 +510,116 @@ class GovernifyRequestTrackingController extends Controller
         $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curl_errors = curl_error($ch);
         return ['status_code' => $status_code, 'response' => json_decode($response, true), 'errors' => $curl_errors];
+    }
+
+    public function requestTracking(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $after      = 'ddd';
+                $tolalData  = 20;
+                $cursor     = 'null';
+                do {
+                    $query = 'query {
+                boards( ids: 1493464821) {
+                id
+                name
+                state
+                permissions
+                board_kind
+                columns {
+                          title
+                          id
+                          archived
+                          description
+                          settings_str
+                          title
+                          type
+                          width
+                      }
+                      items_page (limit: ' . $tolalData . ', cursor:' . $cursor . '){
+                          cursor,
+                          items {
+                              created_at
+                              creator_id
+                              email
+                              id
+                              name
+                              relative_link
+                              state
+                              updated_at
+                              url
+                              column_values {
+                                 id
+                                 value
+                                 type
+                                 text
+                                 ... on StatusValue  {
+                                    label
+                                    update_id
+                                 }
+                             }updates (limit: 5000) {
+                                assets {
+                                    created_at
+                                    file_extension
+                                    file_size
+                                    id
+                                    name
+                                    original_geometry
+                                    public_url
+                                    url
+                                    url_thumbnail 
+                                    }
+                                body
+                                text_body
+                                created_at
+                                creator_id
+                                id
+                                item_id
+                                replies {
+                                    body
+                                    created_at
+                                    creator_id
+                                    id
+                                    text_body
+                                    updated_at
+                                }
+                                updated_at
+                                text_body
+                                creator {
+                                  name
+                                  id
+                                  email
+                                }
+                              } 
+                          }
+                      }
+              }
+            }';
+
+                    $boardsData = $this->_getMondayData($query);
+
+                    if (!empty($boardsData['response']['data']['boards'][0]['items_page']['cursor'])) {
+                        $cursor =  "\"" . $boardsData['response']['data']['boards'][0]['items_page']['cursor'] . "\"";
+                    } else {
+                        $after = '';
+                    }
+                    $curr_data = isset($boardsData['response']['data']['boards'][0]['items_page']['items']) ? $boardsData['response']['data']['boards'][0]['items_page']['items'] : [];
+                    if (!empty($curr_data)) {
+                        if (count($curr_data))
+                            foreach ($curr_data as $item) {
+                                $mondayData[] = $item;
+                            }
+                    }
+                    $newResponse = $boardsData;
+                } while (!empty($after));
+                unset($newResponse['response']['data']['boards'][0]['items_page']['items']);
+                $newResponse['response']['data']['boards'][0]['items_page']['items'] = $mondayData;
+                return $newResponse;
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
     }
 }

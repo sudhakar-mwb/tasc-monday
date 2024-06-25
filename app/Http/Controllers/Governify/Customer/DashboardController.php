@@ -209,13 +209,37 @@ class DashboardController extends Controller
             "message" => $data
         ];
     }
-    public function newResponseDashboard (){
+    public function newResponseDashboard()
+    {
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $dataToRender =  $categories = GovernifyServiceCategorie::with([
-                    'serviceRequests.serviceFormMappings.serviceForm'
-                ])->get();
+                $categories = GovernifyServiceCategorie::with(['serviceRequests', 'serviceFormMappings.serviceForm'])->whereNull('deleted_at')->orderByRaw('CASE WHEN service_categories_index IS NULL THEN 1 ELSE 0 END, service_categories_index')->get();
+
+                $dataToRender = $categories->map(function ($category) {
+                    return [
+                        'category' => $category,
+                        'service_requests' => $category->serviceRequests->map(function ($request) use ($category) {
+                            $formMappings = $category->serviceFormMappings->where('service_id', $request->id);
+                            return [
+                                'service_request' => $request,
+                                'service_forms' => $formMappings->map(function ($mapping) {
+                                    return $mapping->serviceForm;
+                                })
+                            ];
+                        })
+                    ];
+                });
+
+                // $dataToRender =  $categories = GovernifyServiceCategorie::with([
+                //     'serviceRequests.serviceFormMappings.serviceForm'
+                // ])->get();
+
+                // $dataToRender =  $categories = GovernifyServiceCategorie::with([
+                //     'serviceRequests.serviceFormMappings.serviceForm',
+                //     'serviceFormMappings.serviceRequest',
+                //     'serviceFormMappings.serviceCategory'
+                // ])->get();
 
                 return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Request Data.")));
             } else {
@@ -223,6 +247,6 @@ class DashboardController extends Controller
             }
         } catch (\Exception $e) {
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
-        }  
+        }
     }
 }
