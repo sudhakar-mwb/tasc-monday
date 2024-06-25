@@ -171,6 +171,7 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSupe
 
 Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api","isUser"]], function () {
     Route::get('/dashboard',   [CustomerDashboardController::class, 'dashboard']);
+    Route::get('/dashboardata',   [CustomerDashboardController::class, 'newResponseDashboard']);
     Route::post('/createRequestDashboard',   [CustomerDashboardController::class, 'createRequestDashboard']);
     Route::post('/requestTracking',   [GovernifyRequestTrackingController::class, 'requestTracking']);
     Route::post('/cancelRequest',   [GovernifyRequestTrackingController::class, 'cancelRequest']);

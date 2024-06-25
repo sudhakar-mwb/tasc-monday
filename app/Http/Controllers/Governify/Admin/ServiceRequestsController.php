@@ -171,7 +171,14 @@ class ServiceRequestsController extends Controller
                         // 'image'       => "required|string",
                         // 'image_name'  => "required|string",
                         // 'form'        => "required|integer",
-                        'service_categorie_id' => 'required|exists:governify_service_categories,id',
+                        // 'service_categorie_id' => 'required|exists:governify_service_categories,id',
+                        'service_categorie_id' => [
+                            'required',
+                            Rule::exists('governify_service_categories', 'id'),
+                            Rule::unique('governify_service_requests')->where(function ($query) use ($request) {
+                                return $query->where('title', $request->title);
+                            }),
+                        ],
                     ], $this->getErrorMessages());
 
                     // Check if the validation fails
