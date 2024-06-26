@@ -98,6 +98,7 @@ Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], 
 //     Route::post('/login', [AuthController::class, 'login'])->name('monday.post.login');
     Route::get('/signup', [AuthController::class, 'signup'])->name('monday.get.signup');
     Route::post('/signup', [AuthController::class, 'signup'])->name('monday.post.signup');
+    Route::post('/newSignup', [AuthController::class, 'newSignup'])->name('monday.post.newSignup');
     Route::get('/logout', [AuthController::class, 'logout'])->name('monday.get.logout');
 
     Route::get('/forgot', [AuthController::class, 'forgot'])->name('monday.forgot');

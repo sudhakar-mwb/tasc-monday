@@ -489,7 +489,7 @@ class DashboardController extends Controller
     $status     = '';
     $heading    = "Registerd users";
     $subheading = "Stay informed and in control of the overall status of your onboarding requests";
-    $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->get();
+    $mondayUsers = MondayUsers::latest()->get();
     $query = 'query {
               boards(limit: 500) {
                 id
