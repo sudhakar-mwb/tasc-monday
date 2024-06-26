@@ -153,6 +153,7 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSupe
 
     Route::post('/governifySiteSetting', [ServiceCategoriesController::class, 'governifySiteSetting'])->name('serviceCategories.governifySiteSetting');
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
+    Route::get('/getCategoriesWithAllService', [ServiceCategoriesController::class, 'getCategoriesWithAllService']);
 
     //  serviceRequests API
     Route::get('/serviceRequests',  [ServiceRequestsController::class, 'index'])->name('serviceRequests.index');
