@@ -127,6 +127,7 @@ Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function (
     Route::post('/update', [IncorpifyDashboard::class, 'update'])->name('incorpify.update');
     Route::post('/updateReplyOrLike', [IncorpifyDashboard::class, 'updateReplyOrLike'])->name('incorpify.updateReplyOrLike');
     Route::post('/uploadFiles', [IncorpifyDashboard::class, 'uploadFiles'])->name('incorpify.uploadFiles');
+    Route::post('/testwebhooks', [IncorpifyDashboard::class, 'testwebhooks'])->name('incorpify.testwebhooks');
     
     Route::post('/uploadMondayFiles', [IncorpifyDashboard::class, 'uploadMondayFiles'])->name('incorpify.uploadMondayFiles');
     Route::post('/saveSiteSettings', [IncorpifyDashboard::class, 'saveSiteSettings'])->name('incorpify.saveSiteSettings');

@@ -12,6 +12,7 @@ use GuzzleHttp\Client;
 use App\Models\IncorpifySiteSettings;
 use App\Models\Incorpify_likes;
 use Illuminate\Support\Facades\DB;
+use App\Models\UpdateNotification;
 
     
 class DashboardController extends Controller
@@ -356,6 +357,9 @@ class DashboardController extends Controller
                         id
                         text
                      }
+                     updates {
+                        id body created_at updated_at
+                      }
                     }
                   }
               }
@@ -364,6 +368,26 @@ class DashboardController extends Controller
         ';
         
         $response = $this->_getMondayData($query);
+
+        $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems']??[];
+
+        if(empty($subitems)){
+            return $this->returnData("no data found", false);
+        }
+
+        $updatedSubitemIDs = [];
+        $getLastState = UpdateNotification::where('email', $request->email)->first();
+        if(!empty($getLastState)){
+
+            $getLastStateItemData = json_decode(json_decode($getLastState['item_data'], true), true);
+            $updatedSubitemIDs = $this->getSubitemsWithNewUpdates($getLastStateItemData, $response);
+        }
+
+        $updateNotification = UpdateNotification::updateOrCreate(
+            ['email' => $request->email], // Search criteria
+            ['item_data' => json_encode(json_encode($response, true), true)] // Data to be updated or created
+        );
+
         $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems']??[];
 
         if(empty($subitems)){
@@ -383,9 +407,54 @@ class DashboardController extends Controller
         }
 
         $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] = $send_response;
+        $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems']['new_updates'] = $updatedSubitemIDs;
+
         return $this->returnData($response);
     }
 
+
+    //helper functions 
+    function getSubitemsWithNewUpdates($oldResponse, $newResponse) {
+        // Extract subitems from old and new responses
+        $oldSubitems = $oldResponse['response']['data']['boards'][0]['items_page']['items'][0]['subitems'];
+        $newSubitems = $newResponse['response']['data']['boards'][0]['items_page']['items'][0]['subitems'];
+        
+        // Create an associative array of old subitems with their IDs as keys
+        $oldSubitemsById = [];
+        foreach ($oldSubitems as $subitem) {
+            $oldSubitemsById[$subitem['id']] = $subitem;
+        }
+        
+        // Array to hold subitems with new updates
+        $subitemsWithNewUpdates = [];
+        
+        // Iterate over new subitems
+        foreach ($newSubitems as $newSubitem) {
+            $newSubitemId = $newSubitem['id'];
+            
+            // Check if this subitem existed in the old response
+            if (isset($oldSubitemsById[$newSubitemId])) {
+                $oldUpdates = $oldSubitemsById[$newSubitemId]['updates'];
+                $newUpdates = $newSubitem['updates'];
+                
+                // Find new updates in the new subitem that are not in the old subitem
+                $newOnlyUpdates = array_udiff($newUpdates, $oldUpdates, function($a, $b) {
+                    return strcmp($a['id'], $b['id']);
+                });
+    
+                // If there are new updates, add them to the result
+                if (!empty($newOnlyUpdates)) {
+                    $subitemsWithNewUpdates[$newSubitemId] = $newOnlyUpdates;
+                }
+            } else {
+                // If the subitem didn't exist in the old response, consider all its updates as new
+                $subitemsWithNewUpdates[$newSubitemId] = $newSubitem['updates'];
+            }
+        }
+        
+        return $subitemsWithNewUpdates;
+    }
+    
     public function uploadFiles(Request $request) { 
 
 
@@ -918,7 +987,15 @@ class DashboardController extends Controller
     }
     
     
-    
+    //temp data 
+
+    public function testwebhooks(Request $request){
+
+
+        $data = $request->all();
+
+        return $data;
+    }
     
 
 }
