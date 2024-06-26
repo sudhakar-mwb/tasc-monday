@@ -831,4 +831,66 @@ class AuthController extends Controller
 
 
     }
+
+    public function newSignup(Request $request)
+    {
+        try {
+            $status = '';
+            $this->setSetting();
+            if ($request->isMethod('post')) {
+                $input = $request->json()->all();
+                $this->validate($request, [
+                    'name'         => 'required',
+                    'company_name' => 'required',
+                    // 'phone'        => 'required|regex:/^[+]{1}(?:[0-9\-\(\)\/\.]\s?){6,15}[0-9]{1}$/',
+                    'phone'        => 'required|regex:/^\+(?:[0-9] ?){6,14}[0-9]$/',
+                    'email'        => 'required|email|unique:monday_users',
+                    'password'     => 'required|min:6|max:100',
+                    'domain'       => 'required',
+                ], $this->getErrorMessages());
+
+                // $insert_array = array(
+                //     "icon"       => $input['icon'],
+                //     "title"      => $input['title'],
+                //     // "subtitle"   => $input['subtitle'],
+                //     "description" => $input['description'],
+                //     "created_at" => date("Y-m-d H:i:s"),
+                //     "updated_at" => date("Y-m-d H:i:s")
+                // );
+ 
+                $dataToSave = array(
+                    'name'         => trim($input['name']),
+                    'company_name' => trim($input['company_name']),
+                    'phone'        => trim($input['phone']),
+                    'email'        => trim($input['email']),
+                    // 'password'     => trim($input['password']),
+                    'created_at'   => date("Y-m-d H:i:s"),
+                    'updated_at'   => date("Y-m-d H:i:s"),
+                    'password'     => Hash::make(trim($input['password'])),
+                    'board_id'     => 1393670128,
+                );
+                $dataToSave['domain'] = trim($input['domain']);
+                $this->sendVerificationEmail($dataToSave);
+                    
+                $insertUserInDB = MondayUsers::createUser($dataToSave);
+                if ($insertUserInDB['status'] == "success") {
+                    $msg    = "User Created Successfully.";
+                    $status = "success";
+                    // send verification email
+                    $dataToSave['domain'] = trim($input['domain']);
+                    $this->sendVerificationEmail($dataToSave);
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Just verify your email address to confirm that you want to use this email.")));
+                    //
+                    return $this->thankssignup();
+                } elseif ($insertUserInDB['status'] == "already") {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "User Already Exists.")));
+                }
+            }
+            // $heading = "Sign Up";
+            // $subheading = "We’re excited to have you join us! To complete your sign-up, please fill in your information below.";
+            // return view('auth.signup', compact('heading', 'subheading', 'msg', 'status'),);
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }

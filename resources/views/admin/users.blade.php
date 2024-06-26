@@ -50,6 +50,7 @@ if (isset($_GET['success'])) {
                     <th scope="col " class="bg-success site-bg text-light">Assign Board</th>
                     {{-- <th scope="col " class="bg-success site-bg text-light">Password</th> --}}
                     <th scope="col " class="bg-success site-bg text-light">Created Date</th>
+                    <th scope="col " class="bg-success site-bg text-light"> Role </th>
                     <th scope="col " class="bg-success site-bg text-light">Forgot Pass</th>
                     <th scope="col " class="bg-success site-bg text-light">Delete</th>
                 </tr>
@@ -90,6 +91,8 @@ if (isset($_GET['success'])) {
                                     @endif
                                 </select></td>
                             <td>{{ $user->created_at }}</td>
+                            <td>{{ $user->role == 0 ? 'User' : ($user->role == 1 ? 'Super Admin' : 'Admin')}}
+                            </td>
                             <td class="text-info p-0 btn-primary">
                                 <a href="{{ url('/') }}/onboardify/forgot?email={{ $user->email }}"
                                     class="btn m-0 fs-5 rounded-0" style="display: block !important">
