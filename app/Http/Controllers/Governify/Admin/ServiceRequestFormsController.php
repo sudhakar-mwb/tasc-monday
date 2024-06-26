@@ -265,6 +265,9 @@ class ServiceRequestFormsController extends Controller
                 );
 
                 // $deleteServiceRequestForm = GovernifyServiceRequestForms::where('id', $id)->update($dataToUpdate);
+                // Delete dependent records
+                CategoryServiceFormMapping::where('service_form_id', $id)->delete();
+                // Delete the parent record
                 $deleteServiceRequestForm = GovernifyServiceRequestForms::where('id', $id)->delete();
                 if ($deleteServiceRequestForm > 0) {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Request Form Deleted Successfully.")));
