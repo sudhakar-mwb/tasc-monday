@@ -149,6 +149,7 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api","isSupe
     Route::delete('/serviceCategories/{id}', [ServiceCategoriesController::class, 'destroy'])->name('serviceCategories.destroy');
     //swap
     Route::post('/serviceCategories/swap',  [ServiceCategoriesController::class, 'swapServiceCategories']);
+    Route::post('/rejectServiceCategoryMapping',  [ServiceCategoriesController::class, 'rejectServiceCategoryMapping']);
 
     Route::post('/governifySiteSetting', [ServiceCategoriesController::class, 'governifySiteSetting'])->name('serviceCategories.governifySiteSetting');
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
