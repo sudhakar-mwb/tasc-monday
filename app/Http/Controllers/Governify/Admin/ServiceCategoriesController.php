@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Governify\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CategoryServiceFormMapping;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use App\Models\GovernifyServiceCategorie;
+use App\Models\GovernifyServiceRequestForms;
 use App\Models\GovernifySiteSetting;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
@@ -367,6 +369,35 @@ class ServiceCategoriesController extends Controller
                 // $dataToRender = GovernifyServiceCategorie::whereNull('deleted_at')->orderBy('service_categories_index')->get();
                 $dataToRender = GovernifyServiceCategorie::with('serviceRequests')->whereNull('deleted_at')->orderByRaw('CASE WHEN service_categories_index IS NULL THEN 1 ELSE 0 END, service_categories_index')->get();
                 return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Categorie Data.")));
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function rejectServiceCategoryMapping (Request $request){
+
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $input = $request->json()->all();
+                $this->validate($request, [
+                    'category_id'        => 'required',
+                    'service_id'        => 'required',
+                ], $this->getErrorMessages());
+                $CategoryServiceFormMappingData = CategoryServiceFormMapping::where(['categorie_id'=> $input['category_id'], 'service_id' => $input['service_id']])->get();
+                if ($CategoryServiceFormMappingData->isNotEmpty()) {
+                    $firstItem = $CategoryServiceFormMappingData->first();
+                    $GovernifyServiceRequestFormsResponse = GovernifyServiceRequestForms::where(['id'=> $firstItem->service_form_id])->get();
+                    $decodedData = json_decode($GovernifyServiceRequestFormsResponse, true);
+                    $formName = $decodedData[0]['name'];
+                   
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => $formName." already assigned to the same service and category.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => 'No Mapping found')));
+                }
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
