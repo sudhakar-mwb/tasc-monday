@@ -210,6 +210,7 @@ class DashboardController extends Controller
         $validator = Validator::make($request->all(), [
             'item_id' => 'required|filled',
             'text_body' => 'required|filled',
+            'email' => 'required|filled|email',
         ]);
     
         if ($validator->fails()) {
@@ -239,7 +240,54 @@ class DashboardController extends Controller
         // Run the prepared GraphQL query
         $response = $this->_getMondayData($query);
         if(isset($response['response']['data']['create_update']['id'])) {
-            return $this->returnData($response);
+
+
+            //save the current response 
+
+            //search the subitems of the items by email address
+        $column_id = "email__1";
+        $description = "text";
+        $required_action = "dup__of_description__1";
+        $assignee = "assigness__1";
+        $overall_status = "status__1";
+
+        $query = '{
+            boards(ids: 1472103835) {
+              items_page(
+                query_params: {rules: [{column_id: "'.$column_id.'", compare_value: ["'.$payload['email'].'"], operator: contains_text}]}
+              ) {
+                items {
+                    id
+                    name
+                    subitems {
+                      name
+                      id
+                      created_at
+                      updated_at
+                      column_values(ids: ["'.$description.'", "'.$required_action.'", "'.$assignee.'", "'.$overall_status.'"]) {
+                        id
+                        text
+                     }
+                     updates {
+                        id body created_at updated_at
+                      }
+                    }
+                  }
+              }
+            }
+          }
+        ';
+        
+        $responseOne = $this->_getMondayData($query);
+
+        $subitems = $responseOne['response']['data']['boards'][0]['items_page']['items'][0]['subitems']??[];
+
+        if(!empty($subitems)){
+                UpdateNotification::updateOrCreate(
+                    ['email' => $request->email], // Search criteria
+                    ['item_data' => json_encode(json_encode($responseOne, true), true)] // Data to be updated or created
+                );
+            }
         }
     
         return $this->returnData($response, false);
