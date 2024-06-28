@@ -730,58 +730,46 @@ class AuthController extends Controller
                 'domain'   => 'required'
             ], $this->getErrorMessages());
 
-           $userInDb = MondayUsers::loginUser(array( 'email' => trim($input['email']), 'password' =>  trim($input['password'])));
-           if ($userInDb['status'] == 'success') {
-            $userCredential = $request->only('email','password');
-            if(Auth::attempt($userCredential)){
-                // JWTAuth
-                $token = JWTAuth::attempt([
-                    "email" => $request->email,
-                    "password" => $request->password
-                ]);
-
-                if (!empty($userInDb['data']['user_data'])) {
-                    if (!empty($userInDb['data']['user_data']->role) && ($userInDb['data']['user_data']->role == 1) ) {
-                        $role = 'superAdmin';
-                    }
-                    elseif (!empty($userInDb['data']['user_data']->role ) && ($userInDb['data']['user_data']->role  == 2) ) {
-                        $role = 'admin';
-                    }
-                    else  {
-                        $role = 'customer';
-                    }
-                }
-
-                if(!empty($token)){
-                    return response()->json([
-                        "status" => true,
-                        "message" => "User logged in succcessfully",
-                        "token" => $token,
-                        "role"  => $role,
-                        "domain" => $input['domain']
+            $userInDb = MondayUsers::loginUser(array('email' => trim($input['email']), 'password' =>  trim($input['password'])));
+            if ($userInDb['status'] == 'success') {
+                $userCredential = $request->only('email', 'password');
+                if (Auth::attempt($userCredential)) {
+                    // JWTAuth
+                    $token = JWTAuth::attempt([
+                        "email" => $request->email,
+                        "password" => $request->password
                     ]);
+
+                    if (!empty($userInDb['data']['user_data'])) {
+                        if (!empty($userInDb['data']['user_data']->role) && ($userInDb['data']['user_data']->role == 1)) {
+                            $role = 'superAdmin';
+                        } elseif (!empty($userInDb['data']['user_data']->role) && ($userInDb['data']['user_data']->role  == 2)) {
+                            $role = 'admin';
+                        } else {
+                            $role = 'customer';
+                        }
+                    }
+
+                    if (!empty($token)) {
+                        return response()->json([
+                            "status" => true,
+                            "message" => "User logged in succcessfully",
+                            "token" => $token,
+                            "role"  => $role,
+                            "domain" => $input['domain']
+                        ]);
+                    }
+                    $route = $this->redirectDash();
+                    return redirect($route);
                 }
-                $route = $this->redirectDash();
-                return redirect($route);
+            } elseif ($userInDb['status'] == 'not_verified') {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Your email has not been verified yet. Please check your email inbox")));
+            } elseif ($userInDb['status'] == 'wrong_pass') {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Email or Password is incorrect.")));
+            } elseif ($userInDb['status'] == 'not_found') {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "This user not found in database.")));
             }
-           }elseif ($userInDb['status'] == 'not_verified'){
-
-            $msg    = "Your email has not been verified yet. Please check your email inbox";
-            $status = "danger";
-            return view('auth.login',compact('heading','subheading',  'msg', 'status'));
-           }elseif ($userInDb['status'] == 'wrong_pass'){
-
-            $msg    = "Email or Password is incorrect.";
-            $status = "danger";
-            return view('auth.login',compact('heading','subheading',  'msg', 'status'));
-           }elseif ($userInDb['status'] == 'not_found'){
-
-            $msg    = "This user not found in database.";
-            $status = "danger";
-            return view('auth.login',compact('heading','subheading',  'msg', 'status'));
-           }
         }
-        return view('auth.login', compact('heading', 'subheading', 'msg', 'status'), );
     }
     public function loginUserDetails(Request $request)
     {
