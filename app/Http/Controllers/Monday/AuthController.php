@@ -1059,12 +1059,15 @@ class AuthController extends Controller
                 elseif ($request['domain'] == 'incorpify') {
                     $IncorpifySiteSettingsResponse = IncorpifySiteSettings::where('id', '=', 1)->first()->toArray();
                     $sitelogo = !empty($IncorpifySiteSettingsResponse['logo_location']) ? $IncorpifySiteSettingsResponse['logo_location'] : '';
+                    $siteUrl = !empty($IncorpifySiteSettingsResponse['domain']) ? $IncorpifySiteSettingsResponse['domain'] : '';
                 }
                 elseif ($request['domain'] == 'tasc360') {
-                    $GovernifySiteSettingResponse = Tasc360SiteSettings::where('id', '=', 1)->first()->toArray();
-                    $sitelogo = !empty($GovernifySiteSettingResponse['logo_location']) ? $GovernifySiteSettingResponse['logo_location'] : '';
+                    $Tasc360SiteSettingsResponse = Tasc360SiteSettings::where('id', '=', 1)->first()->toArray();
+                    $sitelogo = !empty($Tasc360SiteSettingsResponse['logo_location']) ? $Tasc360SiteSettingsResponse['logo_location'] : '';
+                    $siteUrl = !empty($Tasc360SiteSettingsResponse['domain']) ? $Tasc360SiteSettingsResponse['domain'] : '';
                 }else{
                     $sitelogo = !empty($sitelogo) ?? 'https://onboardify.tasc360.com/uploads/onboardify.png';
+                    $siteUrl  = !empty($siteUrl)  ?? 'https://onboardify.tasc360.com';
                 }
             }
 
@@ -1078,7 +1081,7 @@ class AuthController extends Controller
                 );
 
                 $linkHash        = Crypt::encrypt(json_encode($dataToEncrypt));
-                $verificationURL = $siteUrl.'/onboardify/create-password/' . $linkHash;
+                $verificationURL = $siteUrl.'/reset-password/&email='.$input['email'].'&token=' . $linkHash;
                 $verificationData = array(
                     'emailType'  => 'forget_password_verification',
                     'name'       => $getUser->name,
@@ -1148,7 +1151,7 @@ class AuthController extends Controller
                     </div>
                 </body>
                 </html>';
-echo '<pre>'; print_r( $mail_body ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+
                 try {
 
                     $email   = "KSAAutomation@tascoutsourcing.com";
@@ -1210,6 +1213,7 @@ echo '<pre>'; print_r( $mail_body ); echo '</pre>';die('just_die_here_'.__FILE__
                         if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2)) {
                             return response(json_encode(array('response' => [], 'status' => true, 'message' => "Success, Verification Mail Sent.")));
                         }
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Success, Verification Mail Sent.")));
                     }
                 } catch (\Exception $e) {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Something went wrong during mail send. Please try again.")));
@@ -1221,5 +1225,49 @@ echo '<pre>'; print_r( $mail_body ); echo '</pre>';die('just_die_here_'.__FILE__
         if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2)) {
             return response(json_encode(array('response' => [], 'status' => false, 'message' => "Please provide the email associated with your account.")));
         }
+    }
+
+    public function commonUpdateNewPassword(Request $request)
+    {
+        $input = $request->json()->all();
+
+        $this->validate($request, [
+            'email'    => 'required',
+            'token'    => 'required',
+        ], $this->getErrorMessages());
+        // $decryptedData = Crypt::decrypt($request->token);
+        // $decryptedData = json_decode($decryptedData, true);
+        // echo '<pre>'; print_r( $decryptedData ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+        // if (trim($request->password) !== trim($request->conf_password)) {
+        //     $heading       = "Enter New Password";
+        //     $subheading    = 'for ' . $decryptedData['email'];
+        //     $msg           = 'current password and confirm new password not matched';
+        //     $status        = 'danger';
+        //     $token         =  $request->token;
+        //     return view('auth.create_password', compact('heading', 'subheading', 'msg', 'status', 'token'));
+        // } elseif (trim($request->password) == trim($request->conf_password)) {
+        //     $getUser = MondayUsers::getUser(array('email' => $decryptedData['email']));
+        //     $dataToUpdate = array(
+        //         'password'   => Hash::make($request->password),
+        //         'email_exp'  => Null,
+        //         'updated_at' => date("Y-m-d H:i:s")
+        //     );
+        //     $updatePassword = MondayUsers::setUser(array('id' => $getUser->id), $dataToUpdate);
+        //     if ($updatePassword) {
+        //         $heading       = "Login";
+        //         $subheading    = 'for ' . $decryptedData['email'];
+        //         $msg           = 'Password updated successfully. Now you can login with new password';
+        //         $status        = 'success';
+        //         return redirect('/');
+        //     } else {
+        //         $heading       = "Enter New Password";
+        //         $subheading    = 'for ' . $decryptedData['email'];
+        //         $msg           = 'Current password not updated. Please try again.';
+        //         $status        = 'danger';
+        //         $token         =  $request->token;
+        //         return redirect('onboardify/create-password' . $request->token, compact('heading', 'subheading', 'msg', 'status', 'token'));
+        //     }
+        //     // return view('auth.login', compact('heading', 'subheading', 'msg', 'status', 'token'));
+        // }
     }
 }
