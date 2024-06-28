@@ -518,7 +518,7 @@ class GovernifyRequestTrackingController extends Controller
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
                 $after      = 'ddd';
-                $tolalData  = 20;
+                $tolalData  = 10;
                 $cursor     = 'null';
                 do {
                     $query = 'query {
