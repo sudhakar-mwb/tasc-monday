@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('ui_settings');
             $table->string('logo');
             $table->string('status')->default(0);
+            $table->string('domain')->nullable();
             $table->timestamps();
         });
     }

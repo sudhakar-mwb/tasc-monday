@@ -49,6 +49,7 @@ Route::get('/', [AuthController::class, 'login'])->name('monday.get.login');
 Route::post('/', [AuthController::class, 'login'])->name('monday.post.login');
 
 Route::post('/commom-login', [AuthController::class, 'userLogin']);
+Route::post('/commom-forgot', [AuthController::class, 'commomForgot']);
 
 Route::get('/loginUserDetails/{id}', [AuthController::class, 'loginUserDetails'])->name('monday.get.loginUserDetails')->middleware('auth:api');
 
