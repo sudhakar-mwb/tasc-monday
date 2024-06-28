@@ -407,7 +407,7 @@ class DashboardController extends Controller
         }
 
         $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] = $send_response;
-        $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems']['new_updates'] = $updatedSubitemIDs;
+        $response['response']['data']['boards'][0]['items_page']['items'][0]['new_updates'] = $updatedSubitemIDs;
 
         return $this->returnData($response);
     }
