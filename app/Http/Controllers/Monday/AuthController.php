@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Monday;
 
 use App\Http\Controllers\Controller;
+use App\Models\GovernifySiteSetting;
+use App\Models\IncorpifySiteSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Traits\MondayApis;
@@ -724,7 +726,8 @@ class AuthController extends Controller
             $input = $request->all();
             $this->validate($request, [
                 'email' => 'required|email',
-                'password' => 'required|min:6|max:100'
+                'password' => 'required|min:6|max:100',
+                'domain'   => 'required'
             ], $this->getErrorMessages());
 
            $userInDb = MondayUsers::loginUser(array( 'email' => trim($input['email']), 'password' =>  trim($input['password'])));
@@ -754,7 +757,8 @@ class AuthController extends Controller
                         "status" => true,
                         "message" => "User logged in succcessfully",
                         "token" => $token,
-                        "role"  => $role
+                        "role"  => $role,
+                        "domain" => $input['domain']
                     ]);
                 }
                 $route = $this->redirectDash();
@@ -849,15 +853,6 @@ class AuthController extends Controller
                     'domain'       => 'required',
                 ], $this->getErrorMessages());
 
-                // $insert_array = array(
-                //     "icon"       => $input['icon'],
-                //     "title"      => $input['title'],
-                //     // "subtitle"   => $input['subtitle'],
-                //     "description" => $input['description'],
-                //     "created_at" => date("Y-m-d H:i:s"),
-                //     "updated_at" => date("Y-m-d H:i:s")
-                // );
- 
                 $dataToSave = array(
                     'name'         => trim($input['name']),
                     'company_name' => trim($input['company_name']),
@@ -869,16 +864,14 @@ class AuthController extends Controller
                     'password'     => Hash::make(trim($input['password'])),
                     'board_id'     => 1393670128,
                 );
-                $dataToSave['domain'] = trim($input['domain']);
-                $this->sendVerificationEmail($dataToSave);
-                    
+
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
                 if ($insertUserInDB['status'] == "success") {
                     $msg    = "User Created Successfully.";
                     $status = "success";
                     // send verification email
                     $dataToSave['domain'] = trim($input['domain']);
-                    $this->sendVerificationEmail($dataToSave);
+                    $this->sendVerificationEmailToUser($dataToSave);
                     return response(json_encode(array('response' => [], 'status' => true, 'message' => "Just verify your email address to confirm that you want to use this email.")));
                     //
                     return $this->thankssignup();
@@ -891,6 +884,161 @@ class AuthController extends Controller
             // return view('auth.signup', compact('heading', 'subheading', 'msg', 'status'),);
         } catch (\Exception $e) {
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function sendVerificationEmailToUser ( $userData ){
+
+        if (!empty($userData['domain'])) {
+            if ($userData['domain'] == 'governify') {
+                $GovernifySiteSettingResponse = GovernifySiteSetting::where('id', '=', 1)->first()->toArray();
+                $sitelogo = !empty($GovernifySiteSettingResponse['logo_location']) ? $GovernifySiteSettingResponse['logo_location'] : '';
+            }
+            elseif ($userData['domain'] == 'onboardify') {
+                $SiteSettingsResponse = SiteSettings::where('id', '=', 1)->first()->toArray();
+                $sitelogo = !empty($SiteSettingsResponse['logo_location']) ? $SiteSettingsResponse['logo_location'] : '';
+            }
+            elseif ($userData['domain'] == 'incorpify') {
+                $IncorpifySiteSettingsResponse = IncorpifySiteSettings::where('id', '=', 1)->first()->toArray();
+                $sitelogo = !empty($IncorpifySiteSettingsResponse['logo_location']) ? $IncorpifySiteSettingsResponse['logo_location'] : '';
+            }
+            elseif ($userData['domain'] == 'tasc360') {
+                $GovernifySiteSettingResponse = GovernifySiteSetting::where('id', '=', 2)->first()->toArray();
+                $sitelogo = !empty($GovernifySiteSettingResponse['logo_location']) ? $GovernifySiteSettingResponse['logo_location'] : '';
+            }else{
+                $sitelogo = !empty($sitelogo) ?? 'https://onboardify.tasc360.com/uploads/onboardify.png';
+            }
+        }
+
+        $dataToEncrypt = array(
+            'email' => trim($userData['email']),
+            'name'  => trim($userData['name']),
+        );
+
+        $linkHash         = Crypt::encrypt(json_encode($dataToEncrypt));
+        $verificationURL  = 'https://onboardify.tasc360.com/onboardify/verify/'.$linkHash;
+        $verificationData = array(
+            'name'       => trim($userData['name']),
+            'email'      => trim($userData['email']),
+            'link'       => $verificationURL
+        );
+
+        $get_data   = SiteSettings::where('id', '=', 1)->first()->toArray();
+        $logo_image = json_decode($get_data['ui_settings']);
+
+
+        $mail_body   = '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>MakeWebBetter | Reset Password</title>
+            <style>
+                /* Inline CSS styles */
+                body {
+                    font-family: Arial, sans-serif;
+                    font-size: 14px;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #F9F9F9;
+                    border-radius: 5px;
+                }
+                .logo {
+                    text-align: center;
+                }
+                .logo img {
+                    width: 100px;
+                }
+                .message {
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                }
+                .button {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    background-color: #007BFF;
+                    color: #fff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo" style="width: 100%; justify-content:center">
+                    <img src="'.$sitelogo.'" alt="TASC Logo">
+                </div>
+                <div class="message">
+                    <p>Hello ' . $verificationData['name'] . ',</p>
+                    <p>We received a request to verify your account. If you did not make this request, please ignore this email.</p>
+                    <p>To verify your account, click the button below:</p>
+                    <p><a style="color:#ffff;" href="' .$verificationData['link']  . '" class="button">Verify Account</a></p>
+                    <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
+                    <p> ' .$verificationData['link']. ' </p>
+                    <p>If you have any questions, please contact us at KSAAutomation@tascoutsourcing.com</p>
+                </div>
+            </div>
+        </body>
+        </html>';
+
+        try
+        {
+            $email   = "KSAAutomation@tascoutsourcing.com";
+            $body    =  $mail_body;
+            $subject = "Verify Account";
+
+            $data = array(
+                "personalizations" => array(
+                    array(
+                        "to" =>array(
+                            array(
+
+                                "email" => $verificationData['email'],
+                                "name"  => $verificationData['name']
+                            )
+                        )
+                    )
+                ),
+
+                "from" => array(
+                    "email"=> $email
+                ),
+
+                "subject" =>$subject,
+                "content" =>array(
+                    array(
+                        "type" => "text/html",
+                        "value" => $body
+                    )
+                )
+            );
+
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.sendgrid.com/v3/mail/send',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => json_encode($data),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: Bearer ' . env('SENDGRID_API_KEY'),
+                    'Content-Type: application/json'
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            // return true;
+        }
+        catch(\Exception $e)
+        {
+            // return true;
         }
     }
 }
