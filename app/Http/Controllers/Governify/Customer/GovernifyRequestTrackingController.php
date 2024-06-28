@@ -518,7 +518,7 @@ class GovernifyRequestTrackingController extends Controller
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
                 $after      = 'ddd';
-                $tolalData  = 10;
+                $tolalData  = 200;
                 $cursor     = 'null';
                 do {
                     $query = 'query {
@@ -559,7 +559,7 @@ class GovernifyRequestTrackingController extends Controller
                                     label
                                     update_id
                                  }
-                             }updates (limit: 5000) {
+                             }updates (limit: 200) {
                                 assets {
                                     created_at
                                     file_extension
