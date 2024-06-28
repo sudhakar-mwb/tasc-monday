@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use DB;
 use Illuminate\Support\Facades\Cache;
 use App\Models\SiteSettings;
+use App\Models\Tasc360SiteSettings;
 use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Expr\YieldFrom;
 use \Mailjet\Resources;
@@ -882,10 +883,10 @@ class AuthController extends Controller
                 $GovernifySiteSettingResponse = GovernifySiteSetting::where('id', '=', 1)->first()->toArray();
                 $sitelogo = !empty($GovernifySiteSettingResponse['logo_location']) ? $GovernifySiteSettingResponse['logo_location'] : '';
             }
-            elseif ($userData['domain'] == 'onboardify') {
-                $SiteSettingsResponse = SiteSettings::where('id', '=', 1)->first()->toArray();
-                $sitelogo = !empty($SiteSettingsResponse['logo_location']) ? $SiteSettingsResponse['logo_location'] : '';
-            }
+            // elseif ($userData['domain'] == 'onboardify') {
+            //     $SiteSettingsResponse = SiteSettings::where('id', '=', 1)->first()->toArray();
+            //     $sitelogo = !empty($SiteSettingsResponse['logo_location']) ? $SiteSettingsResponse['logo_location'] : '';
+            // }
             elseif ($userData['domain'] == 'incorpify') {
                 $IncorpifySiteSettingsResponse = IncorpifySiteSettings::where('id', '=', 1)->first()->toArray();
                 $sitelogo = !empty($IncorpifySiteSettingsResponse['logo_location']) ? $IncorpifySiteSettingsResponse['logo_location'] : '';
@@ -1027,6 +1028,198 @@ class AuthController extends Controller
         catch(\Exception $e)
         {
             // return true;
+        }
+    }
+
+    public function commomForgot(Request $request)
+    {
+        $userDetails = auth()->user();
+        $msg        = '';
+        $status     = '';
+        $heading    = "Forgot Password";
+        $subheading = "Please provide the email associated with your account.";
+        $this->setSetting();
+        if ($request->isMethod('post')) {
+            $input = $request->all();
+            $this->validate($request, [
+                'email' => 'required|email',
+                'domain'=> 'required',
+            ], $this->getErrorMessages());
+
+            if (!empty($request['domain'])) {
+                if ($request['domain'] == 'governify') {
+                    $GovernifySiteSettingResponse = GovernifySiteSetting::where('id', '=', 1)->first()->toArray();
+                    $sitelogo = !empty($GovernifySiteSettingResponse['logo_location']) ? $GovernifySiteSettingResponse['logo_location'] : '';
+                    $siteUrl = !empty($GovernifySiteSettingResponse['domain']) ? $GovernifySiteSettingResponse['domain'] : '';
+                }
+                // elseif ($request['domain'] == 'onboardify') {
+                //     $SiteSettingsResponse = SiteSettings::where('id', '=', 1)->first()->toArray();
+                //     $sitelogo = !empty($SiteSettingsResponse['logo_location']) ? $SiteSettingsResponse['logo_location'] : '';
+                // }
+                elseif ($request['domain'] == 'incorpify') {
+                    $IncorpifySiteSettingsResponse = IncorpifySiteSettings::where('id', '=', 1)->first()->toArray();
+                    $sitelogo = !empty($IncorpifySiteSettingsResponse['logo_location']) ? $IncorpifySiteSettingsResponse['logo_location'] : '';
+                }
+                elseif ($request['domain'] == 'tasc360') {
+                    $GovernifySiteSettingResponse = Tasc360SiteSettings::where('id', '=', 1)->first()->toArray();
+                    $sitelogo = !empty($GovernifySiteSettingResponse['logo_location']) ? $GovernifySiteSettingResponse['logo_location'] : '';
+                }else{
+                    $sitelogo = !empty($sitelogo) ?? 'https://onboardify.tasc360.com/uploads/onboardify.png';
+                }
+            }
+
+            $getUser = MondayUsers::getUser(array('email' => trim($input['email'])));
+            if ($getUser) {
+                $dataToEncrypt = array(
+                    'email'      => trim($input['email']),
+                    // 'current'  => date("Y-m-d H:i:s"),
+                    'email_exp'  => date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s") . "+1 hour")),
+                    'id' => trim($getUser->id),
+                );
+
+                $linkHash        = Crypt::encrypt(json_encode($dataToEncrypt));
+                $verificationURL = $siteUrl.'/onboardify/create-password/' . $linkHash;
+                $verificationData = array(
+                    'emailType'  => 'forget_password_verification',
+                    'name'       => $getUser->name,
+                    'recipients' => $getUser->email,
+                    'email'      => $getUser->email,
+                    'link'       => $verificationURL
+                );
+
+                $admin_email = env('MAIL_FROM_ADDRESS'); // admin ,mail
+                // return view('mail.forget-password', ['mail_data' => $verificationData]);
+                // $mail_body   = view('mail.forget-password', ['mail_data' => $verificationData]);
+                $get_data   = SiteSettings::where('id', '=', 1)->first()->toArray();
+                $logo_image = json_decode($get_data['ui_settings']);
+
+                $mail_body   = '<!DOCTYPE html>
+                <html>
+                <head>
+                    <title>MakeWebBetter | Reset Password</title>
+                    <style>
+                        /* Inline CSS styles */
+                        body {
+                            font-family: Arial, sans-serif;
+                            font-size: 14px;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: 0 auto;
+                            padding: 20px;
+                            background-color: #F9F9F9;
+                            border-radius: 5px;
+                        }
+                        .logo {
+                            text-align: center;
+                        }
+                        .logo img {
+                            width: 100px;
+                        }
+                        .message {
+                            margin-top: 20px;
+                            margin-bottom: 20px;
+                        }
+                        .button {
+                            display: inline-block;
+                            padding: 10px 20px;
+                            background-color: #007BFF;
+                            color: #fff;
+                            text-decoration: none;
+                            border-radius: 5px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="logo" style="width: 100%; justify-content:center">
+                            <img src="'.$sitelogo.'" alt="TASC Logo">
+                        </div>
+                        <div class="message">
+                            <p>Hello ' . $verificationData['name'] . ',</p>
+                            <p>We received a request to reset your password. If you did not make this request, please ignore this email.</p>
+                            <p>To reset your password, click the button below:</p>
+                            <p><a style="color:#ffff;" href="' . $verificationData['link']  . '" class="button">Reset Password</a></p>
+                            <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
+                            <p> ' . $verificationData['link'] . ' </p>
+                            <p>This link will expire in 1 hr for security reasons.</p>
+                            <p>If you have any questions, please contact us at KSAAutomation@tascoutsourcing.com</p>
+                        </div>
+                    </div>
+                </body>
+                </html>';
+echo '<pre>'; print_r( $mail_body ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+                try {
+
+                    $email   = "KSAAutomation@tascoutsourcing.com";
+                    $body    =  $mail_body;
+                    $subject = "Reset Password";
+
+                    $data = array(
+                        "personalizations" => array(
+                            array(
+                                "to" => array(
+                                    array(
+
+                                        "email" => $verificationData['email'],
+                                        "name"  => $verificationData['name']
+                                    )
+                                )
+                            )
+                        ),
+
+                        "from" => array(
+                            "email" => $email
+                        ),
+
+                        "subject" => $subject,
+                        "content" => array(
+                            array(
+                                "type" => "text/html",
+                                "value" => $body
+                            )
+                        )
+                    );
+
+                    $curl = curl_init();
+                    curl_setopt_array($curl, array(
+                        CURLOPT_URL => 'https://api.sendgrid.com/v3/mail/send',
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 30,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'POST',
+                        CURLOPT_POSTFIELDS => json_encode($data),
+                        CURLOPT_HTTPHEADER => array(
+                            'Authorization: Bearer ' . env('SENDGRID_API_KEY'),
+                            'Content-Type: application/json'
+                        ),
+                    ));
+
+                    $response = curl_exec($curl);
+                    $err = curl_error($curl);
+                    curl_close($curl);
+
+                    if ($err) {
+                        if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2)) {
+                            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Forgot Password mail not send. Please check sendgrid activity log.")));
+                        }
+                    } else {
+                        $response = DB::table('monday_users')->where('id', $getUser->id)->update(['email_exp' => $dataToEncrypt['email_exp']]);
+                        if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2)) {
+                            return response(json_encode(array('response' => [], 'status' => true, 'message' => "Success, Verification Mail Sent.")));
+                        }
+                    }
+                } catch (\Exception $e) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Something went wrong during mail send. Please try again.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid Email.")));
+            }
+        }
+        if (!is_null($userDetails) && ($userDetails->role == 1 || $userDetails->role == 2)) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Please provide the email associated with your account.")));
         }
     }
 }

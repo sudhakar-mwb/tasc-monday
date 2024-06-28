@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('logo_name')->nullable();
             $table->string('logo_location')->nullable();
             $table->string('status')->default(0);
+            $table->string('domain')->nullable();
             $table->timestamps();
         });
     }
