@@ -77,9 +77,15 @@ class DashboardController extends Controller
 
                 $boardsData = $this->_getMondayData($query);
                 if (isset($boardsData['response']['error_message'])) {
-                    return response(json_encode(array('response' => [], 'status' => false, 'message' => $boardsData['response']['error_message'])));
+                    return response(json_encode(array('response' => $boardsData, 'status' => false, 'message' => $boardsData['response']['error_message'])));
                 }
 
+                if (isset($boardsData['response']['data']['create_item']['id'])) {
+                    return response(json_encode(array('response' => $boardsData, 'status' => true, 'message' => "Item created successfully.")));
+                }else{
+                    return response(json_encode(array('response' => $boardsData, 'status' => false, 'message' => "Item creation failed.")));
+                }
+                /*
                 if (isset($boardsData['response']['data']['create_item']['id'])) {
                     if (!empty($request->file_data)) {
                         $fileDataStrings = [];
@@ -127,6 +133,7 @@ class DashboardController extends Controller
                     }
                     return response(json_encode(array('response' => [], 'status' => true, 'message' => 'Column Updated Successfully')));
                 }
+                */
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
