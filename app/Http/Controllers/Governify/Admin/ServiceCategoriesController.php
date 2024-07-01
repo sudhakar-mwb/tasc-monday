@@ -7,6 +7,7 @@ use App\Models\CategoryServiceFormMapping;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use App\Models\GovernifyServiceCategorie;
+use App\Models\GovernifyServiceRequest;
 use App\Models\GovernifyServiceRequestForms;
 use App\Models\GovernifySiteSetting;
 use Illuminate\Validation\Rule;
@@ -182,6 +183,8 @@ class ServiceCategoriesController extends Controller
                 );
                 // $deleteServiceCategorie = GovernifyServiceCategorie::updateTableData('governify_service_categories', $params, $dataToUpdate);
                 // Delete dependent records
+                // Update the service_categorie_id to null for the given id
+                GovernifyServiceRequest::where('service_categorie_id', $id)->update(['service_categorie_id' => null]);
                 CategoryServiceFormMapping::where('categorie_id', $id)->delete();
                 // Delete the parent record
                 $deleteServiceCategorie = GovernifyServiceCategorie::where('id', $id)->delete();
