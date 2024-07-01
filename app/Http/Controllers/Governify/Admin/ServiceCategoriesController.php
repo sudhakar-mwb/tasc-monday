@@ -181,6 +181,9 @@ class ServiceCategoriesController extends Controller
                     'deleted_at' => date('Y-m-d H:i:s')
                 );
                 // $deleteServiceCategorie = GovernifyServiceCategorie::updateTableData('governify_service_categories', $params, $dataToUpdate);
+                // Delete dependent records
+                CategoryServiceFormMapping::where('categorie_id', $id)->delete();
+                // Delete the parent record
                 $deleteServiceCategorie = GovernifyServiceCategorie::where('id', $id)->delete();
                 if ($deleteServiceCategorie > 0) {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Category Deleted Successfully.")));
