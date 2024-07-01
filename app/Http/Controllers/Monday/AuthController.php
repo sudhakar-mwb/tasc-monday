@@ -907,7 +907,7 @@ class AuthController extends Controller
         );
 
         $linkHash         = Crypt::encrypt(json_encode($dataToEncrypt));
-        $verificationURL  = $siteUrl . '/' . $domain . '/verify/&email=' . $userData['email'] . '/&token=' . $linkHash;
+        $verificationURL  = $siteUrl . '/' . $domain . '/verify?email=' . $userData['email'] . '&token=' . $linkHash;
         $verificationData = array(
             'name'       => trim($userData['name']),
             'email'      => trim($userData['email']),
@@ -1073,7 +1073,7 @@ class AuthController extends Controller
             );
 
             $linkHash        = Crypt::encrypt(json_encode($dataToEncrypt));
-            $verificationURL = $siteUrl . '/reset-password/&email=' . $input['email'] . '&token=' . $linkHash;
+            $verificationURL = $siteUrl . '/reset-password?email=' . $input['email'] . '&token=' . $linkHash;
             $verificationData = array(
                 'emailType'  => 'forget_password_verification',
                 'name'       => $getUser->name,
