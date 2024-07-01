@@ -226,7 +226,7 @@ class DashboardController extends Controller
                 $dataToRender = $categories->map(function ($category) {
                     return [
                         'category' => $category,
-                        'service_requests' => $category->serviceRequests->map(function ($request) use ($category) {
+                        'service_requests' => $category->serviceRequests->whereNull('deleted_at')->map(function ($request) use ($category) {
                             $formMappings = $category->serviceFormMappings->where('service_id', $request->id);
                             return [
                                 'service_request' => $request,

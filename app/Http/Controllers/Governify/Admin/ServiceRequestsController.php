@@ -299,12 +299,16 @@ class ServiceRequestsController extends Controller
                 // Delete dependent records
                 CategoryServiceFormMapping::where('service_id', $id)->delete();
                 // Delete the parent record
+                /* Hard Delete
                 $deleteServiceRequest = GovernifyServiceRequest::where('id', $id)->delete();
                 if ($deleteServiceRequest > 0) {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Request Deleted Successfully.")));
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Request Not Deleted.")));
                 }
+                */
+                //Soft Delete
+                $deleteServiceRequest = GovernifyServiceRequest::where('id', $id)->update($dataToUpdate);
                 if ($deleteServiceRequest) {
                     // $responseData = array(
                     //     'access_token' => $this->refreshToken()->original[ 'access_token' ]
