@@ -50,7 +50,7 @@ Route::post('/', [AuthController::class, 'login'])->name('monday.post.login');
 
 Route::post('/commom-login', [AuthController::class, 'userLogin']);
 Route::post('/commom-forgot', [AuthController::class, 'commomForgot']);
-Route::post('/commom-create-password/{token}', [AuthController::class, 'commomCreateNewPasswordPost']);
+// Route::post('/commom-create-password/{token}', [AuthController::class, 'commomCreateNewPasswordPost']);
 
 Route::get('/loginUserDetails/{id}', [AuthController::class, 'loginUserDetails'])->name('monday.get.loginUserDetails')->middleware('auth:api');
 
@@ -58,6 +58,7 @@ Route::get('/loginUserDetails/{id}', [AuthController::class, 'loginUserDetails']
 
 Route::group(['prefix' => "common"], function () {
     Route::post('/updateNewPassword', [AuthController::class, 'commonUpdateNewPassword']);
+    Route::post('/verifyUser', [AuthController::class, 'verifyUser']);
 });
 Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], function () {
     // Route::middleware('monday.auth')->group(function () {
