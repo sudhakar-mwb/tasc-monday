@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Governify\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CategoryServiceFormMapping;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use Illuminate\Support\Str;
@@ -295,6 +296,9 @@ class ServiceRequestsController extends Controller
                 );
                 
                 // $deleteServiceRequest = GovernifyServiceRequest::where('id', $id)->update($dataToUpdate);
+                // Delete dependent records
+                CategoryServiceFormMapping::where('service_id', $id)->delete();
+                // Delete the parent record
                 $deleteServiceRequest = GovernifyServiceRequest::where('id', $id)->delete();
                 if ($deleteServiceRequest > 0) {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Request Deleted Successfully.")));
