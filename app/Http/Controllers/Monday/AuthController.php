@@ -877,7 +877,7 @@ class AuthController extends Controller
             if ($userData['domain'] == 'governify') {
                 $GovernifySiteSettingResponse = GovernifySiteSetting::where('id', '=', 1)->first()->toArray();
                 $sitelogo = !empty($GovernifySiteSettingResponse['logo_location']) ? $GovernifySiteSettingResponse['logo_location'] : '';
-                $siteUrl = !empty($GovernifySiteSettingResponse['domain']) ? $GovernifySiteSettingResponse['domain'] : '';
+                $siteUrl = !empty($GovernifySiteSettingResponse['domain']) ? $GovernifySiteSettingResponse['domain'] : 'https://governify.tasc360.com';
                 $domain = $userData['domain'];
             }
             // elseif ($userData['domain'] == 'onboardify') {
@@ -887,12 +887,12 @@ class AuthController extends Controller
             elseif ($userData['domain'] == 'incorpify') {
                 $IncorpifySiteSettingsResponse = IncorpifySiteSettings::where('id', '=', 1)->first()->toArray();
                 $sitelogo = !empty($IncorpifySiteSettingsResponse['logo_location']) ? $IncorpifySiteSettingsResponse['logo_location'] : '';
-                $siteUrl = !empty($IncorpifySiteSettingsResponse['domain']) ? $IncorpifySiteSettingsResponse['domain'] : '';
+                $siteUrl = !empty($IncorpifySiteSettingsResponse['domain']) ? $IncorpifySiteSettingsResponse['domain'] : 'https://incorpify.tasc360.com';
                 $domain = $userData['domain'];
             } elseif ($userData['domain'] == 'tasc360') {
                 $Tasc360SiteSettingsResponse = Tasc360SiteSettings::where('id', '=', 1)->first()->toArray();
                 $sitelogo = !empty($Tasc360SiteSettingsResponse['logo_location']) ? $Tasc360SiteSettingsResponse['logo_location'] : '';
-                $siteUrl = !empty($Tasc360SiteSettingsResponse['domain']) ? $Tasc360SiteSettingsResponse['domain'] : '';
+                $siteUrl = !empty($Tasc360SiteSettingsResponse['domain']) ? $Tasc360SiteSettingsResponse['domain'] : 'https://tasc360.com';
                 $domain = $userData['domain'];
             } else {
                 $sitelogo = !empty($sitelogo) ?? 'https://onboardify.tasc360.com/uploads/onboardify.png';
