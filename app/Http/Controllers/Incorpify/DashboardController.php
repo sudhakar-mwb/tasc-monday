@@ -324,6 +324,8 @@ class DashboardController extends Controller
             'item_type' => 'Item Type',
         ]);
 
+        $textBody = addslashes((string) $payload['text_body']);
+
         if ($validator->fails()) {
             return $this->returnData($validator->errors(), false);
         }
@@ -338,7 +340,7 @@ class DashboardController extends Controller
             }';
         } else {
             $query = 'mutation {
-                create_update(item_id : ' . $payload['item_id'] . ' parent_id:' . $payload['update_id'] . ' body: "' . $payload['text_body'] . '") {
+                create_update(item_id : ' . $payload['item_id'] . ' parent_id:' . $payload['update_id'] . ' body: "' . $textBody . '") {
                   id
                 }
             }';
