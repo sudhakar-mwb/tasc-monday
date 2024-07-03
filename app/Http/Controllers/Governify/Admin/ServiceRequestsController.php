@@ -241,15 +241,16 @@ class ServiceRequestsController extends Controller
                 // Delete dependent records
                 CategoryServiceFormMapping::where('service_id', $id)->delete();
                 // Delete the parent record
-                /* Hard Delete
+                // Hard Delete
                 $deleteServiceRequest = GovernifyServiceRequest::where('id', $id)->delete();
                 if ($deleteServiceRequest > 0) {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Request Deleted Successfully.")));
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Request Not Deleted.")));
                 }
-                */
+
                 //Soft Delete
+                /*
                 $deleteServiceRequest = GovernifyServiceRequest::where('id', $id)->update($dataToUpdate);
                 if ($deleteServiceRequest) {
                     // $responseData = array(
@@ -259,6 +260,7 @@ class ServiceRequestsController extends Controller
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Request Not Deleted.")));
                 }
+                */
             }
             return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Request Data Not Found. Invalid Service Request Id Provided.")));
         }

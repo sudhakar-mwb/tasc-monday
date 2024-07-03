@@ -187,15 +187,16 @@ class ServiceCategoriesController extends Controller
                 GovernifyServiceRequest::where('service_categorie_id', $id)->update(['service_categorie_id' => null]);
                 CategoryServiceFormMapping::where('categorie_id', $id)->delete();
                 // Delete the parent record
-                /* Hard Delete
+                // Hard Delete
                 $deleteServiceCategorie = GovernifyServiceCategorie::where('id', $id)->delete();
                 if ($deleteServiceCategorie > 0) {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Category Deleted Successfully.")));
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Category Not Deleted.")));
                 }
-                */
+
                 //Soft Delete
+                /*
                 $deleteServiceCategorie = GovernifyServiceCategorie::updateTableData('governify_service_categories', $params, $dataToUpdate);
                 if ($deleteServiceCategorie['status'] == "success") {
                     // $responseData = array(
@@ -205,6 +206,7 @@ class ServiceCategoriesController extends Controller
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Category Not Deleted.")));
                 }
+                */
             }
             return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
         }
