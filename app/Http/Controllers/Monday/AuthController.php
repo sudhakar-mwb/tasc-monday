@@ -42,7 +42,7 @@ class AuthController extends Controller
     {
         $msg        = '';
         $status     = '';
-        $heading    = "Log In";
+        $heading    = "Onboardify";
         $subheading = "";
         $this->setSetting();
         if ($request->isMethod('post')) {
