@@ -153,7 +153,7 @@ class AuthController extends Controller
             }
         }
         $heading = "Onboardify";
-        $subheading = "We’re excited to have you join us! To complete your sign-up, please fill in your information below.";
+        $subheading = "";
         return view('auth.signup', compact('heading', 'subheading', 'msg', 'status'),);
     }
     public function forgot(Request $request)

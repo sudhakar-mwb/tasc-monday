@@ -11,21 +11,27 @@
     @endif
 
 
-    <form class="form-auth" id="registration-custom-form" action="{{ route('monday.post.signup') }}" method="POST">
-        {{-- @csrf --}}
-        <input type="text" placeholder="Name*" name="name" value="{{ old('name') }}">
+    <form class="form-auth" id="registration-custom-form" action="{{ route('monday.post.signup') }}" method="POST" style="max-width:440px;padding:30px;box-shadow: 0 4px 16px #11111a1a, 0 8px 24px #11111a1a, 0 16px 56px #11111a1a;">
+    <div>
+       <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
+       </div>
+       <div style="font-size:24px;font-weight:600;    font-family: Work Sans,sans-serif;">
+           Sign In
+      </div>  
+    {{-- @csrf --}}
+        <input type="text" placeholder="Name*" name="name" value="{{ old('name') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('name')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
-        <input type="text" placeholder="Company name*" name="company_name" value="{{ old('company_name') }}">
+        <input type="text" placeholder="Company name*" name="company_name" value="{{ old('company_name') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('company_name')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
-        <input type="text" placeholder="+966 011 XXX XXXX" name="phone" value="{{ old('phone') }}">
+        <input type="text" placeholder="+966 011 XXX XXXX" name="phone" value="{{ old('phone') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('phone')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
-        <input type="text" placeholder="Email*" name="email" value="{{ old('email') }}">
+        <input type="text" placeholder="Email*" name="email" value="{{ old('email') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('email')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
@@ -40,7 +46,7 @@
             <div class="g-recaptcha" data-sitekey="6LdmFMQpAAAAAGwLfYZopzckKXOu0obCtpHW0obV"></div>
 
         </div>
-        <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="submit"
+        <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="submit" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;"
            >
             <span>
                   Sign Up
@@ -55,10 +61,14 @@
                 </svg>
             </span>
         </button>
+        <a href="/">Already have an Account?</a>
+        <div class="login-footer">
+        @include('includes.footer')
+        </div>
     </form>
 
 
-    <a href="/">Already have an Account?</a>
+ 
 </main>
 <script>
     var form = document.getElementById('registration-custom-form');
@@ -73,5 +83,13 @@
   .animation-container{
     margin: 0px !important;
   }
+  .input-group-text > i:before{
+    vertical-align:middle;
+  }
+  .login-footer > footer > div {
+    margin-top:1rem !important;
+    margin-bottom:1rem !important;
+}
+
 </style>
-@include('includes.footer')
+
