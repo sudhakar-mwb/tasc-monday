@@ -516,6 +516,12 @@ class GovernifyRequestTrackingController extends Controller
     {
         try {
             $userId = $this->verifyToken()->getData()->id;
+            $getUser = MondayUsers::getUser(['id' => $userId]);
+            if (!empty($getUser) && !empty($getUser->email)) {
+                $userEmail = $getUser->email;
+            }else{
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+            }
             if ($userId) {
                 $after      = 'ddd';
                 $tolalData  = 200;
@@ -538,7 +544,7 @@ class GovernifyRequestTrackingController extends Controller
                           type
                           width
                       }
-                      items_page (limit: ' . $tolalData . ', cursor:' . $cursor . '){
+                      items_page (limit: ' . $tolalData . ', cursor:' . $cursor . ',query_params: {rules: [{column_id: "people0__1", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
                           cursor,
                           items {
                               created_at
