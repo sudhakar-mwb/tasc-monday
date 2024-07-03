@@ -42,7 +42,7 @@ class AuthController extends Controller
     {
         $msg        = '';
         $status     = '';
-        $heading    = "Log In";
+        $heading    = "Onboardify";
         $subheading = "";
         $this->setSetting();
         if ($request->isMethod('post')) {
@@ -152,7 +152,7 @@ class AuthController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
         }
-        $heading = "Sign Up";
+        $heading = "Onboardify";
         $subheading = "We’re excited to have you join us! To complete your sign-up, please fill in your information below.";
         return view('auth.signup', compact('heading', 'subheading', 'msg', 'status'),);
     }

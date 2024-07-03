@@ -13,8 +13,14 @@
             <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }}</div>
         </div>
     @endif
-    <form action="{{ route('monday.post.login') }}" id="loginform" method="POST" class="form-auth">
-        <input type="text" placeholder="Email" name="email" value="{{ old('email') }}">
+    <form action="{{ route('monday.post.login') }}" id="loginform" method="POST" class="form-auth" style="max-width:440px;padding:30px;box-shadow: 0 4px 16px #11111a1a, 0 8px 24px #11111a1a, 0 16px 56px #11111a1a;">
+    <div>
+       <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
+       </div>
+       <div style="font-size:24px;font-weight:600;    font-family: Work Sans,sans-serif;">
+           Sign In
+      </div>
+        <input type="text" placeholder="Email" name="email" value="{{ old('email') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('email')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
@@ -29,7 +35,7 @@
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
 
-        <button id="login-button" class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="button">
+        <button id="login-button" class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="button" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;">
             <span>
                 Log In
             </span>
@@ -44,6 +50,9 @@
         <div class="d-flex justify-content-between align-items-start w-100 mt-2">
             <a href={{ route('monday.forgot') }}>Forgot Password?</a>
             <a href={{ route('monday.get.signup') }}>Create New Account?</a>
+        </div>
+        <div class="login-footer">
+        @include('includes.footer')
         </div>
     </form>
 <script>
@@ -61,6 +70,14 @@
   header{
     padding: 0px !important
   }
+  .input-group-text > i:before{
+    vertical-align:middle;
+  }
+.login-footer > footer > div {
+    margin-top:1rem !important;
+    margin-bottom:1rem !important;
+}
+
 </style>
 
-@include('includes.footer')
+
