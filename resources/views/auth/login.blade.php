@@ -1,4 +1,6 @@
-@include('auth.header')
+<!-- <div class="header-login"> -->
+@include('auth.login_header')
+<!-- </div> -->
 
 <main class="pt-3">
     @include('admin.headtitle')

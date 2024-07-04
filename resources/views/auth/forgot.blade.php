@@ -1,4 +1,4 @@
-@include('auth.header')
+@include('auth.login_header')
 
 
 <main class="px-3 pt-5">
@@ -9,15 +9,21 @@
             <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }}</div>
         </div>
     @endif
-    <form action="{{ route('monday.post.forgot') }}" method="POST" class="form-auth">
-       <div class="w-100">
-        <input class="w-100" type="text" placeholder="Email" name="email" value="{{ old('email') ?? ($_GET['email'] ?? '') }}"
+    <form action="{{ route('monday.post.forgot') }}" method="POST" class="form-auth" style="max-width:440px;padding:30px;box-shadow: 0 4px 16px #11111a1a, 0 8px 24px #11111a1a, 0 16px 56px #11111a1a;">
+    <div>
+       <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
+       </div>
+       <div style="font-size:24px;font-weight:600;    font-family: Work Sans,sans-serif;">
+           Forgot Password
+      </div>  
+    <div class="w-100">
+        <input class="w-100" type="text" placeholder="Email" name="email" value="{{ old('email') ?? ($_GET['email'] ?? '') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;"
         required />
     @error('email')
         <p class="text-danger text-start pt-1 my-0 ms-2 " style="font-size: .875em">{{ $message }}</small>
     @enderror
        </div>
-        <button class="btn btn-to-link btn-secondary btn-gradiant  d-flex align-items-center" type="submit">
+        <button class="btn btn-to-link btn-secondary btn-gradiant  d-flex align-items-center" type="submit" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;">
             <span>
                 Email me a recovery link
             </span>
@@ -32,8 +38,18 @@
         <div class="d-flex justify-content-center align-items-start w-100 mt-2">
             <a href="{{ route('monday.get.login') }}">Back to Login?</a>
         </div>
+        <div class="login-footer">
+        @include('includes.footer')
+        </div>
     </form>
 
 </main>
 
-@include('includes.footer')
+<style>
+    .login-footer > footer > div {
+    margin-top:1rem !important;
+    margin-bottom:1rem !important;
+}
+</style>
+
+
