@@ -1,4 +1,4 @@
-@include('auth.header')
+@include('auth.login_header')
 
 
 <main class="">
@@ -16,7 +16,7 @@
        <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
        </div>
        <div style="font-size:24px;font-weight:600;    font-family: Work Sans,sans-serif;">
-           Sign In
+           Sign Up
       </div>  
     {{-- @csrf --}}
         <input type="text" placeholder="Name*" name="name" value="{{ old('name') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">

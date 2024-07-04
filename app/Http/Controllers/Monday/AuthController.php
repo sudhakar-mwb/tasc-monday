@@ -161,8 +161,8 @@ class AuthController extends Controller
         $userDetails = auth()->user();
         $msg        = '';
         $status     = '';
-        $heading    = "Forgot Password";
-        $subheading = "Please provide the email associated with your account.";
+        $heading    = "Onboardify";
+        $subheading = "";
         $this->setSetting();
         if ($request->isMethod('post')) {
             $input = $request->all();
