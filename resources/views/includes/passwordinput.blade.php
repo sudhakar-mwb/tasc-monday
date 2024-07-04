@@ -2,7 +2,7 @@
     border: 0;
     border-radius: 50px;
     ">
-  <input class="form-control" id="input-password" type="password" placeholder="Password" name="password" style="background: #ececec;
+  <input class="form-control" id="input-password" type="password" placeholder="Password" name="password" style="background: #e8f0fe;
     border: 0;
     border-top-left-radius: 50px;
         border-bottom-left-radius: 50px;

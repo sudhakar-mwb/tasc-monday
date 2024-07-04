@@ -24,16 +24,16 @@
     <div>
        <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
        </div>
-       <div style="font-size:24px;font-weight:600;font-family: Work Sans,sans-serif;margin-bottom:8px;">
+       <div style="font-size:24px;font-weight:600;font-family: Work Sans,sans-serif;margin-bottom:8px;color:#434343;">
            Sign In
       </div>
       <form action="{{ route('monday.post.login') }}" id="loginform" method="POST" class="form-auth">
-        <input type="text" placeholder="Email" name="email" value="{{ old('email') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
+        <input type="text" class="form-control" placeholder="Email" name="email" value="{{ old('email') }}" style="background: #e8f0fe;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('email')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
         {{-- <input type="password" placeholder="Password" name="password"> --}}
-        {{-- <div class="input-group flex-nowrap" id="password-filled">
+        {{-- <div class="input-group flex-nowrap form-control" id="password-filled">
             <input class="form-control" id="input-password" type="password" placeholder="Password" name="password">
             <span class="input-group-text fs-5 encrypted" style="cursor:pointer" id="controller"><i
                     class="bi bi-eye-slash-fill"></i></span>
@@ -59,8 +59,8 @@
             </span>
         </button>
         <div class="d-flex justify-content-between align-items-start w-100 mt-2">
-            <a href={{ route('monday.forgot') }} style="font-size:13px;">Forgot Password?</a>
-            <a href={{ route('monday.get.signup') }} style="font-size:13px;">Create New Account?</a>
+            <a href={{ route('monday.forgot') }} style="font-size:13px;color:#434343;">Forgot Password?</a>
+            <a href={{ route('monday.get.signup') }} style="font-size:13px;color:#434343;">Create New Account?</a>
         </div>
         <div class="login-footer">
         @include('includes.footer')

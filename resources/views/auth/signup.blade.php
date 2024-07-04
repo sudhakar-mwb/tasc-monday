@@ -17,23 +17,23 @@
     <div>
        <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
        </div>
-       <div style="font-size:24px;font-weight:600;    font-family: Work Sans,sans-serif;">
+       <div style="font-size:24px;font-weight:600;font-family: Work Sans,sans-serif;margin-bottom:8px;color:#434343;">
            Sign Up
       </div>  
     {{-- @csrf --}}
-        <input type="text" placeholder="Name*" name="name" value="{{ old('name') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
+        <input type="text" class="form-control" placeholder="Name*" name="name" value="{{ old('name') }}" style="background: #e8f0fe;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('name')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
-        <input type="text" placeholder="Company name*" name="company_name" value="{{ old('company_name') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
+        <input type="text" placeholder="Company name*" class="form-control" name="company_name" value="{{ old('company_name') }}" style="background: #e8f0fe;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('company_name')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
-        <input type="text" placeholder="+966 011 XXX XXXX" name="phone" value="{{ old('phone') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
+        <input type="text" placeholder="+966 011 XXX XXXX" class="form-control" name="phone" value="{{ old('phone') }}" style="background: #e8f0fe;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('phone')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
-        <input type="text" placeholder="Email*" name="email" value="{{ old('email') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
+        <input type="text" placeholder="Email*" class="form-control" name="email" value="{{ old('email') }}" style="background: #e8f0fe;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('email')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
@@ -50,7 +50,8 @@
         </div>
         <button class="btn btn-to-link btn-secondary mt-4  d-flex align-items-center" type="submit" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% );"
            >
-            <span>
+            <span style="font-family: Montserrat!important;
+    font-size: 12px;font-weight:700;">
                   Sign Up
 
             </span>
@@ -63,7 +64,7 @@
                 </svg>
             </span>
         </button>
-        <a href="/" style="font-size:13px;margin-top:9px;">Already have an Account?</a>
+        <a href="/" style="font-size:13px;margin-top:9px;color:#434343;">Already have an Account?</a>
         <div class="login-footer">
         @include('includes.footer')
         </div>
@@ -136,6 +137,8 @@
 .w-100 {
     width: 100%!important;
 }
+
+
 
 </style>
 

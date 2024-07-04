@@ -17,13 +17,13 @@
     <div>
        <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
        </div>
-       <div style="font-size:24px;font-weight:600;font-family: Work Sans,sans-serif;margin-bottom:8px;">
+       <div style="font-size:24px;font-weight:600;font-family: Work Sans,sans-serif;margin-bottom:8px;color:#434343;">
            Forgot Password
       </div>  
     <form action="{{ route('monday.post.forgot') }}" method="POST" class="form-auth" >
    
     <div class="w-100">
-        <input class="w-100" type="text" placeholder="Email" name="email" value="{{ old('email') ?? ($_GET['email'] ?? '') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;"
+        <input class="w-100 form-control" type="text" placeholder="Email" name="email" value="{{ old('email') ?? ($_GET['email'] ?? '') }}" style="background: #e8f0fe;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;"
         required />
     @error('email')
         <p class="text-danger text-start pt-1 my-0 ms-2 " style="font-size: .875em">{{ $message }}</small>
@@ -42,7 +42,7 @@
             </span>
         </button>
         <div class="d-flex justify-content-center align-items-start w-100 mt-2">
-            <a href="{{ route('monday.get.login') }}" style="font-size:13px;">Back to Login?</a>
+            <a href="{{ route('monday.get.login') }}" style="font-size:13px;color:#434343;">Back to Login?</a>
         </div>
         <div class="login-footer">
         @include('includes.footer')
