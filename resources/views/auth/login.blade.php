@@ -19,7 +19,7 @@
             <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }}</div>
         </div>
     @endif
-    <div  style="max-width:440px;padding:30px;box-shadow: 0 2px 6px #0003;margin:0 auto;">
+    <div  style="max-width:440px;padding:30px;box-shadow: 0 2px 6px #0003;margin:0 auto;background:#fff;">
 
     <div>
        <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
@@ -109,8 +109,8 @@
     color:#212529 !important;
 }
 
-.inc-auth-container{
-    background-image: url({{ asset('assets/authbg.svg') }});
+.login-cover-container{
+    background-image: url({{ asset('/authbg.svg') }});
     background-size: 100%;
 }
 

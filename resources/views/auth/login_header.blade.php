@@ -23,7 +23,7 @@
 
 </head>
 
-<body class=" container d-flex h-100 text-center">
+<body class="d-flex h-100 text-center">
     @include('bodyscriptgoogle')
     <?php
     $settings = Session::get('settings');
@@ -40,9 +40,11 @@
                                     }
                                       </style>";
     ?>
+    <div class="login-cover-container" style="width:100vw;">
     <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
         <header class="mb-auto pb-3 pt-3">
             <div>
                
             </div>
         </header>
+        <div>
