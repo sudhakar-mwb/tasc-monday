@@ -2,7 +2,9 @@
 
 
 <main class="px-3 pt-5">
+<div class="login-onboardify-header">
     @include('admin.headtitle')
+    </div>
 
     @if ($status != '')
         <div class="d-flex justify-content-center">
@@ -23,7 +25,7 @@
         <p class="text-danger text-start pt-1 my-0 ms-2 " style="font-size: .875em">{{ $message }}</small>
     @enderror
        </div>
-        <button class="btn btn-to-link btn-secondary btn-gradiant  d-flex align-items-center" type="submit" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;">
+        <button class="btn btn-to-link btn-secondary  d-flex align-items-center" type="submit" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% );">
             <span>
                 Email me a recovery link
             </span>
@@ -49,6 +51,16 @@
     .login-footer > footer > div {
     margin-top:1rem !important;
     margin-bottom:1rem !important;
+}
+.login-onboardify-header{
+    margin-top:60px;
+ 
+}
+
+.login-onboardify-header > div > div > h1{
+    font-size:50px;
+    font-weight:500 !important;
+    color:#212529 !important;
 }
 </style>
 

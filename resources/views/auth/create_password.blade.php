@@ -1,24 +1,31 @@
-
-@include('auth.header')
+@include('auth.login_header')
 <?php 
 // dd($token);
 ?>
         <main class="px-3 pt-5">
-            @include('admin.headtitle')
+        <div class="login-onboardify-header">
+    @include('admin.headtitle')
+    </div>
             @if($status!="")
                 <div class="d-flex justify-content-center">
                     <div class="alert alert-{{$status}}" style="max-width:400px">    {{$msg}}</div>
                 </div>
             @endif
-            <form action="{{route('monday.createNewPasswordPost',['token'=>$token])}}" method="POST" class="form-auth">
-                {{-- <input type="email" disabled placeholder="Email" name="email" value="{{ old('email') }}"> --}}
+            <form action="{{route('monday.createNewPasswordPost',['token'=>$token])}}" method="POST" class="form-auth" style="max-width:440px;padding:30px;box-shadow: 0 4px 16px #11111a1a, 0 8px 24px #11111a1a, 0 16px 56px #11111a1a;">
+            <div>
+       <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
+       </div>
+       <div style="font-size:24px;font-weight:600;    font-family: Work Sans,sans-serif;">
+           Change Password
+      </div>    
+            {{-- <input type="email" disabled placeholder="Email" name="email" value="{{ old('email') }}"> --}}
                 {{-- @error('email')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror --}}
                 <input type="text" name="token" hidden value="{{$token}}">
-                <input type="password" placeholder="Password" name="password" value="{{ old('password') }}">
+                <input type="password" placeholder="Password" name="password" value="{{ old('password') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
                 @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
-                <input type="password" placeholder="Confirm Password" name="conf_password">
+                <input type="password" placeholder="Confirm Password" name="conf_password" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
                 @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
-                <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
+                <button class="btn btn-to-link btn-secondary mt-4 d-flex align-items-center" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% );"
                     type="submit">
                     <span>
                         Change Password
@@ -35,8 +42,29 @@
                     <a href="forgot">Forgot Password?</a>
                     <a href="signup">Create New Account?</a>
                 </div> --}}
+                <div class="login-footer">
+        @include('includes.footer')
+        </div>
             </form>
+        
    
         </main>
+        <style>
 
-        @include('includes.footer')
+        .login-footer > footer > div {
+            margin-top:1rem !important;
+            margin-bottom:1rem !important;
+        }
+        
+        .login-onboardify-header{
+            margin-top:60px;
+        }
+
+        .login-onboardify-header > div > div > h1{
+            font-size:50px;
+            font-weight:500 !important;
+            color:#212529 !important;
+        }
+
+        </style>
+

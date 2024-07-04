@@ -2,7 +2,9 @@
 
 
 <main class="">
+<div class="login-onboardify-header">
     @include('admin.headtitle')
+    </div>
 
     @if ($status != '')
         <div class="d-flex justify-content-center">
@@ -46,7 +48,7 @@
             <div class="g-recaptcha" data-sitekey="6LdmFMQpAAAAAGwLfYZopzckKXOu0obCtpHW0obV"></div>
 
         </div>
-        <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="submit" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;"
+        <button class="btn btn-to-link btn-secondary mt-4  d-flex align-items-center" type="submit" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% );"
            >
             <span>
                   Sign Up
@@ -89,6 +91,15 @@
   .login-footer > footer > div {
     margin-top:1rem !important;
     margin-bottom:1rem !important;
+}
+.login-onboardify-header{
+    margin-top:30px;
+}
+
+.login-onboardify-header > div > div > h1{
+    font-size:50px;
+    font-weight:500 !important;
+    color:#212529 !important;
 }
 
 </style>

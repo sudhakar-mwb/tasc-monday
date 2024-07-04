@@ -3,7 +3,9 @@
 <!-- </div> -->
 
 <main class="pt-3">
+    <div class="login-onboardify-header">
     @include('admin.headtitle')
+    </div>
     <?php
     if (isset($_GET['status'])) {
         $status = $_GET['status'];
@@ -37,7 +39,9 @@
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
 
-        <button id="login-button" class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center" type="button" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;">
+        <button id="login-button" class="btn btn-to-link btn-secondary mt-4 d-flex align-items-center" type="button" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% );
+    transition: 0.5s;
+">
             <span>
                 Log In
             </span>
@@ -78,6 +82,17 @@
 .login-footer > footer > div {
     margin-top:1rem !important;
     margin-bottom:1rem !important;
+}
+
+.login-onboardify-header{
+    margin-top:60px;
+ 
+}
+
+.login-onboardify-header > div > div > h1{
+    font-size:50px;
+    font-weight:500 !important;
+    color:#212529 !important;
 }
 
 </style>
