@@ -462,7 +462,7 @@ class AuthController extends Controller
 
     public function createNewPassword(Request $request)
     {
-        $heading       = "Enter New Password";
+        $heading       = "Onboardify";
         $decryptedData = Crypt::decrypt($request->token);
         $decryptedData = json_decode($decryptedData, true);
         $this->setSetting();
@@ -471,15 +471,16 @@ class AuthController extends Controller
 
             if (date("Y-m-d H:i:s") <= $decryptedData['email_exp'] && !empty($getUser->email_exp)) {
                 if (!empty($decryptedData['email'])) {
-                    $subheading = 'for ' . $decryptedData['email'];
+                    // $subheading = 'for ' . $decryptedData['email'];
+                    $subheading = '';
                 }
                 $msg    = '';
                 $status = '';
                 $token  = $request->token;
                 return view('auth.create_password', compact('heading', 'subheading', 'msg', 'status', 'token'));
             } else {
-                $heading    = "Forgot Password";
-                $subheading = "Please provide the email associated with your account.";
+                $heading    = "Onboardify";
+                $subheading = "";
                 $msg    = 'Your forgot password link is expired. Please re-create a new link';
                 $status = 'danger';
                 return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'),);
