@@ -13,7 +13,7 @@
     @endif
 
 
-    <form class="form-auth" id="registration-custom-form" action="{{ route('monday.post.signup') }}" method="POST" style="max-width:440px;padding:30px;box-shadow: 0 4px 16px #11111a1a, 0 8px 24px #11111a1a, 0 16px 56px #11111a1a;">
+    <form class="form-auth" id="registration-custom-form" action="{{ route('monday.post.signup') }}" method="POST" style="max-width:440px;padding:30px;    box-shadow: 0 2px 6px #0003;background:#fff;">
     <div>
        <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
        </div>
@@ -92,14 +92,39 @@
     margin-top:1rem !important;
     margin-bottom:1rem !important;
 }
-.login-onboardify-header{
-    margin-top:30px;
-}
 
 .login-onboardify-header > div > div > h1{
     font-size:50px;
     font-weight:500 !important;
     color:#212529 !important;
+}
+
+.login-cover-container{
+    background-image: url({{ asset('/authbg.svg') }});
+    background-size: 100%;
+}
+
+.form-auth{
+    padding:0px;
+}
+
+.auth-container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 90vh;
+}
+.text-center {
+    text-align: center!important;
+}
+.pb-2 {
+    padding-bottom: 0.5rem!important;
+} 
+.h-100 {
+    height: 100%!important;
+}
+.w-100 {
+    width: 100%!important;
 }
 
 </style>
