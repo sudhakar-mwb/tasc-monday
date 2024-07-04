@@ -74,7 +74,7 @@ Route::group(['prefix' => "onboardify", 'middleware' => ['web', 'setSession']], 
         Route::get('/candidate-form', [DashboardController::class, 'mobilityform'])->name('monday.mobilityform'); // monday-form
         Route::get('/candidate-stats', [DashboardController::class, 'stats'])->name('monday.stats'); // chart
         Route::get('/track-request/{id}/{userName}', [DashboardController::class, 'manageById'])->name('user.show');
-
+        Route::get('/track-request-updates/{id}', [DashboardController::class, 'trackRequestUpdates'])->name('onboardify.trackRequestUpdates');
 
     });
 

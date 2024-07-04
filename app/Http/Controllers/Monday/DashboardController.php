@@ -1010,4 +1010,85 @@ class DashboardController extends Controller
       return redirect()->route('admin.users', ['success' => false]);
     }
   }
+
+    public function trackRequestUpdates(Request $request)
+  {
+
+    if (!empty(auth()->user()) && !empty(auth()->user()->board_id)) {
+      $boardId  = auth()->user()->board_id;
+      $response = BoardColumnMappings::where('board_id', '=', $boardId)->get();
+      $response = json_decode($response, true);
+      $colors_status = json_decode($this->getColourMapping());
+
+      if ($response['0']['columns'] ?? false) {
+        $boardColumnMappingDbData = $response['0']['columns'];
+      } else {
+        $msg = "Board Column Mapping Not Exist In Db";
+        $status = false;
+        return view('auth.updates', compact('status', 'msg'));
+      }
+    } else {
+      $msg = "Currently Board not Assigned!";
+      $status = false;
+      return view('auth.updates', compact('status', 'msg'));
+    }
+
+    $query = 'query {
+      boards( ids: ' . $boardId . ') {
+      id
+      name
+      state
+      permissions
+      board_kind
+ }
+                items (ids: ' . $request->id . '){
+                    updates (limit: 500) {
+                      assets {
+                          created_at
+                          file_extension
+                          file_size
+                          id
+                          name
+                          original_geometry
+                          public_url
+                          url
+                          url_thumbnail 
+                          }
+                      body
+                      text_body
+                      created_at
+                      creator_id
+                      id
+                      item_id
+                      replies {
+                          body
+                          created_at
+                          creator_id
+                          id
+                          text_body
+                          updated_at
+                      }
+                      updated_at
+                      text_body
+                      creator {
+                        name
+                        id
+                        email
+                      }
+                    } 
+                }
+            
+    
+  }';
+  return  $response = $this->_getMondayData($query)['response'];
+    if (!empty($response) && !empty($response['data']) && !empty($response['data']['items'])) {
+      $status = true;
+      $msg = "Updates Found";
+      return view('admin.updates', compact('status', 'msg', 'response', 'boardColumnMappingDbData'));
+    } else {
+      $msg = "Updates Not Found";
+      $status = false;
+      return view('admin.updates', compact('status', 'msg'));
+    }
+  }
 }
