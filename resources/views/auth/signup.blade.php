@@ -63,7 +63,7 @@
                 </svg>
             </span>
         </button>
-        <a href="/">Already have an Account?</a>
+        <a href="/" style="font-size:13px;margin-top:9px;">Already have an Account?</a>
         <div class="login-footer">
         @include('includes.footer')
         </div>
@@ -89,8 +89,18 @@
     vertical-align:middle;
   }
   .login-footer > footer > div {
-    margin-top:1rem !important;
-    margin-bottom:1rem !important;
+    margin-top:0rem !important;
+    margin-bottom:0rem !important;
+}
+
+.login-footer > footer > div > small {
+   
+    font-size:13px !important;
+    color:#808080;
+}
+
+.login-onboardify-header{
+    margin-top:20px;
 }
 
 .login-onboardify-header > div > div > h1{
