@@ -1,7 +1,9 @@
 <!-- <div class="header-login"> -->
 @include('auth.login_header')
 <!-- </div> -->
-
+<div class="inc-auth-container">
+    <div class="container auth-container text-center">
+        <div class="cover-container w-100 h-100 pb-2" >
 <main class="pt-3">
     <div class="login-onboardify-header">
     @include('admin.headtitle')
@@ -17,13 +19,15 @@
             <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }}</div>
         </div>
     @endif
-    <form action="{{ route('monday.post.login') }}" id="loginform" method="POST" class="form-auth" style="max-width:440px;padding:30px;box-shadow: 0 4px 16px #11111a1a, 0 8px 24px #11111a1a, 0 16px 56px #11111a1a;">
+    <div  style="max-width:440px;padding:30px;box-shadow: 0 2px 6px #0003;margin:0 auto;">
+
     <div>
        <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
        </div>
-       <div style="font-size:24px;font-weight:600;    font-family: Work Sans,sans-serif;">
+       <div style="font-size:24px;font-weight:600;font-family: Work Sans,sans-serif;margin-bottom:8px;">
            Sign In
       </div>
+      <form action="{{ route('monday.post.login') }}" id="loginform" method="POST" class="form-auth">
         <input type="text" placeholder="Email" name="email" value="{{ old('email') }}" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
         @error('email')
             <small class="text-danger text-start ms-2">{{ $message }}</small>
@@ -42,8 +46,9 @@
         <button id="login-button" class="btn btn-to-link btn-secondary mt-4 d-flex align-items-center" type="button" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% );
     transition: 0.5s;
 ">
-            <span>
-                Log In
+            <span style="font-family: Montserrat!important;
+    font-size: 12px;font-weight:700;">
+                Sign In
             </span>
             <span class="icon-btn_track" style="margin-left:10px">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -54,13 +59,14 @@
             </span>
         </button>
         <div class="d-flex justify-content-between align-items-start w-100 mt-2">
-            <a href={{ route('monday.forgot') }}>Forgot Password?</a>
-            <a href={{ route('monday.get.signup') }}>Create New Account?</a>
+            <a href={{ route('monday.forgot') }} style="font-size:13px;">Forgot Password?</a>
+            <a href={{ route('monday.get.signup') }} style="font-size:13px;">Create New Account?</a>
         </div>
         <div class="login-footer">
         @include('includes.footer')
         </div>
     </form>
+        </div>
 <script>
   $("#login-button").on('click',function(){
     localStorage.removeItem('hide-banner');
@@ -69,6 +75,9 @@
 
 </script>
 </main>
+</div>
+</div>
+</div>
 <style>
   .animation-container{
     margin: 0px !important;
@@ -81,11 +90,16 @@
   }
 .login-footer > footer > div {
     margin-top:1rem !important;
-    margin-bottom:1rem !important;
+    margin-bottom:0rem !important;
+}
+
+.login-footer > footer > div > small {
+   
+    font-size:13px !important;
 }
 
 .login-onboardify-header{
-    margin-top:60px;
+    /* margin-top:110px; */
  
 }
 
@@ -94,6 +108,35 @@
     font-weight:500 !important;
     color:#212529 !important;
 }
+
+.inc-auth-container{
+    background-image: url({{ asset('assets/authbg.svg') }});
+    background-size: 100%;
+}
+
+.form-auth{
+    padding:0px;
+}
+
+.auth-container {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 90vh;
+}
+.text-center {
+    text-align: center!important;
+}
+.pb-2 {
+    padding-bottom: 0.5rem!important;
+} 
+.h-100 {
+    height: 100%!important;
+}
+.w-100 {
+    width: 100%!important;
+}
+
 
 </style>
 
