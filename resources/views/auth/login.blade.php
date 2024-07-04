@@ -96,6 +96,7 @@
 .login-footer > footer > div > small {
    
     font-size:13px !important;
+    color:#808080;
 }
 
 .login-onboardify-header{
