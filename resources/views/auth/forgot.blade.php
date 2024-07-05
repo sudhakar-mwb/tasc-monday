@@ -27,7 +27,7 @@
             <p class="text-danger text-start pt-1 my-0 ms-2" style="font-size: .875em">{{ $message }}</p>
         @enderror
         </div>
-        <button id="submitButton" class="btn btn-to-link btn-secondary mt-4 d-flex align-items-center" type="submit" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% );">
+        <button id="submitButton" class="btn btn-to-link btn-secondary mt-4 d-flex align-items-center" type="submit" style="height:46px;background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% );">
             <span style="font-size:12px;font-weight:700;">
                 Email me a recovery link
             </span>
@@ -62,6 +62,7 @@
     }
     .login-onboardify-header {
         /* margin-top:100px; */
+        margin-top:5px;
     }
     .login-onboardify-header > div > div > h1 {
         font-size:50px;
@@ -75,6 +76,13 @@
     .login-footer > footer > div > small {
         font-size:13px !important;
         color:#808080;
+        font-family: "Work Sans", sans-serif !important;
+        width:380px !important;
+    }
+
+    .login-footer > footer > div  {
+        height:19.5px !important;
+        margin-top:16px;
     }
     .login-onboardify-header > div > div > h1 {
         font-size:50px;
