@@ -456,7 +456,14 @@ class DashboardController extends Controller
             }
           }
         }';
-    $boardsData = $this->_get($query)['response']['data'];
+    $boardsData = $this->_get($query)['response'];
+    if (isset($boardsData['data']) && !empty($boardsData['data'])) {
+      $boardsData =  $boardsData['data'];
+    }else{
+      $heading = "Board Visibility";
+      $subheading = "Column restrictions can be set per board by selecting respective column boards.";
+      return view('admin.visiblility', compact('heading', 'subheading'));
+    }
 
     if (!empty($boardsData['boards'])) {
       $idArray = array();
@@ -515,7 +522,12 @@ class DashboardController extends Controller
               }
             }';
     // dd($this->_get($query)['response']);
-    $boardsData = $this->_get($query)['response']['data'];
+    $boardsData = $this->_get($query)['response'];
+    if (isset($boardsData['data']) && !empty($boardsData['data'])) {
+      $boardsData =  $boardsData['data'];
+    }else{
+      return view('admin.users', compact('heading', 'subheading', 'mondayUsers', 'boardsData'));
+    }
     if ($request->isMethod('post')) {
       if (!empty(auth()->user()) && (auth()->user()->role == 2 || auth()->user()->role == 1)) {
         if (!empty($request->board_id) && !empty($request->user_id)) {
