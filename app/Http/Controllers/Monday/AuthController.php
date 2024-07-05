@@ -141,7 +141,7 @@ class AuthController extends Controller
                     // send verification email
                     $this->sendVerificationEmail($dataToSave);
                     $dataToSave['domain'] = 'onboardify';
-                    $this->createMondayContacts($dataToSave);
+                    // $this->createMondayContacts($dataToSave);
                     //
                     return $this->thankssignup();
                 } elseif ($insertUserInDB['status'] == "already") {
