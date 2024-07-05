@@ -114,6 +114,19 @@
     .w-100 {
         width: 100%!important;
     }
+    .btn-gradiants {
+	background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% );
+    transition: 0.5s;
+    background-size: 200% auto;
+    color: white;
+    border: none;
+    font-weight: 700;
+    box-shadow: 0 0 20px #eee;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    min-width: 110px;
+}
 </style>
 
 <script>
