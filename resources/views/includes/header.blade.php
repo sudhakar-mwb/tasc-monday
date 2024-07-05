@@ -20,6 +20,8 @@
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
 
 </head>
@@ -46,7 +48,7 @@
     <div id="notification-banner" style="display:none"
         class=" position-relative custom-banner banner w-100 bg-success  text-center p-2"
         style="background-color:{{ $settings->banner_bg }} !important">
-        <div class="fs-7 banner-content text-light" style="padding-right:50px;padding-left:50px">
+        <div class="fs-7 banner-content text-light" style="font-size:1rem;font-weight:400;padding-right:50px;padding-left:50px">
             {{ $settings->banner_content }} </div>
         <button id="remove-n-btn" style="position:absolute;right:0;margin:8px;height: calc(100% - 16px);"
             class="remove-notification text-light p-0 top-0 mx-2 fs-6 px-2 outline-0 bg-transparent border-0">

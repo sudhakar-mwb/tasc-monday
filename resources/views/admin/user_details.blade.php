@@ -299,18 +299,9 @@ if ($joiningDate !== null && validText($joiningDate)) {
             <div class="col-6 d-flex flex-column onboarding-width" style="gap:30px">
                 <div class="card border-0 border-1 p-4" style="background: rgba(111, 116, 144, 0.06)">
                     <p class="second-heading text-start head-color fw-bold pb-4 border-bottom">Onboarding Updates</h5>
-                    <h6 class="text-start mt-2 mb-4 fw-bold text-secondary">
-                        {{ dateFormater($created_at) ?? '' }}</h6>
-                    <?php 
-                        $desc= getValueById($columns_val, $onboarding_updates_columns, 'text');
-                        if(validText($desc)){
-                        ?>
-                    <p class="text-start text-secondary">
-                        {{ $desc ?? '' }}
-                    </p>
-                    <?php } ?>
+                
                     @include('admin.updates')
-                    <a class="text-decoration-none"
+                    <!-- <a class="text-decoration-none"
                             href="/onboardify/form/track-request-updates/{{ $response['data']['items'][0]['id'] }}">
                             <button class="btn btn-to-link btn-secondary mt-4 btn-gradiant  d-flex align-items-center"
                                 type="button">
@@ -331,7 +322,7 @@ if ($joiningDate !== null && validText($joiningDate)) {
                                     </svg>
                             </button>
 
-                        </a>
+                        </a> -->
                 </div>
 
                 {{-- <div class="card border-0 border-1 p-4">
