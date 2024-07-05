@@ -41,8 +41,8 @@
                                       </style>";
     ?>
     <div class="login-cover-container" style="width:100vw;">
-    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-        <header class="mb-auto pb-3 pt-3">
+    <div class="cover-container d-flex w-100 h-100 mx-auto flex-column">
+        <header class="">
             <div>
                
             </div>

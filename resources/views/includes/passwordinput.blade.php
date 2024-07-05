@@ -1,6 +1,7 @@
 <div class="input-group flex-nowrap" id="password-filled" style="background: #ececec;
     border: 0;
     border-radius: 50px;
+    height:41px;
     ">
   <input class="form-control" id="input-password" type="password" placeholder="Password" name="password" style="background: #e8f0fe;
     border: 0;
