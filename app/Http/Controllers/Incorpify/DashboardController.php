@@ -302,16 +302,15 @@ class DashboardController extends Controller
 
     public function updateReplyOrLike(Request $request)
     {
-
         $payload = $request->json()->all();
 
-        //validate the request
+        // Validate the request
         $validator = Validator::make($request->all(), [
             'mode' => 'required|in:like,reply',
-            'update_id' => 'required',
-            'item_type' => $request->mode == 'like' ? 'required_if:mode,like' : '',
-            'text_body' => $request->mode == 'reply' ? 'required_if:mode,reply' : '',
-            'item_id' => $request->mode == 'reply' ? 'required_if:mode,reply' : '',
+            'update_id' => 'required|filled',
+            'item_type' => 'required_if:mode,like|filled',
+            'text_body' => 'required_if:mode,reply|filled',
+            'item_id' => 'required_if:mode,reply|filled',
         ]);
 
         // Custom error messages
@@ -323,24 +322,22 @@ class DashboardController extends Controller
             'item_type' => 'Item Type',
         ]);
 
-        $textBody = addslashes((string) $payload['text_body']);
-
         if ($validator->fails()) {
             return $this->returnData($validator->errors(), false);
         }
 
-        //preparing query
-        $query = "";
+        // Prepare the query
         if ($payload['mode'] == 'like') {
             $query = 'mutation {
                 like_update (update_id: ' . $payload['update_id'] . ') {
-                  id
+                id
                 }
             }';
         } else {
+            $textBody = json_encode($payload['text_body']);
             $query = 'mutation {
-                create_update(item_id : ' . $payload['item_id'] . ' parent_id:' . $payload['update_id'] . ' body: "' . $textBody . '") {
-                  id
+                create_update(item_id: ' . $payload['item_id'] . ', parent_id: ' . $payload['update_id'] . ', body: ' . $textBody . ') {
+                id
                 }
             }';
         }
@@ -348,9 +345,7 @@ class DashboardController extends Controller
         $response = $this->_getMondayData($query);
 
         if (isset($response['response']['data']['like_update']['id'])) {
-
-            //save the liked data to the database
-
+            // Save the liked data to the database
             $data = [
                 "item_type" => $payload['item_type'],
                 "update_id" => $payload['update_id'],
@@ -366,8 +361,8 @@ class DashboardController extends Controller
         }
 
         return $this->returnData($response, false);
-
     }
+
 
     public function getSubItemByEmail(Request $request)
     {
