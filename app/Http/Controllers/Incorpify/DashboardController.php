@@ -209,7 +209,6 @@ class DashboardController extends Controller
 
     public function update(Request $request)
     {
-
         $payload = $request->json()->all();
 
         // Validate the request
@@ -224,19 +223,19 @@ class DashboardController extends Controller
         }
 
         // Escape the text body content
-        $textBody = addslashes((string) $payload['text_body']);
+        $textBody = json_encode($payload['text_body']);
 
         // Build the query based on the presence of parent_id
         if (!empty($payload['parent_id'])) {
             $query = 'mutation {
-                create_update(item_id: ' . $payload['item_id'] . ', parent_id: ' . $payload['parent_id'] . ', body: "' . $textBody . '") {
+                create_update(item_id: ' . $payload['item_id'] . ', parent_id: ' . $payload['parent_id'] . ', body: ' . $textBody . ') {
                     id
                     body
                 }
             }';
         } else {
             $query = 'mutation {
-                create_update(item_id: ' . $payload['item_id'] . ', body: "' . $textBody . '") {
+                create_update(item_id: ' . $payload['item_id'] . ', body: ' . $textBody . ') {
                     id
                     body
                 }
@@ -247,10 +246,9 @@ class DashboardController extends Controller
         $response = $this->_getMondayData($query);
         if (isset($response['response']['data']['create_update']['id'])) {
 
+            // Save the current response 
 
-            //save the current response 
-
-            //search the subitems of the items by email address
+            // Search the subitems of the items by email address
             $column_id = "email__1";
             $description = "text";
             $required_action = "dup__of_description__1";
@@ -259,9 +257,9 @@ class DashboardController extends Controller
 
             $query = '{
             boards(ids: 1472103835) {
-              items_page(
+            items_page(
                 query_params: {rules: [{column_id: "' . $column_id . '", compare_value: ["' . $payload['email'] . '"], operator: contains_text}]}
-              ) {
+            ) {
                 items {
                         id
                         name
@@ -300,6 +298,7 @@ class DashboardController extends Controller
 
         return $this->returnData($response, false);
     }
+
 
     public function updateReplyOrLike(Request $request)
     {
