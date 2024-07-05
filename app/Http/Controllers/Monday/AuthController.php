@@ -140,6 +140,8 @@ class AuthController extends Controller
                     $status = "success";
                     // send verification email
                     $this->sendVerificationEmail($dataToSave);
+                    $dataToSave['domain'] = 'onboardify';
+                    $this->createMondayContacts($dataToSave);
                     //
                     return $this->thankssignup();
                 } elseif ($insertUserInDB['status'] == "already") {
@@ -1291,5 +1293,27 @@ class AuthController extends Controller
             "min"   => ":attribute should not be less then :min characters.",
             "regex" => "please enter phone number input field with + country code",
         ];
+    }
+
+    public function createMondayContacts ( $userData ){
+        if (!empty($userData)) {
+            $name        = !empty($userData['name']) ? $userData['name'] : '';
+            $companyName = !empty($userData['company_name']) ? $userData['company_name'] : '';
+            $phone       = !empty($userData['phone']) ? $userData['phone'] : '';
+            $email       = !empty($userData['email']) ? $userData['email'] : '';
+
+            $query = 'mutation {
+                create_item(
+                  board_id: 1494725738
+                  group_id: "topics"
+                  item_name: "' . $userData['name']. '"
+                  column_values: "{\"contact_company\":\"' . $userData['company_name']. '\",\"contact_phone\":\"' . $userData['phone'] . '\",\"contact_email\":{\"email\":\"' . $userData['email'] . '\" ,\"text\":\"' . $userData['email'] . '\"}}"
+                ) {
+                  id
+                }
+            }';
+
+          return  $boardsData = $this->_getMondayData($query);
+        }
     }
 }
