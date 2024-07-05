@@ -17,9 +17,11 @@
                         <select id="input-board-select" class="form-select" id="exampleInputEmail1"
                             aria-label="Default select example">
                             <option value="">-- Select Board --</option>
-                            @for ($j = 0; $j < count($boards); $j++)
-                                <option value="{{ $boards[$j]['id'] }}">{{ $boards[$j]['name'] }}</option>
-                            @endfor
+                            @if(!empty($boards))
+                                @for ($j = 0; $j < count($boards); $j++)
+                                    <option value="{{ $boards[$j]['id'] }}">{{ $boards[$j]['name'] }}</option>
+                                @endfor
+                            @endif
                         </select>
                     </div>
                     <div class="hiddenstep" class="" id="form-step-2">
@@ -115,23 +117,25 @@
             </div>
             <div class="form_wrapper border border-success p-4 primary-shadow">
                 <form id="status_view_form" class="text-start">
-                    @foreach ($coloursData as $key => $value)
-                        <?php $val = implode(', ', $value['val']); ?>
-                        <div class="mb-3">
-                            <h5 class="p-2 "
-                                style="border-radius:20%;border-left:10px solid {{ $value['rgb_code'] }};">Color:
-                                {{ $key }}</h3>
-                                <ul style="list-style: none" class="color-section">
-                                    <li>
-                                        <div class="form-floating">
-                                            <textarea name="{{ $key }}" current_color="{{ $key }}" class="form-control color-input"
-                                                placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px">{{ $val }}</textarea>
-                                            <label for="floatingTextarea2">Write Status</label>
-                                        </div>
-                                    </li>
-                                </ul>
-                        </div>
-                    @endforeach
+                    @if(!empty($coloursData))
+                        @foreach ($coloursData as $key => $value)
+                            <?php $val = implode(', ', $value['val']); ?>
+                            <div class="mb-3">
+                                <h5 class="p-2 "
+                                    style="border-radius:20%;border-left:10px solid {{ $value['rgb_code'] }};">Color:
+                                    {{ $key }}</h3>
+                                    <ul style="list-style: none" class="color-section">
+                                        <li>
+                                            <div class="form-floating">
+                                                <textarea name="{{ $key }}" current_color="{{ $key }}" class="form-control color-input"
+                                                    placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px">{{ $val }}</textarea>
+                                                <label for="floatingTextarea2">Write Status</label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                            </div>
+                        @endforeach
+                    @endif
                     <div class="d-grid gap-2 mt-5"> <button id="columns_details_submit" type="submit"
                             class="btn btn-success btn-lg">Submit</button>
                     </div>
