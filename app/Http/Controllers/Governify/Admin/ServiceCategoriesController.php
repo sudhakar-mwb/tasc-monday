@@ -416,4 +416,58 @@ class ServiceCategoriesController extends Controller
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
+
+    public function listOfOverallStatus(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $query = 'query {
+                    boards( ids: 1493464821) {
+                    id
+                    name
+                    state
+                    permissions
+                    board_kind
+                    columns {
+                              title
+                              id
+                              archived
+                              description
+                              settings_str
+                              title
+                              type
+                              width
+                          }
+                        }
+                        }';
+
+                $boardsData = $this->_getMondayData($query);
+
+                if (!empty($boardsData['response']['data']) && !empty($boardsData['response']['data']['boards'] && $boardsData['response']['data']['boards'][0]['columns'])) {
+                    foreach ($boardsData['response']['data']['boards'][0]['columns'] as $item) {
+                        if ($item['id'] === 'status__1') {
+                            $settings_str = json_decode($item['settings_str'], true);
+                            $manipulatedData = [];
+                            foreach ($settings_str['labels'] as $value => $label) {
+                                $manipulatedData[] = ['label' => $label, 'value' => $value];
+                            }
+                            break;
+                        }
+                    }
+                    if (!empty($manipulatedData)) {
+                        return response(json_encode(array('response' => $manipulatedData, 'status' => true, 'message' => "Governify overall status data.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify overall status data not fetch.")));
+                    }
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify overall status data not found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }
