@@ -28,7 +28,7 @@
                     @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
                     <input type="password" id="conf_password" class="form-control" placeholder="Confirm Password" name="conf_password" style="background: #ececec;border: 0;border-radius: 50px;flex-direction: column;gap: 10px;padding: 10px 15px;">
                     @error('password')<small class="text-danger text-start ms-2">{{ $message }}</small>@enderror
-                    <button id="change-password-button" class="btn btn-to-link btn-secondary mt-4 d-flex align-items-center" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% ); opacity: 0.65;" type="submit" disabled>
+                    <button id="change-password-button" class="btn btn-gradiants btn-to-link btn-secondary mt-4 d-flex align-items-center" style="border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;" type="submit" disabled>
                         <span style="font-family: Montserrat!important; font-size: 12px;font-weight:700;">
                             Change Password
                         </span>

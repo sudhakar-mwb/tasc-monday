@@ -47,7 +47,7 @@
             <script src="https://www.google.com/recaptcha/api.js" async defer></script>
             <div class="g-recaptcha" data-sitekey="6LdmFMQpAAAAAGwLfYZopzckKXOu0obCtpHW0obV" data-callback="recaptchaCallback"></div>
         </div>
-        <button id="signup-button" class="btn btn-to-link btn-secondary mt-4 d-flex align-items-center" type="submit" style="height:47px;background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient( to right, #28dd7a 0%, #185a9d 51%, #45ce43 100% ); opacity: 0.65;">
+        <button id="signup-button" class="btn btn-to-link btn-gradiants btn-secondary mt-4 d-flex align-items-center" type="submit" style="height:47px;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;">
             <span style="font-family: Montserrat!important; font-size: 12px;font-weight:700;">
                 Sign Up
             </span>

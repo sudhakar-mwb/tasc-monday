@@ -43,7 +43,7 @@
             <small class="text-danger text-start ms-2">{{ $message }}</small>
         @enderror
 
-        <button id="login-button" class="btn btn-to-link btn-secondary mt-4 d-flex align-items-center" type="button" style="background: #ececec;border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;background-image: linear-gradient(90deg,#28dd7a 0,#185a9d 51%,#45ce43);
+        <button id="login-button" class="btn btn-to-link btn-secondary btn-gradiants mt-4 d-flex align-items-center" type="button" style="border: 0;border-radius: 50px;gap: 10px;padding: 15px;display:flex;align-items:center;justify-content:center;
     transition: 0.5s;height:46px;">
             <span style="font-family: Montserrat!important;
     font-size: 12px;font-weight:700;">
