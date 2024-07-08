@@ -808,8 +808,10 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
+                    'user_id' => $getUser['id'] ?? "",
                     'email' => $getUser['email'] ?? "",
                     'name' => $getUser['name'] ?? "",
+                    'created_at' => $getUser['created_at'] ?? "",
                 ],
                 'message' => 'User details retrieved successfully.'
             ]);
