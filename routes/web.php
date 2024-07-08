@@ -195,6 +195,7 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api","isU
     Route::get('/uploadGovernifyDocument',   [GovernifyRequestTrackingController::class, 'uploadGovernifyDocument']);
 
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
+    Route::get('/serviceRequests',  [ServiceRequestsController::class, 'index']);
 });
 
 require __DIR__ . '/auth.php';
