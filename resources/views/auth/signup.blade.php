@@ -1,7 +1,8 @@
 @include('auth.login_header')
 <div class="inc-auth-container">
-<div class="container auth-container text-center">
-<main class="">
+<div class="container auth-container text-center" style="min-height:100vh;">
+<main class="w-100 d-flex align-items-center justify-content-center p-3" style="min-height:100vh;">
+    <div class="w-100 p-3">
     <div class="login-onboardify-header">
         @include('admin.headtitle')
     </div>
@@ -11,7 +12,7 @@
             <div class="alert alert-{{ $status }}" style="max-width:400px"> {{ $msg }}</div>
         </div>
     @endif
-    <div style="box-shadow: 0 2px 6px #0003;background:#fff;max-width:440px;padding:30px;margin:auto;">
+    <div style="box-shadow: 0 2px 6px #0003;background:#fff;max-width:440px;padding:30px;" class="mx-auto">
         <div>
             <img src="{{ asset('asset/tasc.svg') }}" alt="No Preview" style="max-width:220px;">
         </div>
@@ -62,6 +63,7 @@
             @include('includes.footer')
         </div>
     </form>
+
 </div>
 </main>
 </div>
@@ -148,7 +150,7 @@
         display:flex;
         align-items:center;
         justify-content:center;
-        height:100vh;
+        min-height:100vh;
     }
     .auth-container {
         /* min-height: 90vh; */
@@ -179,3 +181,12 @@
     min-width: 110px;
 }
 </style>
+
+
+
+
+
+
+
+
+
