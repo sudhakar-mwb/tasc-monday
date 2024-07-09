@@ -887,37 +887,38 @@ class DashboardController extends Controller
                 } else if ($request->isMethod('post')) {
                     // Handle POST request to save site settings
                     $input = $request->json()->all();
-                    $criteria = ['status' => 0];
                     $get_data = IncorpifySiteSettings::where('id', '=', 1)->first();
-
+    
                     $insert_array = [
                         "ui_settings" => json_encode($input['ui_settings']),
                         "meeting_link" => $input['meeting_link'] ?? null,
                         "created_at" => date("Y-m-d H:i:s"),
+                        "board_id" => $input['board_id'] ?? null,
                         "updated_at" => date("Y-m-d H:i:s")
                     ];
-
+    
                     $datatoUpdate = [];
                     if (isset($input['logo_image']) && $input['logo_image']) {
                         // Additional validation for base64 image
                         if (!$this->isValidBase64Image($input['logo_image'])) {
                             return response()->json(['response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png)."]);
                         }
-
+    
                         $imageData = $input['logo_image'];
                         list($type, $data) = explode(';', $imageData);
                         list(, $data) = explode(',', $data);
                         $data = base64_decode($data);
                         $extension = explode('/', mime_content_type($imageData))[1];
                         $timestamp = now()->timestamp;
-
+    
                         $updateFileName = $timestamp . '_' . $input['logo_name'];
                         \File::put(public_path('uploads/incorpify/' . $updateFileName), $data);
-
+    
                         $datatoUpdate['logo_name'] = $updateFileName;
+                        $datatoUpdate['board_id'] = $input['board_id'];
                         $imagePath = '/uploads/incorpify/' . $updateFileName;
                         $datatoUpdate['logo_location'] = \URL::to("/") . $imagePath;
-
+    
                         if ($get_data && $get_data->logo_name) {
                             $uploadedImagePath = public_path('uploads/incorpify/' . $get_data->logo_name);
                             // Check if the image file exists
@@ -927,19 +928,19 @@ class DashboardController extends Controller
                             }
                         }
                     }
-
+    
                     $datatoUpdate['ui_settings'] = $insert_array['ui_settings'];
                     $datatoUpdate['meeting_link'] = $insert_array['meeting_link'];
                     $datatoUpdate['status'] = 0;
                     $datatoUpdate['updated_at'] = date("Y-m-d H:i:s");
-
+    
                     if (empty($get_data)) {
                         $datatoUpdate['created_at'] = date("Y-m-d H:i:s");
                         $insert = IncorpifySiteSettings::create($datatoUpdate);
                     } else {
                         $insert = IncorpifySiteSettings::where('id', '=', 1)->update($datatoUpdate);
                     }
-
+    
                     if ($insert) {
                         return response()->json(['response' => [], 'status' => true, 'message' => "Incorpify Site Setting Updated Successfully."]);
                     } else {
@@ -955,6 +956,7 @@ class DashboardController extends Controller
             return response()->json(['response' => [], 'status' => false, 'message' => "Invalid User."]);
         }
     }
+    
 
     public function getLikes($item_type_id, $item_type)
     {
@@ -1060,6 +1062,31 @@ class DashboardController extends Controller
         $data = $request->all();
 
         return $data;
+    }
+
+    public function getBoardIds()
+    {
+        $query = "query {
+            boards(page: 1, limit: 99999) {
+              id
+              name
+            }
+        }";
+
+        try {
+            $responseData = $this->_getMondayData($query);
+
+            if(isset($responseData['response']['data']['boards'])) {
+                $responseData['response']['data']['message'] = "boards ids fetched successfully";
+                return $this->returnData($responseData['response']['data']);
+            } 
+
+            return $this->returnData($responseData, false);
+
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching board IDs'], 500);
+        }
     }
 
 
