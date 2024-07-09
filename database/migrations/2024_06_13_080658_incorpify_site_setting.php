@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('logo_location')->nullable();
             $table->string('meeting_link')->nullable();
             $table->integer('status')->default(0);
-            $table->string('domain')->nullable();
+            $table->string('domain_id')->nullable();
             $table->timestamps();
         });
     }
