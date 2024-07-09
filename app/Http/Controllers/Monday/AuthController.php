@@ -134,6 +134,7 @@ class AuthController extends Controller
                     'password'     => Hash::make(trim($input['password'])),
                     'board_id'     => 1393670128,
                 );
+               return $this->createMondayContacts($dataToSave);
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
                 if ($insertUserInDB['status'] == "success") {
                     $msg    = "User Created Successfully.";
