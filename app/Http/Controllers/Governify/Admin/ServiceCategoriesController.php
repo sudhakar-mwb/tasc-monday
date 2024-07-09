@@ -232,9 +232,9 @@ class ServiceCategoriesController extends Controller
                 $criteria = ['status' => 0];
                 $get_data = GovernifySiteSetting::where('id', '=', 1)->first();
 
-                // $this->validate($request, [
-                //     'ui_settings' => 'required|json',
-                // ], $this->getErrorMessages());
+                $this->validate($request, [
+                    'board_id' => 'required',
+                ], $this->getErrorMessages());
 
                 $insert_array = array(
                     "ui_settings" => $request->ui_settings,
@@ -273,6 +273,7 @@ class ServiceCategoriesController extends Controller
 
                 $datatoUpdate['ui_settings'] = json_encode(!empty($insert_array['ui_settings']) ? $insert_array['ui_settings'] : '');
                 $datatoUpdate['status'] = 0;
+                $datatoUpdate['board_id'] = $request['board_id'];
 
                 if (empty($get_data)) {
                     $insert = GovernifySiteSetting::where($criteria)->create($datatoUpdate);
@@ -463,6 +464,52 @@ class ServiceCategoriesController extends Controller
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify overall status data not found.")));
                 }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+    public function fetchAllBoards(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $page      = 1;
+                $tolalData  = 1000;
+                $after     = 'null';
+                do {
+                    $query = 'query {
+                boards (limit : ' . $tolalData . ', page : ' . $page . '){
+                id
+                name
+                state
+                permissions
+                board_kind
+            }
+        }';
+
+                    $boardsData = $this->_getMondayData($query);
+
+                    if (!empty($boardsData['response']['data']['boards'])) {
+                        // $page += $page;
+                        $page++;
+                    } else {
+                        $after = '';
+                    }
+                    $curr_data = isset($boardsData['response']['data']['boards']) ? $boardsData['response']['data']['boards'] : [];
+                    if (!empty($curr_data)) {
+                        if (count($curr_data))
+                            foreach ($curr_data as $item) {
+                                $mondayData[] = $item;
+                            }
+                    }
+                    $newResponse = $boardsData;
+                } while (!empty($after));
+                unset($newResponse['response']['data']['boards']);
+                $newResponse['response']['data']['boards'] = $mondayData;
+                return $newResponse;
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }

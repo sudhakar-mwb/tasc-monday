@@ -166,6 +166,10 @@ Route::group(['prefix' => "governify/admin", "middleware" => ["auth:api", "isSup
     Route::post('/serviceCategories/swap', [ServiceCategoriesController::class, 'swapServiceCategories']);
     Route::post('/rejectServiceCategoryMapping', [ServiceCategoriesController::class, 'rejectServiceCategoryMapping']);
     Route::get('/overallStatus', [ServiceCategoriesController::class, 'listOfOverallStatus']);
+    Route::post('/serviceCategories/swap',  [ServiceCategoriesController::class, 'swapServiceCategories']);
+    Route::post('/rejectServiceCategoryMapping',  [ServiceCategoriesController::class, 'rejectServiceCategoryMapping']);
+    Route::get('/overallStatus',  [ServiceCategoriesController::class, 'listOfOverallStatus']);
+    Route::get('/fetchAllBoards',  [ServiceCategoriesController::class, 'fetchAllBoards']);
 
     Route::post('/governifySiteSetting', [ServiceCategoriesController::class, 'governifySiteSetting'])->name('serviceCategories.governifySiteSetting');
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
