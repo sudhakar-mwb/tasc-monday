@@ -232,9 +232,9 @@ class ServiceCategoriesController extends Controller
                 $criteria = ['status' => 0];
                 $get_data = GovernifySiteSetting::where('id', '=', 1)->first();
 
-                // $this->validate($request, [
-                //     'ui_settings' => 'required|json',
-                // ], $this->getErrorMessages());
+                $this->validate($request, [
+                    'board_id' => 'required',
+                ], $this->getErrorMessages());
 
                 $insert_array = array(
                     "ui_settings" => $request->ui_settings,
@@ -273,6 +273,7 @@ class ServiceCategoriesController extends Controller
 
                 $datatoUpdate['ui_settings'] = json_encode(!empty($insert_array['ui_settings']) ? $insert_array['ui_settings'] : '');
                 $datatoUpdate['status'] = 0;
+                $datatoUpdate['board_id'] = $request['board_id'];
 
                 if (empty($get_data)) {
                     $insert = GovernifySiteSetting::where($criteria)->create($datatoUpdate);
