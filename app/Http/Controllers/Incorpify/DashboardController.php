@@ -704,8 +704,40 @@ class DashboardController extends Controller
         return $this->returnData($response, false);
     }
 
+    public function getBoardId()
+    {
+        try {
+            $siteSettings = IncorpifySiteSettings::select('board_id')->where('id', '=', 1)->first();
+            if ($siteSettings) {
+                return (['board_id' => $siteSettings->board_id, 'status' => true, 'message' => "Board ID fetched successfully."]);
+            } else {
+                return (['response' => null, 'status' => false, 'message' => "Site settings not found."]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['response' => null, 'status' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
     public function getSubItemDetailsById(Request $request)
     {
+
+        $data = $this->getBoardId();
+        $board_id = $data['board_id'] ?? null;
+
+        if($board_id==null && empty($board_id)) {
+            return $this->returnData("board id not set", false);
+        }
+
+        echo '<pre>';
+        print_r($data);
+        echo '[Line]:     ' . __LINE__ . "\n";
+        echo '[Function]: ' . __FUNCTION__ . "\n";
+        echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
+        echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
+        echo '[File]:     ' . __FILE__ . "\n";
+        die;
+        
+        
 
         $data = [
             "id" => $request->id
@@ -915,7 +947,6 @@ class DashboardController extends Controller
                         \File::put(public_path('uploads/incorpify/' . $updateFileName), $data);
     
                         $datatoUpdate['logo_name'] = $updateFileName;
-                        $datatoUpdate['board_id'] = $input['board_id'];
                         $imagePath = '/uploads/incorpify/' . $updateFileName;
                         $datatoUpdate['logo_location'] = \URL::to("/") . $imagePath;
     
@@ -928,6 +959,8 @@ class DashboardController extends Controller
                             }
                         }
                     }
+
+                    $datatoUpdate['board_id'] = $input['board_id'];
     
                     $datatoUpdate['ui_settings'] = $insert_array['ui_settings'];
                     $datatoUpdate['meeting_link'] = $insert_array['meeting_link'];
