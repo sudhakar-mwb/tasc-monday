@@ -716,27 +716,20 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             return response()->json(['response' => null, 'status' => false, 'message' => $e->getMessage()]);
         }
+
+
+
+        // $data = $this->getBoardId();
+        // $board_id = $data['board_id'] ?? null;
+
+        // if($board_id==null && empty($board_id)) {
+        //     return $this->returnData("board id not set", false);
+        // }s
     }
 
     public function getSubItemDetailsById(Request $request)
     {
 
-        $data = $this->getBoardId();
-        $board_id = $data['board_id'] ?? null;
-
-        if($board_id==null && empty($board_id)) {
-            return $this->returnData("board id not set", false);
-        }
-
-        echo '<pre>';
-        print_r($data);
-        echo '[Line]:     ' . __LINE__ . "\n";
-        echo '[Function]: ' . __FUNCTION__ . "\n";
-        echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
-        echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
-        echo '[File]:     ' . __FILE__ . "\n";
-        die;
-        
         
 
         $data = [
