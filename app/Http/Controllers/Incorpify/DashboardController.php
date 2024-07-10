@@ -1115,5 +1115,40 @@ class DashboardController extends Controller
         }
     }
 
+    public function getBoardColumnsIds(Request $request) {
+        // Validate the request to ensure 'id' is set
+        if (!isset($request->id)) {
+            return $this->returnData("invalid board id found", false);
+        }
+    
+        // Correcting the variable name to $board_id
+        $board_id = $request->id;
+    
+        // Construct the GraphQL query
+        $query = "{
+            boards(ids: $board_id) {
+                columns {
+                    id
+                    title
+                    description
+                    type
+                    archived
+                    width
+                }
+            }s
+        }";
+    
+        // Fetch data using the _getMondayData method
+        $responseData = $this->_getMondayData($query);
+    
+        // Check if columns data is present in the response
+        if (isset($responseData['response']['data']['boards'][0]['columns'])) {
+            return $this->returnData($responseData['response']['data']['boards'][0]['columns']);
+        } else {
+            return $this->returnData("No columns found for the given board id.", false);
+        }
+    }
+    
+
 
 }
