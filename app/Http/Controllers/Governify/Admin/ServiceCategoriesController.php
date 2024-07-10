@@ -422,9 +422,11 @@ class ServiceCategoriesController extends Controller
     {
         try {
             $userId = $this->verifyToken()->getData()->id;
+            $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
+            $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
             if ($userId) {
                 $query = 'query {
-                    boards( ids: 1493464821) {
+                    boards( ids: '.$boardId.') {
                     id
                     name
                     state
