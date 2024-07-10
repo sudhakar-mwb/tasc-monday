@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Governify\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\GovernifySiteSetting;
 use App\Models\MondayUsers;
 use App\Traits\MondayApis;
 use Illuminate\Http\Request;
@@ -54,8 +55,10 @@ class GovernifyRequestTrackingController extends Controller
         $limit  = !empty($request->limit)  ? $request->limit  : 10;
         $cursor = !empty($cursorData) ? $cursorData : 'cursor:'.'null';
         //Invalid request: You must provide either a 'query_params' or a 'cursor', but not both. Use 'query_params' for the initial request and 'cursor' for paginated requests.
+        $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
+        $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
         $query = 'query {
-            boards(limit: 500, ids: 1493464821) {
+            boards(limit: 500, ids: '.$boardId.') {
             id
             name
             state
@@ -256,7 +259,8 @@ class GovernifyRequestTrackingController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $boardId = 1493464821;
+                $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
+                $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
 
                 $after      = 'ddd';
                 $tolalData  = 500;
@@ -526,9 +530,11 @@ class GovernifyRequestTrackingController extends Controller
                 $after      = 'ddd';
                 $tolalData  = 200;
                 $cursor     = 'null';
+                $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
+                $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
                 do {
                     $query = 'query {
-                boards( ids: 1493464821) {
+                boards( ids: '.$boardId.') {
                 id
                 name
                 state
