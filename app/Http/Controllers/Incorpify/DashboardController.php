@@ -1135,7 +1135,7 @@ class DashboardController extends Controller
                     archived
                     width
                 }
-            }s
+            }
         }";
     
         // Fetch data using the _getMondayData method
