@@ -211,6 +211,13 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
 
 Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isSuperAdmin", "isAdmin"]], function () {
     Route::get('/userListing', [OnboardifyDashboardController::class, 'userListing']);
+    Route::post('/assignBoard', [OnboardifyDashboardController::class, 'assignBoard']);
+    Route::delete('/userDelete/{id}', [OnboardifyDashboardController::class, 'userDelete']);
+
+    Route::get('/getboardVisibilityMapping', [OnboardifyDashboardController::class, 'getboardVisibilityMapping']);
+    Route::post('/boardVisibilityMapping', [OnboardifyDashboardController::class, 'boardVisibilityMapping']);
+    Route::get('/getBoardColourMapping', [OnboardifyDashboardController::class, 'getBoardColourMapping']);
+    Route::post('/boardColourMapping', [OnboardifyDashboardController::class, 'boardColourMapping']);
 });
 
 Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {

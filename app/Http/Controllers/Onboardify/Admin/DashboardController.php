@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Onboardify\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BoardColumnMappings;
+use App\Models\ColourMappings;
+use App\Models\GovernifyServiceCategorie;
 use App\Models\MondayUsers;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
@@ -11,14 +14,15 @@ class DashboardController extends Controller
 {
     use MondayApis;
 
-    public function userListing (Request $request){
+    public function userListing(Request $request)
+    {
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $mondayUsers = MondayUsers::latest()->get();
+                $mondayUsers = MondayUsers::get();
                 if (!empty($mondayUsers)) {
                     return response(json_encode(array('response' => $mondayUsers, 'status' => true, 'message' => "Users data.")));
-                }else{
+                } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Users data not found.")));
                 }
             } else {
@@ -28,4 +32,215 @@ class DashboardController extends Controller
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
-}   
+
+    public function assignBoard(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $input = $request->json()->all();
+                $this->validate($request, [
+                    'user_id'   => 'required',
+                    'board_id'  => 'required',
+                    'email_id'  => 'required',
+                ], $this->getErrorMessages());
+                $response = MondayUsers::where('id', $input['user_id'])->update(['board_id' => $input['board_id']]);
+                if (!empty($response)) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Board assign to user successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Something went wrong during assign board to user.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function userDelete($id)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $mondayUsersData =  MondayUsers::find($id);
+                if (empty($mondayUsersData)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "User Not Found.")));
+                }
+                $deleteMondayUsers = MondayUsers::where('id', $id)->delete();
+                if ($deleteMondayUsers > 0) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "User Deleted Successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "User Not Deleted.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function getErrorMessages()
+    {
+        return [
+            "required" => ":attribute is required.",
+            "max"   => ":attribute should not be more then :max characters.",
+            "min"   => ":attribute should not be less then :min characters."
+        ];
+    }
+
+    public function getboardVisibilityMapping(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $board_id = $request->query('board_id');
+                $email    = $request->query('email');
+                if (!empty($board_id) && !empty($email)) {
+                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id, 'email' => $email])->get();
+                    if (!empty($BoardColumnMappingData)) {
+                        return response(json_encode(array('response' => $BoardColumnMappingData, 'status' => true, 'message' => "Board Column Mppaing Data.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mppaing Data Not Found.")));
+                    }
+                } elseif (!empty($board_id) && empty($email)) {
+                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id, 'email' => ""])->get();
+                    if (!empty($BoardColumnMappingData)) {
+                        return response(json_encode(array('response' => $BoardColumnMappingData, 'status' => true, 'message' => "Board Column Mppaing Data.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mppaing Data Not Found.")));
+                    }
+                } elseif (empty($board_id) && !empty($email)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Currently board not selected first select the board.")));
+                } elseif (empty($board_id) && empty($email)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Currently board not selected first select the board.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function boardVisibilityMapping(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $data  = $request->getContent();
+                if (!empty($data)) {
+                    $dataArray = json_decode($data, true);
+
+                    $datatoUpdate = [
+                        'columns' => $data,
+                    ];
+
+                    if (!empty($dataArray['email'])) {
+                        $criteria = [
+                            'board_id' => $dataArray['board'],
+                            'email'    => $dataArray['email'],
+                        ];
+                        $updateData = [
+                            'columns' => $datatoUpdate['columns'],
+                            'email'   => $dataArray['email'],
+                        ];
+                        $user     = BoardColumnMappings::where($criteria)->get();
+                        $response = BoardColumnMappings::updateOrCreate($criteria, $updateData);
+
+                        if ($user && $response->wasChanged()) {
+                            return response(json_encode(array('response' => true, 'status' => true, 'message' => "Board column mapping successfully updated.")));
+                        } else {
+                            return response(json_encode(array('response' => true, 'status' => true, 'message' => "Board column mapping updated.")));
+                        }
+                    } else {
+                        $criteria = [
+                            'board_id' => $dataArray['board'],
+                            'email' => "",
+                        ];
+                        $user = BoardColumnMappings::where($criteria)->get();
+                        $response = BoardColumnMappings::updateOrCreate($criteria, $datatoUpdate);
+
+                        if ($user && $response->wasChanged()) {
+                            return response(json_encode(array('response' => true, 'status' => true, 'message' => "Board column mapping successfully updated.")));
+                        } else {
+                            return response(json_encode(array('response' => true, 'status' => true, 'message' => "Board column mapping updated.")));
+                        }
+                    }
+                    return response(json_encode(array('response' => true, 'status' => false, 'message' => "Something went wrong during board column mapping.")));
+                } else {
+                    return response(json_encode(array('response' => true, 'status' => false, 'message' => "Board column mapping data not received.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function boardColourMapping(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $data  = $request->getContent();
+                if (!empty($data)) {
+                    $dataArray = json_decode($data, true);
+                    foreach ($dataArray as $key => $value) {
+                        $datatoUpdate = [
+                            'colour_value' => json_encode($value),
+                        ];
+                        $criteria = [
+                            'colour_name' => $key,
+                        ];
+                        $colourMappingDBData = ColourMappings::find($criteria['colour_name']);
+                        $response = ColourMappings::updateOrCreate($criteria, $datatoUpdate);
+                    }
+
+                    // Check if the record was updated
+                    if ($colourMappingDBData && $response->wasChanged()) {
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Status Colour mapping updated successfully.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Status Colour mapping updated successfully.")));
+                    }
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "something went wrong during status colour mapping.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Status Colour mapping data not received.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function getBoardColourMapping()
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $colourMappingsData = ColourMappings::get();
+                if (!empty($colourMappingsData)) {
+                    $data = json_decode($colourMappingsData, true);
+
+                    $coloursData = array();
+                    foreach ($data as $record) {
+                        $coloursData[] = [
+                            $record['colour_name'] =>  json_decode($record['colour_value'], true),
+                        ];
+                    }
+                    return response(json_encode(array('response' => $coloursData, 'status' => true, 'message' => "Status Colour Mapping data.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Status Colour mapping data not found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+}
