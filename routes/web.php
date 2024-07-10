@@ -13,6 +13,7 @@ use App\Http\Controllers\Governify\Admin\ServiceRequestFormsController;
 use App\Http\Controllers\Governify\Admin\ServiceRequestsController;
 use App\Http\Controllers\Governify\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Governify\Customer\GovernifyRequestTrackingController;
+use App\Http\Controllers\Onboardify\Admin\DashboardController as OnboardifyDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -206,6 +207,14 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
 
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
     Route::get('/serviceRequests', [ServiceRequestsController::class, 'index']);
+});
+
+Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isSuperAdmin", "isAdmin"]], function () {
+    Route::get('/userListing', [OnboardifyDashboardController::class, 'userListing']);
+});
+
+Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {
+
 });
 
 require __DIR__ . '/auth.php';
