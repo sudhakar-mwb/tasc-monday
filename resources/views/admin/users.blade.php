@@ -81,13 +81,15 @@ if (isset($_GET['success'])) {
                                     class="board_change form-select m-0 rounded-0 h-100 "
                                     aria-label="Default select example">
                                     <option class=" fs-5">Not Assigned</option>
-                                    @if (count($boardsData['boards']) > 0)
-                                        @foreach ($boardsData['boards'] as $board)
-                                            <option class=" fs-5" value="{{ $board['id'] }}"
-                                                {{ $board['id'] == $user->board_id ? 'selected' : '' }}>
-                                                {{ $board['name'] }}
-                                            </option>
-                                        @endforeach
+                                    @if (!empty($boardsData)) 
+                                        @if (count($boardsData['boards']) > 0)
+                                            @foreach ($boardsData['boards'] as $board)
+                                                <option class=" fs-5" value="{{ $board['id'] }}"
+                                                    {{ $board['id'] == $user->board_id ? 'selected' : '' }}>
+                                                    {{ $board['name'] }}
+                                                </option>
+                                            @endforeach
+                                        @endif
                                     @endif
                                 </select></td>
                             <td>{{ $user->created_at }}</td>

@@ -42,7 +42,7 @@ class AuthController extends Controller
     {
         $msg        = '';
         $status     = '';
-        $heading    = "Log In";
+        $heading    = "Onboardify";
         $subheading = "";
         $this->setSetting();
         if ($request->isMethod('post')) {
@@ -134,12 +134,15 @@ class AuthController extends Controller
                     'password'     => Hash::make(trim($input['password'])),
                     'board_id'     => 1393670128,
                 );
+            //    return $this->createMondayContacts($dataToSave);
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
                 if ($insertUserInDB['status'] == "success") {
                     $msg    = "User Created Successfully.";
                     $status = "success";
                     // send verification email
                     $this->sendVerificationEmail($dataToSave);
+                    $dataToSave['domain'] = 'onboardify';
+                    $this->createMondayContacts($dataToSave);
                     //
                     return $this->thankssignup();
                 } elseif ($insertUserInDB['status'] == "already") {
@@ -152,8 +155,8 @@ class AuthController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
         }
-        $heading = "Sign Up";
-        $subheading = "We’re excited to have you join us! To complete your sign-up, please fill in your information below.";
+        $heading = "Onboardify";
+        $subheading = "";
         return view('auth.signup', compact('heading', 'subheading', 'msg', 'status'),);
     }
     public function forgot(Request $request)
@@ -161,8 +164,8 @@ class AuthController extends Controller
         $userDetails = auth()->user();
         $msg        = '';
         $status     = '';
-        $heading    = "Forgot Password";
-        $subheading = "Please provide the email associated with your account.";
+        $heading    = "Onboardify";
+        $subheading = "";
         $this->setSetting();
         if ($request->isMethod('post')) {
             $input = $request->all();
@@ -462,7 +465,7 @@ class AuthController extends Controller
 
     public function createNewPassword(Request $request)
     {
-        $heading       = "Enter New Password";
+        $heading       = "Onboardify";
         $decryptedData = Crypt::decrypt($request->token);
         $decryptedData = json_decode($decryptedData, true);
         $this->setSetting();
@@ -471,15 +474,16 @@ class AuthController extends Controller
 
             if (date("Y-m-d H:i:s") <= $decryptedData['email_exp'] && !empty($getUser->email_exp)) {
                 if (!empty($decryptedData['email'])) {
-                    $subheading = 'for ' . $decryptedData['email'];
+                    // $subheading = 'for ' . $decryptedData['email'];
+                    $subheading = '';
                 }
                 $msg    = '';
                 $status = '';
                 $token  = $request->token;
                 return view('auth.create_password', compact('heading', 'subheading', 'msg', 'status', 'token'));
             } else {
-                $heading    = "Forgot Password";
-                $subheading = "Please provide the email associated with your account.";
+                $heading    = "Onboardify";
+                $subheading = "";
                 $msg    = 'Your forgot password link is expired. Please re-create a new link';
                 $status = 'danger';
                 return view('auth.forgot', compact('heading', 'subheading', 'msg', 'status'),);
@@ -805,8 +809,10 @@ class AuthController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
+                    'user_id' => $getUser['id'] ?? "",
                     'email' => $getUser['email'] ?? "",
                     'name' => $getUser['name'] ?? "",
+                    'created_at' => $getUser['created_at'] ?? "",
                 ],
                 'message' => 'User details retrieved successfully.'
             ]);
@@ -855,6 +861,7 @@ class AuthController extends Controller
                     // send verification email
                     $dataToSave['domain'] = trim($input['domain']);
                     $this->sendVerificationEmailToUser($dataToSave);
+                    $this->createMondayContacts($dataToSave);
                     return response(json_encode(array('response' => [], 'status' => true, 'message' => "Just verify your email address to confirm that you want to use this email.")));
                     //
                     return $this->thankssignup();
@@ -1290,5 +1297,71 @@ class AuthController extends Controller
             "min"   => ":attribute should not be less then :min characters.",
             "regex" => "please enter phone number input field with + country code",
         ];
+    }
+
+    public function createMondayContacts ( $userData ){
+        if (!empty($userData)) {
+            $name        = !empty($userData['name']) ? $userData['name'] : '';
+            $companyName = !empty($userData['company_name']) ? $userData['company_name'] : '';
+            $phone       = !empty($userData['phone']) ? $userData['phone'] : '';
+            $email       = !empty($userData['email']) ? $userData['email'] : '';
+
+            if (!empty($companyName)) {
+                $query = 'query {
+                    boards( ids: 1494725740) {
+                    id
+                    name
+                    state
+                    permissions
+                    board_kind
+                    items_page (query_params: {rules: [{column_id: "name", compare_value: ["'.$companyName.'"], operator: contains_text}]}) {
+                              items {
+                                  created_at
+                                  creator_id
+                                  email
+                                  id
+                                  name
+                                  relative_link
+                                  state
+                                  updated_at
+                                  url
+                              }
+                          }
+                  }
+                }';
+                $boardsData = $this->_getMondayData($query);
+
+                if (!empty($boardsData['response']['data']) && !empty($boardsData['response']['data']['boards']) && !empty($boardsData['response']['data']['boards'][0]['items_page']) && !empty($boardsData['response']['data']['boards'][0]['items_page']['items']) && !empty($boardsData['response']['data']['boards'][0]['items_page']['items'][0]['id']) ){
+                    $companyId = $boardsData['response']['data']['boards'][0]['items_page']['items'][0]['id'];
+                }else{
+                    $companyCreate = 'mutation {
+                        create_item(
+                          board_id: 1494725740
+                          group_id: "topics"
+                          item_name: "'.$companyName.'"
+                        ) {
+                          id
+                        }
+                      }';
+                      $companyData = $this->_getMondayData($companyCreate);
+                      if (!empty($companyData['response']['data']) && !empty($companyData['response']['data']['create_item'])  && !empty($companyData['response']['data']['create_item']['id']) ) {
+                        $companyId = $companyData['response']['data']['create_item']['id'];
+                      }
+                }
+            }
+            $companyId = !empty($companyId) ? $companyId : '';
+            $query = 'mutation {
+                create_item(
+                  board_id: 1494725738
+                  group_id: "topics"
+                  item_name: "' . $name. '"
+                  column_values: "{\"contact_account\":{\"item_ids\":['.$companyId.']},\"contact_phone\":\"' . $phone . '\",\"contact_email\":{\"email\":\"' . $email . '\" ,\"text\":\"' . $email . '\"}}"
+                ) {
+                  id
+                }
+            }';
+
+          return  $boardsData = $this->_getMondayData($query);
+        }
     }
 }

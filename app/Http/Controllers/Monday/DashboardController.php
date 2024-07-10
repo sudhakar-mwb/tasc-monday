@@ -456,7 +456,14 @@ class DashboardController extends Controller
             }
           }
         }';
-    $boardsData = $this->_get($query)['response']['data'];
+    $boardsData = $this->_get($query)['response'];
+    if (isset($boardsData['data']) && !empty($boardsData['data'])) {
+      $boardsData =  $boardsData['data'];
+    }else{
+      $heading = "Board Visibility";
+      $subheading = "Column restrictions can be set per board by selecting respective column boards.";
+      return view('admin.visiblility', compact('heading', 'subheading'));
+    }
 
     if (!empty($boardsData['boards'])) {
       $idArray = array();
@@ -466,6 +473,12 @@ class DashboardController extends Controller
     }
 
     $colourMappingsData = ColourMappings::get();
+    $mondayUsers = MondayUsers::where('role', '=', '0')->whereNotNull('board_id')->latest()->get();
+    if (!empty($mondayUsers)) {
+      $mondayUsersData = $mondayUsers;
+    }else{
+      $mondayUsersData = '';
+    }
 
     if (!empty($colourMappingsData)) {
       $data = json_decode($colourMappingsData, true);
@@ -480,7 +493,7 @@ class DashboardController extends Controller
     // $boards=['3454','5345','34553','5345','3553','3455','4355','34553','35345'];
     $boards = $idArray;
     $subheading = "Column restrictions can be set per board by selecting respective column boards.";
-    return view('admin.visiblility', compact('heading', 'subheading', 'boards', 'coloursData'));
+    return view('admin.visiblility', compact('heading', 'subheading', 'boards', 'coloursData', 'mondayUsersData'));
   }
 
   public function userslist(Request $request)
@@ -515,7 +528,12 @@ class DashboardController extends Controller
               }
             }';
     // dd($this->_get($query)['response']);
-    $boardsData = $this->_get($query)['response']['data'];
+    $boardsData = $this->_get($query)['response'];
+    if (isset($boardsData['data']) && !empty($boardsData['data'])) {
+      $boardsData =  $boardsData['data'];
+    }else{
+      return view('admin.users', compact('heading', 'subheading', 'mondayUsers', 'boardsData'));
+    }
     if ($request->isMethod('post')) {
       if (!empty(auth()->user()) && (auth()->user()->role == 2 || auth()->user()->role == 1)) {
         if (!empty($request->board_id) && !empty($request->user_id)) {
@@ -650,14 +668,35 @@ class DashboardController extends Controller
       $datatoUpdate = [
         'columns' => $data,
       ];
-      $criteria = [
-        'board_id' => $dataArray['board'],
+
+
+      if (!empty($dataArray['email'])) {
+        $criteria = [
+          'board_id' => $dataArray['board'],
+          'email' => $dataArray['email'],
+        ];
+        $updateData = [
+          'columns' => $datatoUpdate['columns'],
+          'email'   => $dataArray['email'],
       ];
+        $user     = BoardColumnMappings::find($criteria);
+        $response = BoardColumnMappings::updateOrCreate($criteria, $updateData);
+      }else{
+        $criteria = [
+          'board_id' => $dataArray['board'],
+          'email' => "",
+        ];
+        $user = BoardColumnMappings::find($criteria['board_id']);
+        $response = BoardColumnMappings::updateOrCreate($criteria, $datatoUpdate);
+      }
+      // $criteria = [
+      //   'board_id' => $dataArray['board'],
+      // ];
 
       // Retrieve the existing record
-      $user = BoardColumnMappings::find($criteria['board_id']);
+      // $user = BoardColumnMappings::find($criteria['board_id']);
 
-      $response = BoardColumnMappings::updateOrCreate($criteria, $datatoUpdate);
+      // $response = BoardColumnMappings::updateOrCreate($criteria, $datatoUpdate);
 
       // Check if the record was updated
       if ($user && $response->wasChanged()) {

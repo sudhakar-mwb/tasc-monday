@@ -209,7 +209,6 @@ class DashboardController extends Controller
 
     public function update(Request $request)
     {
-
         $payload = $request->json()->all();
 
         // Validate the request
@@ -224,19 +223,19 @@ class DashboardController extends Controller
         }
 
         // Escape the text body content
-        $textBody = addslashes((string) $payload['text_body']);
+        $textBody = json_encode($payload['text_body']);
 
         // Build the query based on the presence of parent_id
         if (!empty($payload['parent_id'])) {
             $query = 'mutation {
-                create_update(item_id: ' . $payload['item_id'] . ', parent_id: ' . $payload['parent_id'] . ', body: "' . $textBody . '") {
+                create_update(item_id: ' . $payload['item_id'] . ', parent_id: ' . $payload['parent_id'] . ', body: ' . $textBody . ') {
                     id
                     body
                 }
             }';
         } else {
             $query = 'mutation {
-                create_update(item_id: ' . $payload['item_id'] . ', body: "' . $textBody . '") {
+                create_update(item_id: ' . $payload['item_id'] . ', body: ' . $textBody . ') {
                     id
                     body
                 }
@@ -247,10 +246,9 @@ class DashboardController extends Controller
         $response = $this->_getMondayData($query);
         if (isset($response['response']['data']['create_update']['id'])) {
 
+            // Save the current response 
 
-            //save the current response 
-
-            //search the subitems of the items by email address
+            // Search the subitems of the items by email address
             $column_id = "email__1";
             $description = "text";
             $required_action = "dup__of_description__1";
@@ -259,9 +257,9 @@ class DashboardController extends Controller
 
             $query = '{
             boards(ids: 1472103835) {
-              items_page(
+            items_page(
                 query_params: {rules: [{column_id: "' . $column_id . '", compare_value: ["' . $payload['email'] . '"], operator: contains_text}]}
-              ) {
+            ) {
                 items {
                         id
                         name
@@ -301,18 +299,18 @@ class DashboardController extends Controller
         return $this->returnData($response, false);
     }
 
+
     public function updateReplyOrLike(Request $request)
     {
-
         $payload = $request->json()->all();
 
-        //validate the request
+        // Validate the request
         $validator = Validator::make($request->all(), [
             'mode' => 'required|in:like,reply',
-            'update_id' => 'required',
-            'item_type' => $request->mode == 'like' ? 'required_if:mode,like' : '',
-            'text_body' => $request->mode == 'reply' ? 'required_if:mode,reply' : '',
-            'item_id' => $request->mode == 'reply' ? 'required_if:mode,reply' : '',
+            'update_id' => 'required|filled',
+            'item_type' => 'required_if:mode,like|filled',
+            'text_body' => 'required_if:mode,reply|filled',
+            'item_id' => 'required_if:mode,reply|filled',
         ]);
 
         // Custom error messages
@@ -328,18 +326,18 @@ class DashboardController extends Controller
             return $this->returnData($validator->errors(), false);
         }
 
-        //preparing query
-        $query = "";
+        // Prepare the query
         if ($payload['mode'] == 'like') {
             $query = 'mutation {
                 like_update (update_id: ' . $payload['update_id'] . ') {
-                  id
+                id
                 }
             }';
         } else {
+            $textBody = json_encode($payload['text_body']);
             $query = 'mutation {
-                create_update(item_id : ' . $payload['item_id'] . ' parent_id:' . $payload['update_id'] . ' body: "' . $payload['text_body'] . '") {
-                  id
+                create_update(item_id: ' . $payload['item_id'] . ', parent_id: ' . $payload['update_id'] . ', body: ' . $textBody . ') {
+                id
                 }
             }';
         }
@@ -347,9 +345,7 @@ class DashboardController extends Controller
         $response = $this->_getMondayData($query);
 
         if (isset($response['response']['data']['like_update']['id'])) {
-
-            //save the liked data to the database
-
+            // Save the liked data to the database
             $data = [
                 "item_type" => $payload['item_type'],
                 "update_id" => $payload['update_id'],
@@ -365,8 +361,8 @@ class DashboardController extends Controller
         }
 
         return $this->returnData($response, false);
-
     }
+
 
     public function getSubItemByEmail(Request $request)
     {
@@ -708,8 +704,33 @@ class DashboardController extends Controller
         return $this->returnData($response, false);
     }
 
+    public function getBoardId()
+    {
+        try {
+            $siteSettings = IncorpifySiteSettings::select('board_id')->where('id', '=', 1)->first();
+            if ($siteSettings) {
+                return (['board_id' => $siteSettings->board_id, 'status' => true, 'message' => "Board ID fetched successfully."]);
+            } else {
+                return (['response' => null, 'status' => false, 'message' => "Site settings not found."]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['response' => null, 'status' => false, 'message' => $e->getMessage()]);
+        }
+
+
+
+        // $data = $this->getBoardId();
+        // $board_id = $data['board_id'] ?? null;
+
+        // if($board_id==null && empty($board_id)) {
+        //     return $this->returnData("board id not set", false);
+        // }s
+    }
+
     public function getSubItemDetailsById(Request $request)
     {
+
+        
 
         $data = [
             "id" => $request->id
@@ -891,37 +912,37 @@ class DashboardController extends Controller
                 } else if ($request->isMethod('post')) {
                     // Handle POST request to save site settings
                     $input = $request->json()->all();
-                    $criteria = ['status' => 0];
                     $get_data = IncorpifySiteSettings::where('id', '=', 1)->first();
-
+    
                     $insert_array = [
                         "ui_settings" => json_encode($input['ui_settings']),
                         "meeting_link" => $input['meeting_link'] ?? null,
                         "created_at" => date("Y-m-d H:i:s"),
+                        "board_id" => $input['board_id'] ?? null,
                         "updated_at" => date("Y-m-d H:i:s")
                     ];
-
+    
                     $datatoUpdate = [];
                     if (isset($input['logo_image']) && $input['logo_image']) {
                         // Additional validation for base64 image
                         if (!$this->isValidBase64Image($input['logo_image'])) {
                             return response()->json(['response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png)."]);
                         }
-
+    
                         $imageData = $input['logo_image'];
                         list($type, $data) = explode(';', $imageData);
                         list(, $data) = explode(',', $data);
                         $data = base64_decode($data);
                         $extension = explode('/', mime_content_type($imageData))[1];
                         $timestamp = now()->timestamp;
-
+    
                         $updateFileName = $timestamp . '_' . $input['logo_name'];
                         \File::put(public_path('uploads/incorpify/' . $updateFileName), $data);
-
+    
                         $datatoUpdate['logo_name'] = $updateFileName;
                         $imagePath = '/uploads/incorpify/' . $updateFileName;
                         $datatoUpdate['logo_location'] = \URL::to("/") . $imagePath;
-
+    
                         if ($get_data && $get_data->logo_name) {
                             $uploadedImagePath = public_path('uploads/incorpify/' . $get_data->logo_name);
                             // Check if the image file exists
@@ -932,18 +953,20 @@ class DashboardController extends Controller
                         }
                     }
 
+                    $datatoUpdate['board_id'] = $input['board_id'];
+    
                     $datatoUpdate['ui_settings'] = $insert_array['ui_settings'];
                     $datatoUpdate['meeting_link'] = $insert_array['meeting_link'];
                     $datatoUpdate['status'] = 0;
                     $datatoUpdate['updated_at'] = date("Y-m-d H:i:s");
-
+    
                     if (empty($get_data)) {
                         $datatoUpdate['created_at'] = date("Y-m-d H:i:s");
                         $insert = IncorpifySiteSettings::create($datatoUpdate);
                     } else {
                         $insert = IncorpifySiteSettings::where('id', '=', 1)->update($datatoUpdate);
                     }
-
+    
                     if ($insert) {
                         return response()->json(['response' => [], 'status' => true, 'message' => "Incorpify Site Setting Updated Successfully."]);
                     } else {
@@ -959,6 +982,7 @@ class DashboardController extends Controller
             return response()->json(['response' => [], 'status' => false, 'message' => "Invalid User."]);
         }
     }
+    
 
     public function getLikes($item_type_id, $item_type)
     {
@@ -1064,6 +1088,31 @@ class DashboardController extends Controller
         $data = $request->all();
 
         return $data;
+    }
+
+    public function getBoardIds()
+    {
+        $query = "query {
+            boards(page: 1, limit: 99999) {
+              id
+              name
+            }
+        }";
+
+        try {
+            $responseData = $this->_getMondayData($query);
+
+            if(isset($responseData['response']['data']['boards'])) {
+                $responseData['response']['data']['message'] = "boards ids fetched successfully";
+                return $this->returnData($responseData['response']['data']);
+            } 
+
+            return $this->returnData($responseData, false);
+
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching board IDs'], 500);
+        }
     }
 
 

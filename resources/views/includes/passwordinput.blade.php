@@ -1,6 +1,14 @@
-<div class="input-group flex-nowrap" id="password-filled">
-  <input class="form-control" id="input-password" type="password" placeholder="Password" name="password">
-  <span class="input-group-text fs-5 encrypted" style="cursor:pointer" id="controller"><i
+<div class="input-group flex-nowrap" id="password-filled" style="background: #ececec;
+    border: 0;
+    border-radius: 50px;
+    height:41px;
+    ">
+  <input class="form-control" id="input-password" type="password" placeholder="Password" name="password" style="background: #e8f0fe;
+    border: 0;
+    border-top-left-radius: 50px;
+        border-bottom-left-radius: 50px;
+    padding: 10px 0px 10px 15px;">
+  <span class="input-group-text fs-5 encrypted" style="cursor:pointer;border-top-right-radius:50px;border-bottom-right-radius:50px;background: #f8f9fa;display:flex;justify-content:center;align-items:center;" id="controller"><i
           class="bi bi-eye-slash-fill"></i></span>
 </div>
 <script>

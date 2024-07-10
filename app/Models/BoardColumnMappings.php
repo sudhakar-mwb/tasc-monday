@@ -15,7 +15,7 @@ class BoardColumnMappings extends Model
     * @var array
     */
     protected $fillable = [
-        'id', 'board_id', 'columns', 'updated_at', 'created_at'
+        'id', 'board_id', 'email','columns', 'updated_at', 'created_at'
     ];
 
     /**

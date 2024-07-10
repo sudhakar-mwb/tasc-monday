@@ -7,6 +7,7 @@ use App\Traits\MondayApis;
 use Illuminate\Http\Request;
 use App\Models\GovernifyServiceRequest;
 use App\Models\GovernifyServiceCategorie;
+use App\Models\GovernifySiteSetting;
 use App\Models\MondayUsers;
 use Illuminate\Support\Facades\Validator;
 use CURLFile;
@@ -53,7 +54,8 @@ class DashboardController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $boardId = 1493464821;
+                $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
+                $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
                 $getUser = MondayUsers::getUser(['id' => $userId]);
                 $formDataStrings = [];
                 if (!empty($request->form_data)) {
@@ -64,6 +66,7 @@ class DashboardController extends Controller
                     }
                     $formDataString = implode(', ', $formDataStrings);
                 }
+                // need to dynamic mutation query
                 $query = 'mutation {
                     create_item(
                       board_id: ' . $boardId . '
