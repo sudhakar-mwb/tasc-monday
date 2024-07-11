@@ -581,6 +581,8 @@ class DashboardController extends Controller
             'email' => 'required|email|min:0',
             'your_company_name' => 'string|min:0',
             'type_of_license' => 'string|min:0',
+            'type_of_license_column_id' => 'string|min:0',
+            'email_column_id' => 'string|min:0',
         ]);
 
         // Custom error messages
@@ -588,6 +590,8 @@ class DashboardController extends Controller
             'email' => 'Email',
             'your_company_name' => 'Company Name',
             'type_of_license' => 'Type of License',
+            'type_of_license_column_id' => 'Type of License Column ID',
+            'email_column_id' => 'Email Column ID',
         ]);
 
         if ($validator->fails()) {
@@ -597,11 +601,11 @@ class DashboardController extends Controller
         $column_values = json_encode(
             json_encode(
                 [
-                    "email__1" => [
+                    $payload['email_column_id'] => [
                         "email" => $payload['email'],
                         "text" => $payload['email']
                     ],
-                    "single_select3__1" => $payload['type_of_license']
+                    $payload['type_of_license_column_id'] => $payload['type_of_license']
                 ],
                 true
             ),
