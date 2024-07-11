@@ -860,6 +860,7 @@ class DashboardController extends Controller
             'item_id' => 'required',
             'file' => 'required',
             'file_name' => 'required',
+            'column_id' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -868,7 +869,7 @@ class DashboardController extends Controller
 
         // Get validated data
         $itemId = $request->input('item_id');
-        $columnId = 'files__1';
+        $columnId = $request->column_id;
         $base64Data = $request->file;
         $fileName = $request->file_name;
 
