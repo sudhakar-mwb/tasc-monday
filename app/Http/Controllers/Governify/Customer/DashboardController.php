@@ -58,11 +58,11 @@ class DashboardController extends Controller
                 $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
                 $ui_settings = json_decode($GovernifySiteSettingData['ui_settings'], true);
                 
-                $category_name_key = !empty($ui_settings['submitRequestKey']['category_name_key']) ? $ui_settings['submitRequestKey']['category_name_key'] : 'service_category__1';
+                $head = !empty($ui_settings['selectedColumn']['head']) ? $ui_settings['selectedColumn']['head'] : 'service_category__1';
                 
-                $form_information_key = !empty($ui_settings['submitRequestKey']['form_information_key']) ? $ui_settings['submitRequestKey']['form_information_key'] : 'form_infomation__1';
+                $form_information_key = !empty($ui_settings['selectedColumn']['form_information_key']) ? $ui_settings['selectedColumn']['form_information_key'] : 'form_infomation__1';
                 
-                $email = !empty($ui_settings['submitRequestKey']['email']) ? $ui_settings['submitRequestKey']['email'] : 'people0__1';
+                $email = !empty($ui_settings['selectedColumn']['email']) ? $ui_settings['selectedColumn']['email'] : 'people0__1';
                 
                 $getUser = MondayUsers::getUser(['id' => $userId]);
                 $formDataStrings = [];
@@ -80,7 +80,7 @@ class DashboardController extends Controller
                       board_id: ' . $boardId . '
                       group_id: "topics"
                       item_name: "' . $request->service_request . '"
-                      column_values: "{\"'.$category_name_key.'\":\"' . $request->service_category . '\",\"'.$form_information_key.'\":\"' . $formDataString . '\",\"'.$email.'\":{\"email\":\"' . $getUser->email . '\" ,\"text\":\"' . $getUser->email . '\"}}"
+                      column_values: "{\"'.$head.'\":\"' . $request->service_category . '\",\"'.$form_information_key.'\":\"' . $formDataString . '\",\"'.$email.'\":{\"email\":\"' . $getUser->email . '\" ,\"text\":\"' . $getUser->email . '\"}}"
                     ) {
                       id
                     }
