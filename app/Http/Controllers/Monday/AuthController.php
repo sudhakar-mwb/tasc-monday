@@ -1299,14 +1299,16 @@ class AuthController extends Controller
         ];
     }
 
-    public function createMondayContacts ( $userData ){
+    public function createMondayContacts($userData)
+    {
         if (!empty($userData)) {
             $name        = !empty($userData['name']) ? $userData['name'] : '';
             $companyName = !empty($userData['company_name']) ? $userData['company_name'] : '';
             $phone       = !empty($userData['phone']) ? $userData['phone'] : '';
             $email       = !empty($userData['email']) ? $userData['email'] : '';
-
+            $companyId = '';
             if (!empty($companyName)) {
+                // company search
                 $query = 'query {
                     boards( ids: 1494725740) {
                     id
@@ -1314,7 +1316,7 @@ class AuthController extends Controller
                     state
                     permissions
                     board_kind
-                    items_page (query_params: {rules: [{column_id: "name", compare_value: ["'.$companyName.'"], operator: contains_text}]}) {
+                    items_page (query_params: {rules: [{column_id: "name", compare_value: ["' . $companyName . '"], operator: contains_text}]}) {
                               items {
                                   created_at
                                   creator_id
@@ -1331,37 +1333,65 @@ class AuthController extends Controller
                 }';
                 $boardsData = $this->_getMondayData($query);
 
-                if (!empty($boardsData['response']['data']) && !empty($boardsData['response']['data']['boards']) && !empty($boardsData['response']['data']['boards'][0]['items_page']) && !empty($boardsData['response']['data']['boards'][0]['items_page']['items']) && !empty($boardsData['response']['data']['boards'][0]['items_page']['items'][0]['id']) ){
+                if (!empty($boardsData['response']['data']) && !empty($boardsData['response']['data']['boards']) && !empty($boardsData['response']['data']['boards'][0]['items_page']) && !empty($boardsData['response']['data']['boards'][0]['items_page']['items']) && !empty($boardsData['response']['data']['boards'][0]['items_page']['items'][0]['id'])) {
                     $companyId = $boardsData['response']['data']['boards'][0]['items_page']['items'][0]['id'];
-                }else{
+                } else {
+                    // create company
                     $companyCreate = 'mutation {
                         create_item(
                           board_id: 1494725740
                           group_id: "topics"
-                          item_name: "'.$companyName.'"
+                          item_name: "' . $companyName . '"
                         ) {
                           id
                         }
                       }';
-                      $companyData = $this->_getMondayData($companyCreate);
-                      if (!empty($companyData['response']['data']) && !empty($companyData['response']['data']['create_item'])  && !empty($companyData['response']['data']['create_item']['id']) ) {
+                    $companyData = $this->_getMondayData($companyCreate);
+                    if (!empty($companyData['response']['data']) && !empty($companyData['response']['data']['create_item'])  && !empty($companyData['response']['data']['create_item']['id'])) {
                         $companyId = $companyData['response']['data']['create_item']['id'];
-                      }
+                    }
                 }
+                if (!empty($companyId)) {
+                    // contact create with company association
+                    $query = 'mutation {
+                        create_item(
+                          board_id: 1494725738
+                          group_id: "topics"
+                          item_name: "' . $name . '"
+                          column_values: "{\"contact_account\":{\"item_ids\":[' . $companyId . ']},\"contact_phone\":\"' . $phone . '\",\"contact_email\":{\"email\":\"' . $email . '\" ,\"text\":\"' . $email . '\"}}"
+                        ) {
+                          id
+                        }
+                    }';
+                    return  $boardsData = $this->_getMondayData($query);
+                } else {
+                    // companyId not found only contact create
+                    $query = 'mutation {
+                        create_item(
+                          board_id: 1494725738
+                          group_id: "topics"
+                          item_name: "' . $name . '"
+                          column_values: "{\"contact_phone\":\"' . $phone . '\",\"contact_email\":{\"email\":\"' . $email . '\" ,\"text\":\"' . $email . '\"}}"
+                        ) {
+                          id
+                        }
+                    }';
+                    return  $boardsData = $this->_getMondayData($query);
+                }
+            } else {
+                // contact create when company not found
+                $query = 'mutation {
+                    create_item(
+                      board_id: 1494725738
+                      group_id: "topics"
+                      item_name: "' . $name . '"
+                      column_values: "{\"contact_phone\":\"' . $phone . '\",\"contact_email\":{\"email\":\"' . $email . '\" ,\"text\":\"' . $email . '\"}}"
+                    ) {
+                      id
+                    }
+                }';
+                return  $boardsData = $this->_getMondayData($query);
             }
-            $companyId = !empty($companyId) ? $companyId : '';
-            $query = 'mutation {
-                create_item(
-                  board_id: 1494725738
-                  group_id: "topics"
-                  item_name: "' . $name. '"
-                  column_values: "{\"contact_account\":{\"item_ids\":['.$companyId.']},\"contact_phone\":\"' . $phone . '\",\"contact_email\":{\"email\":\"' . $email . '\" ,\"text\":\"' . $email . '\"}}"
-                ) {
-                  id
-                }
-            }';
-
-          return  $boardsData = $this->_getMondayData($query);
         }
     }
 }

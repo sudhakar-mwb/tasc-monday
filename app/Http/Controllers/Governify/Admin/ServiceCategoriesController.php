@@ -519,4 +519,42 @@ class ServiceCategoriesController extends Controller
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
+    
+    public function fetchBoardWiseColumn($id)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                if (!empty($id)) {
+                    $query = 'query
+                                      {
+                                          boards(ids: ' . $id . ') {
+                                              columns {
+                                              id
+                                              title
+                                              description
+                                              type
+                                              settings_str
+                                              archived
+                                              archived
+                                              width
+                                              }
+                                          }
+                                      }';
+                    $boardsData = $this->_getMondayData($query);
+                    if (!empty($boardsData['response']['data']) && !empty($boardsData['response']['data']['boards']) && !empty($boardsData['response']['data']['boards'][0]['columns'])) {
+                        return response(json_encode(array('response' => $boardsData['response']['data']['boards'][0]['columns'], 'status' => true, 'message' => "Board Columns Data Found.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Columns Not Data Found.")));
+                    }
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Id Not Found")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }
