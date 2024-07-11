@@ -760,20 +760,18 @@ class DashboardController extends Controller
             return $this->returnData($validator->errors(), false);
         }
 
-        $description = "text";
-        $required_action = "dup__of_description__1";
-        $assignee = "assigness__1";
-        $overall_status = "status__1";
+        // $description = "text";
+        // $required_action = "dup__of_description__1";
+        // $assignee = "assigness__1";
+        // $overall_status = "status__1";
 
         $query = '{
-            items(ids: ' . $request->id . ') {
+            items(ids: '.$request->id.') {
               id
               name
               created_at
               updated_at
-              column_values(
-                ids: ["' . $description . '", "' . $required_action . '", "' . $assignee . '", "' . $overall_status . '"]
-              ) {
+              column_values {
                 id
                 text
               }
