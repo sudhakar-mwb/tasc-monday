@@ -661,7 +661,8 @@ class DashboardController extends Controller
         // Custom error messages
         $validator->setAttributeNames([
             'subitem_id' => 'Subitem Id ',
-            'status_to_update' => 'Update Status'
+            'status_to_update' => 'Update Status',
+            'status_column_id' => 'Status Column Id'
         ]);
 
         if ($validator->fails()) {
@@ -688,7 +689,7 @@ class DashboardController extends Controller
             change_column_value(
               board_id: ' . $getBoardId . ',
               item_id: ' . $payload['subitem_id'] . ',
-              column_id: "status__1",
+              column_id: '.$payload['status_column_id'].',
               value: "{\"label\": \"In Progress\"}") {
             id
             }
