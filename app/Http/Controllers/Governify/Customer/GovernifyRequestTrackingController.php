@@ -534,6 +534,8 @@ class GovernifyRequestTrackingController extends Controller
                 $mondayData = [];
                 $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
                 $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
+                $ui_settings = json_decode($GovernifySiteSettingData['ui_settings'], true);
+                $email = !empty($ui_settings['selectedColumn']['email']) ? $ui_settings['selectedColumn']['email'] : 'people0__1';
                 do {
                     $query = 'query {
                 boards( ids: '.$boardId.') {
@@ -552,7 +554,7 @@ class GovernifyRequestTrackingController extends Controller
                           type
                           width
                       }
-                      items_page (limit: ' . $tolalData . ', cursor:' . $cursor . ',query_params: {rules: [{column_id: "people0__1", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
+                      items_page (limit: ' . $tolalData . ', cursor:' . $cursor . ',query_params: {rules: [{column_id: "'.$email.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
                           cursor,
                           items {
                               created_at
