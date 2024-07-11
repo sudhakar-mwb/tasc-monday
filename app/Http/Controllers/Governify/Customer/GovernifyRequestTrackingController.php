@@ -265,6 +265,7 @@ class GovernifyRequestTrackingController extends Controller
                 $after      = 'ddd';
                 $tolalData  = 500;
                 $cursor     = 'null';
+                $mondayData = [];
                 do {
                     $query = 'query {
                         boards( ids: ' . $boardId . ') {
@@ -530,6 +531,7 @@ class GovernifyRequestTrackingController extends Controller
                 $after      = 'ddd';
                 $tolalData  = 200;
                 $cursor     = 'null';
+                $mondayData = [];
                 $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
                 $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
                 do {
