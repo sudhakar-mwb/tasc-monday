@@ -218,6 +218,9 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
     Route::post('/boardVisibilityMapping', [OnboardifyDashboardController::class, 'boardVisibilityMapping']);
     Route::get('/getBoardColourMapping', [OnboardifyDashboardController::class, 'getBoardColourMapping']);
     Route::post('/boardColourMapping', [OnboardifyDashboardController::class, 'boardColourMapping']);
+    Route::get('/getGeneralSettings', [OnboardifyDashboardController::class, 'getGeneralSettings']);
+    Route::post('/generalSettings', [OnboardifyDashboardController::class, 'generalSettings']);
+    Route::post('/addAdminOrUser', [OnboardifyDashboardController::class, 'addAdminOrUser']);
 });
 
 Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {

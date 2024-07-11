@@ -7,8 +7,11 @@ use App\Models\BoardColumnMappings;
 use App\Models\ColourMappings;
 use App\Models\GovernifyServiceCategorie;
 use App\Models\MondayUsers;
+use App\Models\SiteSettings;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\URL;
 
 class DashboardController extends Controller
 {
@@ -236,6 +239,122 @@ class DashboardController extends Controller
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Status Colour mapping data not found.")));
                 }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function getGeneralSettings(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $get_data = SiteSettings::where('id', '=', 1)->first()->toArray();
+                if (!empty($get_data)) {
+                    return response(json_encode(array('response' => $get_data, 'status' => true, 'message' => "General Settings Data Fetch.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "General Settings Data Not Found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function generalSettings(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $input = $request->json()->all();
+                $criteria = ['status' => 0];
+                $get_data = SiteSettings::where('id', '=', 1)->first();
+
+                $insert_array = array(
+                    "ui_settings" => $request->ui_settings,
+                    "created_at"  => date("Y-m-d H:i:s"),
+                    "updated_at"  => date("Y-m-d H:i:s")
+                );
+
+                $datatoUpdate = [];
+                if ($request->input('logo_image')) {
+                    // Additional validation for base64 image
+                    if (!$this->isValidBase64Image($request->logo_image)) {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
+                    }
+
+                    $imageData = $request->input('logo_image');
+                    list($type, $data) = explode(';', $imageData);
+                    list(, $data)      = explode(',', $data);
+                    $data      = base64_decode($data);
+                    $extension = explode('/', mime_content_type($imageData))[1];
+                    $timestamp = now()->timestamp;
+
+                    $updateFileName = $timestamp . '_' . $request->input('logo_name');
+                    File::put(public_path('uploads/onboardify/' . $updateFileName), $data);
+                    $datatoUpdate['logo']         = $updateFileName;
+                    $imagePath = '/uploads/onboardify/' . $updateFileName;
+                    $datatoUpdate['logo_location'] =  URL::to("/") . $imagePath;
+
+                    // $uploadedImagePath = $serviceRequest->file_location;
+                    $uploadedImagePath = public_path('uploads/onboardify/' . $get_data->logo);
+                    // Check if the image file exists
+                    if (File::exists($uploadedImagePath)) {
+                        // Delete the image file
+                        File::delete($uploadedImagePath);
+                    }
+                }
+
+                $datatoUpdate['ui_settings'] = json_encode(!empty($insert_array['ui_settings']) ? $insert_array['ui_settings'] : '');
+                $datatoUpdate['status'] = 0;
+
+                if (empty($get_data)) {
+                    $insert = SiteSettings::where($criteria)->create($datatoUpdate);
+                } else {
+                    $insert = SiteSettings::where($criteria)->update($datatoUpdate);
+                }
+
+                if ($insert) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Site Setting Updated Successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Site Setting Not Created.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    private function isValidBase64Image($base64Image)
+    {
+        $pattern = '/^data:image\/(jpeg|jpg|png);base64,/';
+        if (preg_match($pattern, $base64Image)) {
+            $data = substr($base64Image, strpos($base64Image, ',') + 1);
+            if (base64_decode($data, true) === false) {
+                return false;
+            }
+            $image = imagecreatefromstring(base64_decode($data));
+            if (!$image) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function addAdminOrUser(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $input = $request->json()->all();
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
