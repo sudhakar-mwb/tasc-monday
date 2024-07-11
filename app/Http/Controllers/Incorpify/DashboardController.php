@@ -581,6 +581,8 @@ class DashboardController extends Controller
             'email' => 'required|email|min:0',
             'your_company_name' => 'string|min:0',
             'type_of_license' => 'string|min:0',
+            'type_of_license_column_id' => 'string|min:0',
+            'email_column_id' => 'string|min:0',
         ]);
 
         // Custom error messages
@@ -588,6 +590,8 @@ class DashboardController extends Controller
             'email' => 'Email',
             'your_company_name' => 'Company Name',
             'type_of_license' => 'Type of License',
+            'type_of_license_column_id' => 'Type of License Column ID',
+            'email_column_id' => 'Email Column ID',
         ]);
 
         if ($validator->fails()) {
@@ -597,11 +601,11 @@ class DashboardController extends Controller
         $column_values = json_encode(
             json_encode(
                 [
-                    "email__1" => [
+                    $payload['email_column_id'] => [
                         "email" => $payload['email'],
                         "text" => $payload['email']
                     ],
-                    "single_select3__1" => $payload['type_of_license']
+                    $payload['type_of_license_column_id'] => $payload['type_of_license']
                 ],
                 true
             ),
@@ -661,7 +665,8 @@ class DashboardController extends Controller
         // Custom error messages
         $validator->setAttributeNames([
             'subitem_id' => 'Subitem Id ',
-            'status_to_update' => 'Update Status'
+            'status_to_update' => 'Update Status',
+            'status_column_id' => 'Status Column Id'
         ]);
 
         if ($validator->fails()) {
@@ -688,7 +693,7 @@ class DashboardController extends Controller
             change_column_value(
               board_id: ' . $getBoardId . ',
               item_id: ' . $payload['subitem_id'] . ',
-              column_id: "status__1",
+              column_id: '.$payload['status_column_id'].',
               value: "{\"label\": \"In Progress\"}") {
             id
             }
@@ -755,20 +760,18 @@ class DashboardController extends Controller
             return $this->returnData($validator->errors(), false);
         }
 
-        $description = "text";
-        $required_action = "dup__of_description__1";
-        $assignee = "assigness__1";
-        $overall_status = "status__1";
+        // $description = "text";
+        // $required_action = "dup__of_description__1";
+        // $assignee = "assigness__1";
+        // $overall_status = "status__1";
 
         $query = '{
-            items(ids: ' . $request->id . ') {
+            items(ids: '.$request->id.') {
               id
               name
               created_at
               updated_at
-              column_values(
-                ids: ["' . $description . '", "' . $required_action . '", "' . $assignee . '", "' . $overall_status . '"]
-              ) {
+              column_values {
                 id
                 text
               }
@@ -860,6 +863,7 @@ class DashboardController extends Controller
             'item_id' => 'required',
             'file' => 'required',
             'file_name' => 'required',
+            'column_id' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -868,7 +872,7 @@ class DashboardController extends Controller
 
         // Get validated data
         $itemId = $request->input('item_id');
-        $columnId = 'files__1';
+        $columnId = $request->column_id;
         $base64Data = $request->file;
         $fileName = $request->file_name;
 
@@ -1114,6 +1118,66 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Error fetching board IDs'], 500);
         }
     }
+
+    public function getBoardColumnsIds(Request $request) {
+        // Validate the request to ensure 'id' is set
+        if (!isset($request->id)) {
+            return $this->returnData("invalid board id found", false);
+        }
+    
+        // Correcting the variable name to $board_id
+        $board_id = $request->id;
+    
+        // Construct the GraphQL query
+        $query = "{
+            boards(ids: $board_id) {
+                columns {
+                    id
+                    title
+                    description
+                    type
+                    archived
+                    width
+                }
+
+                items_page {
+                    items {
+                      subitems {
+                        column_values {
+                          column {
+                            id
+                            title
+                            
+                          }
+                        }
+                      }
+                    }
+                }
+            }
+        }";
+    
+        // Fetch data using the _getMondayData method
+        $responseData = $this->_getMondayData($query);
+    
+        // Check if columns data is present in the response
+        if (isset($responseData['response']['data']['boards'][0]['columns'])) {
+
+            $subitemsColumnIds = $responseData['response']['data']['boards'][0]['items_page']['items'][0]['subitems'][0]??[];
+            $columnValue = $responseData['response']['data']['boards'][0]['columns'];
+
+            $response = array(
+                "board"=>$columnValue,
+                "subitems"=>$subitemsColumnIds
+            );
+            
+            // $responseData['response']['data']['boards'][0]['items_page'] = $subitemsColumnIds;
+            
+            return $this->returnData($response);
+        } else {
+            return $this->returnData($responseData, false);
+        }
+    }
+    
 
 
 }

@@ -151,6 +151,7 @@ Route::group(['prefix' => "incorpify", "middleware" => ["auth:api"]], function (
 
     Route::group(['prefix' => "admin", 'middleware' => ['web', 'isAdmin']], function () {
         Route::get('/getBoardIds', [IncorpifyDashboard::class, 'getBoardIds'])->name('admin.get.getBoardIds');
+        Route::get('/getBoardColumnsIds/{id}', [IncorpifyDashboard::class, 'getBoardColumnsIds'])->name('admin.get.getBoardColumnsIds');
     });
 
 });
