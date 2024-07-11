@@ -481,6 +481,7 @@ class ServiceCategoriesController extends Controller
                 $page      = 1;
                 $tolalData  = 1000;
                 $after     = 'null';
+                $mondayData = [];
                 do {
                     $query = 'query {
                 boards (limit : ' . $tolalData . ', page : ' . $page . '){
