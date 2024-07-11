@@ -1135,6 +1135,20 @@ class DashboardController extends Controller
                     archived
                     width
                 }
+
+                items_page {
+                    items {
+                      subitems {
+                        column_values {
+                          column {
+                            id
+                            title
+                            
+                          }
+                        }
+                      }
+                    }
+                }
             }
         }";
     
@@ -1143,9 +1157,20 @@ class DashboardController extends Controller
     
         // Check if columns data is present in the response
         if (isset($responseData['response']['data']['boards'][0]['columns'])) {
-            return $this->returnData($responseData['response']['data']['boards'][0]['columns']);
+
+            $subitemsColumnIds = $responseData['response']['data']['boards'][0]['items_page']['items'][0]['subitems'][0]??[];
+            $columnValue = $responseData['response']['data']['boards'][0]['columns'];
+
+            $response = array(
+                "board"=>$columnValue,
+                "subitems"=>$subitemsColumnIds
+            );
+            
+            // $responseData['response']['data']['boards'][0]['items_page'] = $subitemsColumnIds;
+            
+            return $this->returnData($response);
         } else {
-            return $this->returnData("No columns found for the given board id.", false);
+            return $this->returnData($responseData, false);
         }
     }
     
