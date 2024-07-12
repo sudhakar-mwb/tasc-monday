@@ -662,7 +662,8 @@ class DashboardController extends Controller
 
         $validator = Validator::make($request->all(), [
             'subitem_id' => 'required|min:0',
-            'status_to_update' => 'required|string|min:0'
+            'status_to_update' => 'required|string|min:0',
+            'status_column_id' => 'required|string|min:0'
         ]);
 
         // Custom error messages
@@ -705,7 +706,7 @@ class DashboardController extends Controller
 
         $response = $this->_getMondayData($update_query);
 
-        if ($response['response']['data']['change_column_value']['id']) {
+        if (isset($response['response']['data']['change_column_value']['id'])) {
             return $this->returnData($response);
         }
 
