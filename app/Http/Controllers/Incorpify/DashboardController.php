@@ -583,6 +583,7 @@ class DashboardController extends Controller
             'type_of_license' => 'string|min:0',
             'type_of_license_column_id' => 'string|min:0',
             'email_column_id' => 'string|min:0',
+            'name_column_id' => 'string|min:0',
         ]);
 
         // Custom error messages
@@ -592,6 +593,7 @@ class DashboardController extends Controller
             'type_of_license' => 'Type of License',
             'type_of_license_column_id' => 'Type of License Column ID',
             'email_column_id' => 'Email Column ID',
+            'name_column_id' => 'name Column ID',
         ]);
 
         if ($validator->fails()) {
@@ -605,7 +607,8 @@ class DashboardController extends Controller
                         "email" => $payload['email'],
                         "text" => $payload['email']
                     ],
-                    $payload['type_of_license_column_id'] => $payload['type_of_license']
+                    $payload['type_of_license_column_id'] => $payload['type_of_license'],
+                    $payload['name_column_id'] => $payload['your_company_name']
                 ],
                 true
             ),
