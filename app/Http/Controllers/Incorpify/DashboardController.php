@@ -662,7 +662,8 @@ class DashboardController extends Controller
 
         $validator = Validator::make($request->all(), [
             'subitem_id' => 'required|min:0',
-            'status_to_update' => 'required|string|min:0'
+            'status_to_update' => 'required|string|min:0',
+            'status_column_id' => 'required|string|min:0'
         ]);
 
         // Custom error messages
@@ -696,7 +697,7 @@ class DashboardController extends Controller
             change_column_value(
               board_id: ' . $getBoardId . ',
               item_id: ' . $payload['subitem_id'] . ',
-              column_id: '.$payload['status_column_id'].',
+              column_id: "'.$payload['status_column_id'].'",
               value: "{\"label\": \"In Progress\"}") {
             id
             }
@@ -705,7 +706,7 @@ class DashboardController extends Controller
 
         $response = $this->_getMondayData($update_query);
 
-        if ($response['response']['data']['change_column_value']['id']) {
+        if (isset($response['response']['data']['change_column_value']['id'])) {
             return $this->returnData($response);
         }
 
