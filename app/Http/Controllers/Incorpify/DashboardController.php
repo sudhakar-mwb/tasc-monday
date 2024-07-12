@@ -697,7 +697,7 @@ class DashboardController extends Controller
             change_column_value(
               board_id: ' . $getBoardId . ',
               item_id: ' . $payload['subitem_id'] . ',
-              column_id: '.$payload['status_column_id'].',
+              column_id: "'.$payload['status_column_id'].'",
               value: "{\"label\": \"In Progress\"}") {
             id
             }
