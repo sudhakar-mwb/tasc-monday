@@ -362,4 +362,42 @@ class DashboardController extends Controller
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
+
+    public function getBoardColumns($id)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                if (!empty($id)) {
+                    $query = 'query
+                        {
+                            boards(ids: ' . $id . ') {
+                                columns {
+                                id
+                                title
+                                description
+                                type
+                                settings_str
+                                archived
+                                archived
+                                width
+                                }
+                            }
+                        }';
+                    $boardsData = $this->_get($query)['response'];
+                    if (!empty($boardsData['data']) && !empty($boardsData['data']['boards']) && !empty($boardsData['data']['boards'][0]['columns'])) {
+                        return response(json_encode(array('response' => $boardsData['data']['boards'][0]['columns'], 'status' => true, 'message' => "Boards columns data found.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Boards columns data not found.")));
+                    }
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Boards id not found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }

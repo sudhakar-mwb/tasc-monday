@@ -221,6 +221,7 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
     Route::get('/getGeneralSettings', [OnboardifyDashboardController::class, 'getGeneralSettings']);
     Route::post('/generalSettings', [OnboardifyDashboardController::class, 'generalSettings']);
     Route::post('/addAdminOrUser', [OnboardifyDashboardController::class, 'addAdminOrUser']);
+    Route::get('/get-board-columns/{id}', [OnboardifyDashboardController::class, 'getBoardColumns']);
 });
 
 Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {
