@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\URL;
-
+use Illuminate\Support\Facades\Hash;
 class DashboardController extends Controller
 {
     use MondayApis;
@@ -355,6 +355,45 @@ class DashboardController extends Controller
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
                 $input = $request->json()->all();
+                $request->validate([
+                    'name'         => 'required',
+                    'email'        => 'required|email|unique:monday_users',
+                    'password'     => 'required|min:6|max:100',
+                    'role'         => 'required'
+                  ], $this->getErrorMessages());
+              
+                  $dataToSave = array(
+                    'name'         => trim($request['name']),
+                    'email'        => trim($request['email']),
+                    'phone'        => trim($request['phone'] ?? ''),
+                    'company_name' => trim($request['company_name'] ?? ''),
+                    'role'         => trim($request['role']),
+                    'created_at'   => date("Y-m-d H:i:s"),
+                    'updated_at'   => date("Y-m-d H:i:s"),
+                    // 'password'     => trim($request['password']),
+                    'password'     => Hash::make(trim($request['password']))
+                  );
+                  $insertUserInDB = MondayUsers::createUser($dataToSave);
+                  if ($insertUserInDB['status'] == "success") {
+                    MondayUsers::setUser(['email' => $request['email']], ['status' => 1]);
+                    if ($request['role'] == 0) {
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Contact Created Successfully.")));
+                    }
+                    if ($request['role'] == 1) {
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Super Admin Created Successfully.")));
+                    }
+                    if ($request['role'] == 2) {
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Admin Created Successfully.")));  
+                    }
+                  } elseif ($insertUserInDB['status'] == "already") {
+                    
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "User already exist.")));
+
+                  }elseif ($insertUserInDB['status'] == "error") {
+                    
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "something went wrong during user creation.")));
+
+                  } 
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
