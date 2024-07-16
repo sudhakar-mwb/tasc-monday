@@ -210,4 +210,9 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
     Route::get('/serviceRequests', [ServiceRequestsController::class, 'index']);
 });
 
+Route::group(['prefix' => "tasc360", "middleware" => ["auth:api", "isSuperAdmin", "isAdmin"]], function () {
+
+    Route::post('/getAllDomain', [IncorpifyDashboard::class, 'getAllDomain']);
+});
+
 require __DIR__ . '/auth.php';

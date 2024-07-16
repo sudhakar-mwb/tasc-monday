@@ -10,9 +10,13 @@ use CURLFile;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
 use App\Models\IncorpifySiteSettings;
+use App\Models\GovernifySiteSetting;
+use App\Models\MondayUsers;
 use App\Models\Incorpify_likes;
 use Illuminate\Support\Facades\DB;
 use App\Models\UpdateNotification;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 
 class DashboardController extends Controller
@@ -1182,6 +1186,77 @@ class DashboardController extends Controller
         }
     }
     
+
+    public function getAllDomain(Request $request)
+    {
+        try {
+            // Parse and verify the token
+            $user = JWTAuth::parseToken()->authenticate();
+
+            // Get the email from the authenticated user
+            $email = $user->email;
+
+            // Search for the email in the three tables and get the data
+            $incorpifyData = $this->getBoardId();
+            $siteSettingsGovernify = GovernifySiteSetting::first()->toArray();
+            $siteSettingsOnboardify = MondayUsers::where('email', '=', $email)->first()->toArray();
+
+            // Check if board_id is present and construct the GraphQL query
+            $graphqlQuery = [];
+            $graphqlResults = [];
+
+            if (isset($incorpifyData['board_id'])) {
+                $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems');
+                $graphqlResults['Incorpify'] = $this->_getMondayData($incorpifyQuery);
+
+            } else {
+                $graphqlResults['Incorpify'] = [];
+            }
+            if (isset($siteSettingsGovernify['board_id'])) {
+                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items');
+                $graphqlResults['Governify'] = $this->_getMondayData($governifyQuery);
+
+            } else {
+                $graphqlResults['Governify'] = [];
+
+            }
+            if (isset($siteSettingsOnboardify['board_id'])) {
+                $onboardifyQuery = $this->constructGraphQLQuery($siteSettingsOnboardify['board_id'], 'items');
+                $graphqlResults['Onboardify'] = $this->_getMondayData($onboardifyQuery);
+
+            } else {
+                $graphqlResults['Onboardify'] = [];
+
+            }
+
+            // Return the combined data as a JSON response
+            return response()->json($graphqlResults);
+
+        } catch (JWTException $e) {
+            // Something went wrong whilst decoding the token
+            return response()->json(['error' => 'Token is invalid'], 400);
+        } catch (\Exception $e) {
+            // Handle any other exceptions
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    public function constructGraphQLQuery($boardId, $type)
+    {
+        return "query {
+            boards(ids: $boardId){
+              items_page {
+                items {
+                  id 
+                    name
+                  created_at
+                  updated_at
+                }
+              }
+            }
+          }";
+    }
 
 
 }
