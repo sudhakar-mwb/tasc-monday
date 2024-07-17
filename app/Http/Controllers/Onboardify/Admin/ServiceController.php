@@ -252,4 +252,23 @@ class ServiceController extends Controller
         }
         return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
     }
+
+    public function getAllUsers (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $dataToRender =  MondayUsers::where('role' ,'=', 0)->get();
+                if (!empty($dataToRender)) {
+                    return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Users Data.")));
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Users Data Not Found.")));
+                }
+                
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }
