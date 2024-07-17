@@ -439,4 +439,55 @@ class DashboardController extends Controller
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
+
+    public function fetchAllBoards (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $page      = 1;
+                $tolalData  = 1000;
+                $after     = 'null';
+                do {
+                    $query = 'query {
+                boards (limit : ' . $tolalData . ', page : ' . $page . '){
+                id
+                name
+                state
+                permissions
+                board_kind
+            }
+        }';
+
+                    $boardsData = $this->_getMondayData($query);
+
+                    if (!empty($boardsData['response']['data']['boards'])) {
+                        // $page += $page;
+                        $page++;
+                    } else {
+                        $after = '';
+                    }
+                    $curr_data = isset($boardsData['response']['data']['boards']) ? $boardsData['response']['data']['boards'] : [];
+                    if (!empty($curr_data)) {
+                        if (count($curr_data))
+                            foreach ($curr_data as $item) {
+                                $mondayData[] = $item;
+                            }
+                    }
+                    $newResponse = $boardsData;
+                } while (!empty($after));
+                unset($newResponse['response']['data']['boards']);
+                $newResponse['response']['data']['boards'] = $mondayData;
+                if (!empty($newResponse['response']['data'])) {
+                    return response(json_encode(array('response' => $newResponse['response']['data'], 'status' => true, 'message' => "Fetch all board data.")));
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board data not found.")));
+                }
+                
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }
