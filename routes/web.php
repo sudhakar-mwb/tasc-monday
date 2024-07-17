@@ -14,6 +14,7 @@ use App\Http\Controllers\Governify\Admin\ServiceRequestsController;
 use App\Http\Controllers\Governify\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Governify\Customer\GovernifyRequestTrackingController;
 use App\Http\Controllers\Onboardify\Admin\DashboardController as OnboardifyDashboardController;
+use App\Http\Controllers\Onboardify\Admin\ServiceController as OnboardifyServiceController;
 use App\Http\Controllers\Onboardify\Customer\DashboardController as OnboardifyCustomerDashboardController;
 
 /*
@@ -224,6 +225,10 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
     Route::post('/addAdminOrUser', [OnboardifyDashboardController::class, 'addAdminOrUser']);
     Route::get('/get-board-columns/{id}', [OnboardifyDashboardController::class, 'getBoardColumns']);
     Route::get('/fetchAllBoards',  [OnboardifyDashboardController::class, 'fetchAllBoards']);
+    Route::get('/serviceRequests', [OnboardifyServiceController::class, 'index']);
+    Route::post('/createServiceRequests',  [OnboardifyServiceController::class, 'createServiceRequests']);
+    Route::put('/serviceRequests/{id}', [OnboardifyServiceController::class, 'updateServiceRequests']);
+    Route::delete('/serviceRequests/{id}', [OnboardifyServiceController::class, 'destroy']);
 });
 
 Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {
