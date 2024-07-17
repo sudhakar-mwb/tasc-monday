@@ -1190,6 +1190,14 @@ class DashboardController extends Controller
     public function getAllDomain(Request $request)
     {
         try {
+
+            //payload 
+            $payload = $request->json()->all();
+
+            if(!isset($payload['emailColumnId']) && empty($payload['emailColumnId'])) {
+                return $this->returnData("emailColumnId key is an required field", false);
+            }
+
             // Parse and verify the token
             $user = JWTAuth::parseToken()->authenticate();
 
@@ -1206,7 +1214,8 @@ class DashboardController extends Controller
             $graphqlResults = [];
 
             if (isset($incorpifyData['board_id'])) {
-                $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems');
+                $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems', $email, $payload['emailColumnId']);
+                
                 $graphqlResults['Incorpify'] = $this->_getMondayData($incorpifyQuery);
 
             } else {
@@ -1242,20 +1251,41 @@ class DashboardController extends Controller
     }
 
 
-    public function constructGraphQLQuery($boardId, $type)
+    public function constructGraphQLQuery($boardId, $type, $email = null, $emailColumnId = null)
     {
-        return "query {
-            boards(ids: $boardId){
-              items_page {
-                items {
-                  id 
-                    name
-                  created_at
-                  updated_at
+        if($type=='items') {
+
+            return "query {
+                boards(ids: $boardId){
+                items_page {
+                    items {
+                    id 
+                        name
+                    created_at
+                    updated_at
+                    }
+                }
+                }
+            }";
+        } elseif ($type=='subitems'){
+            return '{
+                boards(ids: '.$boardId.') {
+                  items_page(
+                    query_params: {rules: [{column_id: "' . $emailColumnId . '", compare_value: ["' . $email . '"], operator: contains_text}]}
+                  ) {
+                    items {
+                        subitems {
+                          name
+                          id
+                          created_at
+                          updated_at
+                        }
+                      }
+                  }
                 }
               }
-            }
-          }";
+            ';
+        }
     }
 
 
