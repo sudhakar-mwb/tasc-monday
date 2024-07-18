@@ -31,16 +31,32 @@ class DashboardController extends Controller
                 $after      = 'ddd';
                 $tolalData  = 200;
                 $cursor     = 'null';
+                $mondayData = '';
                 if (!empty($getUser->board_id)) {
                    $boardId = $getUser->board_id;
                 }else{
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify board not assign to this user.")));
                 }
                 $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $boardId, 'email'=>$userEmail])->first();
-                if (!empty($BoardColumnMappingsData)) {
-
+                if (!empty($BoardColumnMappingsData['columns'])) {
+                    $checkEmailKey = json_decode($BoardColumnMappingsData['columns'], true);
+                    if (!empty($checkEmailKey['email_key'])) {
+                        $emailKeyForFilter = $checkEmailKey['email_key'];
+                    }
+                }else{
+                    $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $boardId, 'email'=>""])->first();
+                    if (!empty($BoardColumnMappingsData['columns'])) {
+                        $checkEmailKey = json_decode($BoardColumnMappingsData['columns'], true);
+                        if (!empty($checkEmailKey['email_key'])) {
+                            $emailKeyForFilter = $checkEmailKey['email_key'];
+                        }
+                    }else{
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mapping Data Not Found.")));
+                    }
                 }
-                $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
+                if (empty($emailKeyForFilter)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "The required key for Onboardify board visibility is missing.")));
+                }
                 do {
                     $query = 'query {
                 boards( ids: '.$boardId.') {
@@ -59,7 +75,7 @@ class DashboardController extends Controller
                           type
                           width
                       }
-                      items_page (limit: ' . $tolalData . ', cursor:' . $cursor . ',query_params: {rules: [{column_id: "people0__1", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
+                      items_page (limit: ' . $tolalData . ', cursor:' . $cursor . ',query_params: {rules: [{column_id: "'.$emailKeyForFilter.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
                           cursor,
                           items {
                               created_at
@@ -120,7 +136,6 @@ class DashboardController extends Controller
             }';
 
                     $boardsData = $this->_getMondayData($query);
-echo '<pre>'; print_r( $boardsData ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
                     if (!empty($boardsData['response']['data']['boards'][0]['items_page']['cursor'])) {
                         $cursor =  "\"" . $boardsData['response']['data']['boards'][0]['items_page']['cursor'] . "\"";
                     } else {
@@ -138,6 +153,42 @@ echo '<pre>'; print_r( $boardsData ); echo '</pre>';die('just_die_here_'.__FILE_
                 unset($newResponse['response']['data']['boards'][0]['items_page']['items']);
                 $newResponse['response']['data']['boards'][0]['items_page']['items'] = $mondayData;
                 return $newResponse;
+            }else{
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function getUserFormAndChart (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            $getUser = MondayUsers::getUser(['id' => $userId]);
+            if (!empty($getUser) && !empty($getUser->email)) {
+                $userEmail = $getUser->email;
+            }else{
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+            }
+            if ($userEmail) {
+                if (!empty($getUser->board_id)) {
+                    $getBoardColumnMappings = BoardColumnMappings::where(['board_id' => $getUser->board_id, 'email'=>$getUser->email])->first();
+                    if(!empty($getBoardColumnMappings)){
+                        return response(json_encode(array('response' => $getBoardColumnMappings, 'status' => true, 'message' => "Board Column Mapping Data.")));
+                    }
+                    else{
+                        $getBoardColumnMappings = BoardColumnMappings::where(['board_id' => $getUser->board_id, 'email'=>""])->first();
+                        if (!empty($getBoardColumnMappings)) {
+                            return response(json_encode(array('response' => $getBoardColumnMappings, 'status' => true, 'message' => "Board Column Mapping Data.")));
+                        }else{
+                            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mapping Data Not Found.")));
+                        }
+                    }
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Currently The Board Is Not Assigned To User. First, Assign The Board To The User.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
         } catch (\Exception $e) {
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));

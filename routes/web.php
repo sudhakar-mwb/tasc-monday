@@ -234,6 +234,7 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
 
 Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {
     Route::post('/requestTracking', [OnboardifyCustomerDashboardController::class, 'requestTracking']);
+    Route::get('/getUserFormAndChart', [OnboardifyCustomerDashboardController::class, 'getUserFormAndChart']);
 });
 
 require __DIR__ . '/auth.php';
