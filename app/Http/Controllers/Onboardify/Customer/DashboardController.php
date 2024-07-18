@@ -200,4 +200,37 @@ class DashboardController extends Controller
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
+
+    public function getboardVisibilityMapping(Request $request){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $board_id = $request->query('board_id');
+                $email    = $request->query('email');
+                if (!empty($board_id) && !empty($email)) {
+                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id, 'email' => $email])->get();
+                    if (!empty($BoardColumnMappingData)) {
+                        return response(json_encode(array('response' => $BoardColumnMappingData, 'status' => true, 'message' => "Board Column Mppaing Data.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mppaing Data Not Found.")));
+                    }
+                } elseif (!empty($board_id) && empty($email)) {
+                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id, 'email' => ""])->get();
+                    if (!empty($BoardColumnMappingData)) {
+                        return response(json_encode(array('response' => $BoardColumnMappingData, 'status' => true, 'message' => "Board Column Mppaing Data.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mppaing Data Not Found.")));
+                    }
+                } elseif (empty($board_id) && !empty($email)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Currently board not selected first select the board.")));
+                } elseif (empty($board_id) && empty($email)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Currently board not selected first select the board.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }
