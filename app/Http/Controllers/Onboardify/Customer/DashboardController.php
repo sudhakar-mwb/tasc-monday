@@ -31,7 +31,8 @@ class DashboardController extends Controller
                 $after      = 'ddd';
                 $tolalData  = 200;
                 $cursor     = 'null';
-                $mondayData = '';
+                $mondayData = [];
+                // limit: ' . $tolalData . ', cursor:' . $cursor . ',
                 if (!empty($getUser->board_id)) {
                    $boardId = $getUser->board_id;
                 }else{
@@ -75,7 +76,7 @@ class DashboardController extends Controller
                           type
                           width
                       }
-                      items_page (limit: ' . $tolalData . ', cursor:' . $cursor . ',query_params: {rules: [{column_id: "'.$emailKeyForFilter.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
+                      items_page (query_params: {rules: [{column_id: "'.$emailKeyForFilter.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
                           cursor,
                           items {
                               created_at
