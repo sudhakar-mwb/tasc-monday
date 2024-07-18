@@ -156,7 +156,7 @@ class DashboardController extends Controller
                 if (!empty( $newResponse['response']['data']['boards'][0]['items_page']['items'])) {
                     return response(json_encode(array('response' => $newResponse['response'], 'status' => true, 'message' => "Board Items Data Found.")));
                 }else{
-                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Items Data Not Found.")));
+                    return response(json_encode(array('response' => $newResponse['response'], 'status' => false, 'message' => "Board Items Data Not Found.")));
                 }
                 return $newResponse;
             }else{
