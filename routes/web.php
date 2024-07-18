@@ -229,7 +229,7 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
     Route::post('/createServiceRequests',  [OnboardifyServiceController::class, 'createServiceRequests']);
     Route::put('/serviceRequests/{id}', [OnboardifyServiceController::class, 'updateServiceRequests']);
     Route::delete('/serviceRequests/{id}', [OnboardifyServiceController::class, 'destroy']);
-    Route::get('/getAllUsers', [OnboardifyServiceController::class, 'getAllUsers']);
+    Route::get('/getAllUsers/{board_id}', [OnboardifyServiceController::class, 'getAllUsers']);
 });
 
 Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {

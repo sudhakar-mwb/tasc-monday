@@ -253,12 +253,12 @@ class ServiceController extends Controller
         return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
     }
 
-    public function getAllUsers (){
+    public function getAllUsers ($board_id){
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $dataToRender =  MondayUsers::where('role' ,'=', 0)->get();
-                if (!empty($dataToRender)) {
+                $dataToRender =  MondayUsers::where('role', '=', 0)->where('board_id', '=', $board_id)->get();
+                if (($dataToRender->isNotEmpty())) {
                     return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Users Data.")));
                 }else{
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Users Data Not Found.")));
