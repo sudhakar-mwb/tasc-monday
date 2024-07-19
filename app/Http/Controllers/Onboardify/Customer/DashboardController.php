@@ -288,7 +288,7 @@ class DashboardController extends Controller
                             title
                             type
                             width
-                        }activity_logs (from: "' . Carbon::now()->subWeek()->startOfDay()->toIso8601String() . '", to: "' . Carbon::now()->toIso8601String() . '", column_ids:'.$idString.') {
+                        }activity_logs (from: "' . Carbon::now()->subWeek()->startOfDay()->toIso8601String() . '", to: "' . Carbon::now()->toIso8601String() . '", column_ids:'.$idString.', item_ids:'.$itemID.') {
                           id
                           user_id
                           account_id
