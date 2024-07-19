@@ -13,6 +13,7 @@ use App\Traits\MondayApis;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 class DashboardController extends Controller
 {
     use MondayApis;
@@ -232,5 +233,109 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
+    }
+
+    public function requestTrackingActivity ($itemID){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            
+            if ($userId) {
+
+                $getUser = MondayUsers::getUser(['id' => $userId]);
+            if (!empty($getUser) && !empty($getUser->email)) {
+                $userEmail = $getUser->email;
+            }else{
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+            }
+
+                $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id, 'email'=>$userEmail])->first();
+                if (!empty($BoardColumnMappingsData['columns'])) {
+                    $onboardingColumnsKeys = json_decode($BoardColumnMappingsData['columns'], true);
+                    if (!empty($onboardingColumnsKeys['onboarding_columns'])) {
+                        $onboardingColumnsKeyForFilter = $onboardingColumnsKeys['onboarding_columns'];
+                    }
+                }else{
+                    $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id, 'email'=>""])->first();
+                    if (!empty($BoardColumnMappingsData['columns'])) {
+                        $onboardingColumnsKeys = json_decode($BoardColumnMappingsData['columns'], true);
+                        if (!empty($onboardingColumnsKeys['onboarding_columns'])) {
+                            $onboardingColumnsKeyForFilter = $onboardingColumnsKeys['onboarding_columns'];
+                        }
+                    }else{
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mapping Data Not Found.")));
+                    }
+                }
+                if (empty($onboardingColumnsKeyForFilter)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "The required key for Onboardify board visibility is missing.")));
+                }
+
+                $idArray = [];
+
+                foreach ($onboardingColumnsKeyForFilter as $item) {
+                    $idArray[] = '"' . $item['id'] . '"';
+                }
+
+                $idString = '[' . implode(',', $idArray) . ']';
+                if (!empty($idString)) {
+                    $query = '{
+                        boards(ids: ' . $getUser->board_id . ') {
+                        columns {
+                            title
+                            id
+                            archived
+                            description
+                            settings_str
+                            title
+                            type
+                            width
+                        }activity_logs (from: "' . Carbon::now()->subWeek()->startOfDay()->toIso8601String() . '", to: "' . Carbon::now()->toIso8601String() . '", column_ids:'.$idString.') {
+                          id
+                          user_id
+                          account_id
+                          data
+                          entity
+                          event
+                          created_at
+                      }}
+                     items (ids: [' . $itemID . ']) {
+                        created_at
+                        creator_id
+                        email
+                        id
+                        name
+                        relative_link
+                        state
+                        updated_at
+                        url
+                        column_values {
+                           id
+                           value
+                           type
+                           text
+                           ... on StatusValue  {
+                              label
+                              update_id
+                           }
+                        }
+                       }
+                   }';
+
+                    $boardsItemActivityData = $this->_get($query)['response'];
+                    if (!empty($boardsItemActivityData['data']['boards']) && !empty($boardsItemActivityData['data']['items'])) {
+                        return response(json_encode(array('response' => $boardsItemActivityData, 'status' => true, 'message' => "Borda items data found.")));
+                    }else{
+                        return response(json_encode(array('response' => $boardsItemActivityData, 'status' => false, 'message' => "Borda items data not found.")));
+                    }
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Borda items activity column not prepared.")));
+                }
+               
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+
     }
 }
