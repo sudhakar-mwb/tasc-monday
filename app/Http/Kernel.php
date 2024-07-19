@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'isAdmin'      => \App\Http\Middleware\AdminAuthentication::class,
         'isUser'       => \App\Http\Middleware\UserAuthentication::class,
         'setSession'       => \App\Http\Middleware\SetSession::class,
+        'checkUserType' => \App\Http\Middleware\CheckUserType::class
     ];
 }

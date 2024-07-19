@@ -1190,12 +1190,15 @@ class DashboardController extends Controller
     public function getAllDomain(Request $request)
     {
         try {
-
-            //payload 
+            // Payload 
             $payload = $request->json()->all();
 
-            if(!isset($payload['emailColumnId']) && empty($payload['emailColumnId'])) {
-                return $this->returnData("emailColumnId key is an required field", false);
+            $requiredKeys = ['incorpify', 'governify', 'onboardify'];
+            foreach ($requiredKeys as $key) {
+                if (!isset($payload[$key]['emailColumnId']) || empty($payload[$key]['emailColumnId']) ||
+                    !isset($payload[$key]['statusColumnId']) || empty($payload[$key]['statusColumnId'])) {
+                    return $this->returnData("$key: emailColumnId and statusColumnId are required fields", false);
+                }
             }
 
             // Parse and verify the token
@@ -1214,28 +1217,24 @@ class DashboardController extends Controller
             $graphqlResults = [];
 
             if (isset($incorpifyData['board_id'])) {
-                $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems', $email, $payload['emailColumnId']);
-                
+                $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems', $email, $payload['incorpify']['emailColumnId']);
                 $graphqlResults['Incorpify'] = $this->_getMondayData($incorpifyQuery);
-
             } else {
                 $graphqlResults['Incorpify'] = [];
             }
+
             if (isset($siteSettingsGovernify['board_id'])) {
                 $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items');
                 $graphqlResults['Governify'] = $this->_getMondayData($governifyQuery);
-
             } else {
                 $graphqlResults['Governify'] = [];
-
             }
+
             if (isset($siteSettingsOnboardify['board_id'])) {
                 $onboardifyQuery = $this->constructGraphQLQuery($siteSettingsOnboardify['board_id'], 'items');
                 $graphqlResults['Onboardify'] = $this->_getMondayData($onboardifyQuery);
-
             } else {
                 $graphqlResults['Onboardify'] = [];
-
             }
 
             // Return the combined data as a JSON response
@@ -1249,6 +1248,7 @@ class DashboardController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
 
     public function constructGraphQLQuery($boardId, $type, $email = null, $emailColumnId = null)
