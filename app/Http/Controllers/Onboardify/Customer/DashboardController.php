@@ -338,4 +338,31 @@ class DashboardController extends Controller
         }
 
     }
+
+    public function getBoardColourMapping()
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $colourMappingsData = ColourMappings::get();
+                if (!empty($colourMappingsData)) {
+                    $data = json_decode($colourMappingsData, true);
+
+                    $coloursData = array();
+                    foreach ($data as $record) {
+                        $coloursData[] = [
+                            $record['colour_name'] =>  json_decode($record['colour_value'], true),
+                        ];
+                    }
+                    return response(json_encode(array('response' => $coloursData, 'status' => true, 'message' => "Status Colour Mapping data.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Status Colour mapping data not found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }
