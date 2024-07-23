@@ -887,10 +887,11 @@ class AuthController extends Controller
                 $siteUrl = !empty($GovernifySiteSettingResponse['domain']) ? $GovernifySiteSettingResponse['domain'] : 'https://governify.tasc360.com';
                 $domain = $userData['domain'];
             }
-            elseif ($request['domain'] == 'onboardify') {
+            elseif ($userData['domain'] == 'onboardify') {
                 $SiteSettingsResponse = SiteSettings::where('id', '=', 1)->first()->toArray();
                 $sitelogo = !empty($SiteSettingsResponse['logo_location']) ? $SiteSettingsResponse['logo_location'] : '';
                 $siteUrl = !empty($SiteSettingsResponse['domain']) ? $SiteSettingsResponse['domain'] : '';
+                $domain = $userData['domain'];
             }
             elseif ($userData['domain'] == 'incorpify') {
                 $IncorpifySiteSettingsResponse = IncorpifySiteSettings::where('id', '=', 1)->first()->toArray();
