@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\UpdateNotification;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Models\BoardColumnMappings;
 
 
 class DashboardController extends Controller
@@ -1211,6 +1212,26 @@ class DashboardController extends Controller
             $incorpifyData = $this->getBoardId();
             $siteSettingsGovernify = GovernifySiteSetting::first()->toArray();
             $siteSettingsOnboardify = MondayUsers::where('email', '=', $email)->first()->toArray();
+            $siteSettingsOnboardifyData = [];
+            if(isset($siteSettingsOnboardify['board_id'])){
+
+                $siteSettingsOnboardifyData = BoardColumnMappings::where('email', $email)
+                ->where('board_id', (int)$siteSettingsOnboardify['board_id'])
+                ->first();
+
+                $siteSettingsOnboardifyData = json_decode(json_encode($siteSettingsOnboardifyData, true), true);
+                
+
+                if(empty($siteSettingsOnboardifyData['board_id'])){
+                 
+                    $siteSettingsOnboardifyData = BoardColumnMappings::where('board_id', $siteSettingsOnboardify['board_id'])
+                    ->first();
+
+                    $siteSettingsOnboardifyData = json_decode(json_encode($siteSettingsOnboardifyData, true), true);
+
+
+                }
+            }
 
             // Check if board_id is present and construct the GraphQL query
             $graphqlQuery = [];
@@ -1224,18 +1245,54 @@ class DashboardController extends Controller
             }
 
             if (isset($siteSettingsGovernify['board_id'])) {
-                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items');
+                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId']);
+                
                 $graphqlResults['Governify'] = $this->_getMondayData($governifyQuery);
             } else {
                 $graphqlResults['Governify'] = [];
             }
 
-            if (isset($siteSettingsOnboardify['board_id'])) {
-                $onboardifyQuery = $this->constructGraphQLQuery($siteSettingsOnboardify['board_id'], 'items');
-                $graphqlResults['Onboardify'] = $this->_getMondayData($onboardifyQuery);
-            } else {
-                $graphqlResults['Onboardify'] = [];
-            }
+
+            //----------------------
+            //Comment Untill the conformation
+            //----------------------
+
+            // if (isset($siteSettingsOnboardifyData['board_id'])) {
+
+            //     //onboardify
+
+            //     $jsonData = json_decode($siteSettingsOnboardifyData['columns'], true);
+
+            //     $emailColumnId = $jsonData['email_key'];
+            //     $statusColumnId = null;
+
+            //     foreach ($jsonData['onboarding_columns'] as $column) {
+            //         if ($column['name'] === 'Email Address') {
+            //             $emailColumnId = $column['id'];
+            //         }
+            //         if (strpos($column['name'], 'Status') !== false) {
+            //             $statusColumnId = $column['id'];
+            //         }
+            //     }
+
+            //     $onboardifyQuery = $this->constructGraphQLQuery($siteSettingsOnboardify['board_id'], 'items', $emailColumnId, $statusColumnId);
+
+            //     echo '<pre>';
+            //     print_r($emailColumnId);
+            //     print_r($statusColumnId);
+            //     print_r($onboardifyQuery);
+            //     echo '[Line]:     ' . __LINE__ . "\n";
+            //     echo '[Function]: ' . __FUNCTION__ . "\n";
+            //     echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
+            //     echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
+            //     echo '[File]:     ' . __FILE__ . "\n";
+            //     die;
+                
+                
+            //     $graphqlResults['Onboardify'] = $this->_getMondayData($onboardifyQuery);
+            // } else {
+            //     $graphqlResults['Onboardify'] = [];
+            // }
 
             // Return the combined data as a JSON response
             return response()->json($graphqlResults);
@@ -1251,22 +1308,26 @@ class DashboardController extends Controller
 
 
 
-    public function constructGraphQLQuery($boardId, $type, $email = null, $emailColumnId = null)
+    public function constructGraphQLQuery($boardId, $type, $email = null, $emailColumnId = null, $statusColumnId=null, $status=null)
     {
         if($type=='items') {
 
-            return "query {
-                boards(ids: $boardId){
-                items_page {
+            return 'query {
+                boards(ids: '.$boardId.') {
+                  items_page(query_params: {
+                    rules: [
+                      {column_id: "'.$emailColumnId.'", compare_value: ["'.$email.'"], operator: any_of}
+                    ]
+                  }) {
                     items {
-                    id 
-                        name
-                    created_at
-                    updated_at
+                      id
+                      name
+                      created_at
+                      updated_at
                     }
+                  }
                 }
-                }
-            }";
+              }';
         } elseif ($type=='subitems'){
             return '{
                 boards(ids: '.$boardId.') {
