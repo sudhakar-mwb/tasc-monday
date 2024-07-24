@@ -14,6 +14,7 @@ use App\Http\Controllers\Governify\Admin\ServiceRequestsController;
 use App\Http\Controllers\Governify\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Governify\Customer\GovernifyRequestTrackingController;
 use App\Http\Controllers\Onboardify\Admin\DashboardController as OnboardifyDashboardController;
+use App\Http\Controllers\Onboardify\Admin\ProfileController as OnboardifyProfileController;
 use App\Http\Controllers\Onboardify\Admin\ServiceController as OnboardifyServiceController;
 use App\Http\Controllers\Onboardify\Customer\DashboardController as OnboardifyCustomerDashboardController;
 
@@ -211,7 +212,7 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
     Route::get('/serviceRequests', [ServiceRequestsController::class, 'index']);
 });
 
-Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isSuperAdmin", "isAdmin"]], function () {
+Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isAdmin"]], function () {
     Route::get('/userListing', [OnboardifyDashboardController::class, 'userListing']);
     Route::post('/assignBoard', [OnboardifyDashboardController::class, 'assignBoard']);
     Route::delete('/userDelete/{id}', [OnboardifyDashboardController::class, 'userDelete']);
@@ -230,6 +231,15 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
     Route::put('/serviceRequests/{id}', [OnboardifyServiceController::class, 'updateServiceRequests']);
     Route::delete('/serviceRequests/{id}', [OnboardifyServiceController::class, 'destroy']);
     Route::get('/getAllUsers/{board_id}', [OnboardifyServiceController::class, 'getAllUsers']);
+
+    //  Onboardify Profile
+    Route::get('/onboardifyProfile', [OnboardifyProfileController::class, 'getOnboardifyProfile']);
+    Route::post('/onboardifyProfile', [OnboardifyProfileController::class, 'onboardifyProfile']);
+    Route::put('/onboardifyProfile/{id}', [OnboardifyProfileController::class, 'editOnboardifyProfile']);
+    Route::delete('/onboardifyProfile/{id}', [OnboardifyProfileController::class, 'destroy']);
+    Route::post('/updateProfileSetting', [OnboardifyProfileController::class, 'updateProfileSetting']);
+
+    // Onboardify Service
 });
 
 Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {

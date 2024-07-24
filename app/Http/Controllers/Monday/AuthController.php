@@ -780,6 +780,7 @@ class AuthController extends Controller
 
         if (!isset($request->id) && empty($request->id)) {
             return [
+                'status'  => false,
                 "success" => false,
                 "message" => "user token is not found"
             ];
@@ -801,12 +802,14 @@ class AuthController extends Controller
 
             if (empty($getUser)) {
                 return response()->json([
+                    'status'  => false,
                     'success' => false,
                     'message' => 'User not found.'
                 ]);
             }
 
             return response()->json([
+                'status'  => true,
                 'success' => true,
                 'data' => [
                     'user_id' => $getUser['id'] ?? "",
@@ -819,6 +822,7 @@ class AuthController extends Controller
         } catch (Exception $e) {
 
             return response()->json([
+                'status'  => false,
                 'success' => false,
                 'message' => 'User not found.'
             ]);
