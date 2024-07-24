@@ -1195,11 +1195,17 @@ class DashboardController extends Controller
             $payload = $request->json()->all();
 
             $requiredKeys = ['incorpify', 'governify', 'onboardify'];
+            $allowedStatuses = ["completed", "pending", "canceled", "awaiting action"];
+
             foreach ($requiredKeys as $key) {
                 if (!isset($payload[$key]['emailColumnId']) || empty($payload[$key]['emailColumnId']) ||
                     !isset($payload[$key]['statusColumnId']) || empty($payload[$key]['statusColumnId'])) {
                     return $this->returnData("$key: emailColumnId and statusColumnId are required fields", false);
                 }
+            }
+
+            if (!isset($payload['status']) || !in_array(strtolower($payload['status']), $allowedStatuses)) {
+                return $this->returnData("Status is required and must be one of the following: " . implode(", ", $allowedStatuses), false);
             }
 
             // Parse and verify the token
@@ -1239,13 +1245,18 @@ class DashboardController extends Controller
 
             if (isset($incorpifyData['board_id'])) {
                 $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems', $email, $payload['incorpify']['emailColumnId'], $payload['incorpify']['statusColumnId']);
-                $graphqlResults['Incorpify'] = $this->_getMondayData($incorpifyQuery);
+                $response = $this->_getMondayData($incorpifyQuery);
+                $filterResult = $this->filterSubitemsByStatus($response, $payload['status']);
+                $graphqlResults['Incorpify'] = $filterResult;
+
+
             } else {
                 $graphqlResults['Incorpify'] = [];
             }
 
             if (isset($siteSettingsGovernify['board_id'])) {
-                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId'], $payload['governify']['statusColumnId']);
+
+                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId'], $payload['governify']['statusColumnId'], $payload['status']);
                 
                 $graphqlResults['Governify'] = $this->_getMondayData($governifyQuery);
             } else {
@@ -1307,16 +1318,46 @@ class DashboardController extends Controller
     }
 
 
+    //filter out the status 
+    function filterSubitemsByStatus($array, $status) {
+        if (isset($array['response']['data']['boards'][0]['items_page']['items'][0]['subitems'])) {
+            $filteredSubitems = array_filter($array['response']['data']['boards'][0]['items_page']['items'][0]['subitems'], function($subitem) use ($status) {
+                foreach ($subitem['column_values'] as $columnValue) {
+                    if (strtolower($columnValue['text']) == strtolower($status)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+    
+            $array['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] = array_values($filteredSubitems);
+        }
+    
+        return $array;
+    }
+
+
 
     public function constructGraphQLQuery($boardId, $type, $email = null, $emailColumnId = null, $statusColumnId=null, $status=null)
     {
+
+        $allowedStatus = [
+            "completed"=>"1",
+            "pending"=>"2",
+            "canceled"=>"3",
+            "awaiting action"=>"5"
+        ];
+        
+
         if($type=='items') {
 
+            $statusValue = strtolower($status);
             return 'query {
                 boards(ids: '.$boardId.') {
                   items_page(query_params: {
                     rules: [
-                      {column_id: "'.$emailColumnId.'", compare_value: ["'.$email.'"], operator: any_of}
+                      {column_id: "'.$emailColumnId.'", compare_value: ["'.$email.'"], operator: any_of},
+                      {column_id: "'.$statusColumnId.'", compare_value: ['.$allowedStatus[$statusValue].'], operator: any_of}
                     ]
                   }) {
                     items {
