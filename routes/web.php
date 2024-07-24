@@ -13,6 +13,10 @@ use App\Http\Controllers\Governify\Admin\ServiceRequestFormsController;
 use App\Http\Controllers\Governify\Admin\ServiceRequestsController;
 use App\Http\Controllers\Governify\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Governify\Customer\GovernifyRequestTrackingController;
+use App\Http\Controllers\Onboardify\Admin\DashboardController as OnboardifyDashboardController;
+use App\Http\Controllers\Onboardify\Admin\ProfileController as OnboardifyProfileController;
+use App\Http\Controllers\Onboardify\Admin\ServiceController as OnboardifyServiceController;
+use App\Http\Controllers\Onboardify\Customer\DashboardController as OnboardifyCustomerDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -208,6 +212,45 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
 
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
     Route::get('/serviceRequests', [ServiceRequestsController::class, 'index']);
+});
+
+Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isAdmin"]], function () {
+    Route::get('/userListing', [OnboardifyDashboardController::class, 'userListing']);
+    Route::post('/assignBoard', [OnboardifyDashboardController::class, 'assignBoard']);
+    Route::delete('/userDelete/{id}', [OnboardifyDashboardController::class, 'userDelete']);
+
+    Route::get('/getboardVisibilityMapping', [OnboardifyDashboardController::class, 'getboardVisibilityMapping']);
+    Route::post('/boardVisibilityMapping', [OnboardifyDashboardController::class, 'boardVisibilityMapping']);
+    Route::get('/getBoardColourMapping', [OnboardifyDashboardController::class, 'getBoardColourMapping']);
+    Route::post('/boardColourMapping', [OnboardifyDashboardController::class, 'boardColourMapping']);
+    Route::get('/getGeneralSettings', [OnboardifyDashboardController::class, 'getGeneralSettings']);
+    Route::post('/generalSettings', [OnboardifyDashboardController::class, 'generalSettings']);
+    Route::post('/addAdminOrUser', [OnboardifyDashboardController::class, 'addAdminOrUser']);
+    Route::get('/get-board-columns/{id}', [OnboardifyDashboardController::class, 'getBoardColumns']);
+    Route::get('/fetchAllBoards',  [OnboardifyDashboardController::class, 'fetchAllBoards']);
+    Route::get('/serviceRequests', [OnboardifyServiceController::class, 'index']);
+    Route::post('/createServiceRequests',  [OnboardifyServiceController::class, 'createServiceRequests']);
+    Route::put('/serviceRequests/{id}', [OnboardifyServiceController::class, 'updateServiceRequests']);
+    Route::delete('/serviceRequests/{id}', [OnboardifyServiceController::class, 'destroy']);
+    Route::get('/getAllUsers/{board_id}', [OnboardifyServiceController::class, 'getAllUsers']);
+
+    //  Onboardify Profile
+    Route::get('/onboardifyProfile', [OnboardifyProfileController::class, 'getOnboardifyProfile']);
+    Route::post('/onboardifyProfile', [OnboardifyProfileController::class, 'onboardifyProfile']);
+    Route::put('/onboardifyProfile/{id}', [OnboardifyProfileController::class, 'editOnboardifyProfile']);
+    Route::delete('/onboardifyProfile/{id}', [OnboardifyProfileController::class, 'destroy']);
+    Route::post('/updateProfileSetting', [OnboardifyProfileController::class, 'updateProfileSetting']);
+
+    // Onboardify Service
+});
+
+Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {
+    Route::post('/requestTracking', [OnboardifyCustomerDashboardController::class, 'requestTracking']);
+    Route::get('/getUserFormAndChart', [OnboardifyCustomerDashboardController::class, 'getUserFormAndChart']);
+    Route::get('/getboardVisibilityMapping', [OnboardifyCustomerDashboardController::class, 'getboardVisibilityMapping']);
+    Route::get('/requestTrackingActivity/{itemID}', [OnboardifyCustomerDashboardController::class, 'requestTrackingActivity']);
+    Route::get('/getBoardColourMapping', [OnboardifyCustomerDashboardController::class, 'getBoardColourMapping']);
+    Route::get('/getGeneralSettings', [OnboardifyCustomerDashboardController::class, 'getGeneralSettings']);
 });
 
 require __DIR__ . '/auth.php';
