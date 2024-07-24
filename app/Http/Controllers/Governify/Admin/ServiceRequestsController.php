@@ -71,6 +71,17 @@ class ServiceRequestsController extends Controller
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid image format. Please re-upload the image (jpeg|jpg|png).")));
                 }
 
+
+                // Check if a service request with the same title already exists
+                $existingRequest = GovernifyServiceRequest::where('title', $request->title)->first();
+                if ($existingRequest) {
+                    return response()->json([
+                        'response' => [],
+                        'status' => false,
+                        'message' => "A service request with the same title already exists."
+                    ]);
+                }
+
                 $insert_array = array(
                     "title"       => $request->title,
                     "description" => $request->description,
