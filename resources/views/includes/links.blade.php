@@ -4,7 +4,7 @@ $links = [
         'users list' => 'users',
         'board visibilty' => 'board-visiblilty',
         'settings' => 'settings',
-        'create Admin' => 'create-admin',
+        'create Admin/User' => 'create-admin',
     ],
     '2' => [
         'users list' => 'users',

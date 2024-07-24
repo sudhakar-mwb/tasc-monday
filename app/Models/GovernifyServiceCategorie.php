@@ -73,4 +73,14 @@ class GovernifyServiceCategorie extends Model
     public static function getData(string $table_name, array $params = array()) {
         return DB::table( $table_name )->where($params)->get()->toArray();
     }
+
+    public function serviceRequests()
+    {
+        return $this->hasMany(GovernifyServiceRequest::class, 'service_categorie_id');
+    }
+
+    public function serviceFormMappings()
+    {
+        return $this->hasMany(CategoryServiceFormMapping::class, 'categorie_id');
+    }
 }

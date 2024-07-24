@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('site_settings', function (Blueprint $table) {
+        Schema::create('update_notification', function (Blueprint $table) {
             $table->id();
-            $table->string('ui_settings');
-            $table->string('logo');
-            $table->string('status')->default(0);
-            $table->string('domain')->nullable();
+            $table->string('email');
+            $table->text('item_data');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('site_settings');
+        Schema::dropIfExists('update_notification');
     }
 };

@@ -456,7 +456,14 @@ class DashboardController extends Controller
             }
           }
         }';
-    $boardsData = $this->_get($query)['response']['data'];
+    $boardsData = $this->_get($query)['response'];
+    if (isset($boardsData['data']) && !empty($boardsData['data'])) {
+      $boardsData =  $boardsData['data'];
+    }else{
+      $heading = "Board Visibility";
+      $subheading = "Column restrictions can be set per board by selecting respective column boards.";
+      return view('admin.visiblility', compact('heading', 'subheading'));
+    }
 
     if (!empty($boardsData['boards'])) {
       $idArray = array();
@@ -466,6 +473,12 @@ class DashboardController extends Controller
     }
 
     $colourMappingsData = ColourMappings::get();
+    $mondayUsers = MondayUsers::where('role', '=', '0')->whereNotNull('board_id')->latest()->get();
+    if (!empty($mondayUsers)) {
+      $mondayUsersData = $mondayUsers;
+    }else{
+      $mondayUsersData = '';
+    }
 
     if (!empty($colourMappingsData)) {
       $data = json_decode($colourMappingsData, true);
@@ -480,7 +493,7 @@ class DashboardController extends Controller
     // $boards=['3454','5345','34553','5345','3553','3455','4355','34553','35345'];
     $boards = $idArray;
     $subheading = "Column restrictions can be set per board by selecting respective column boards.";
-    return view('admin.visiblility', compact('heading', 'subheading', 'boards', 'coloursData'));
+    return view('admin.visiblility', compact('heading', 'subheading', 'boards', 'coloursData', 'mondayUsersData'));
   }
 
   public function userslist(Request $request)
@@ -489,7 +502,7 @@ class DashboardController extends Controller
     $status     = '';
     $heading    = "Registerd users";
     $subheading = "Stay informed and in control of the overall status of your onboarding requests";
-    $mondayUsers = MondayUsers::where('role', '=', '0')->latest()->get();
+    $mondayUsers = MondayUsers::latest()->get();
     $query = 'query {
               boards(limit: 500) {
                 id
@@ -515,7 +528,12 @@ class DashboardController extends Controller
               }
             }';
     // dd($this->_get($query)['response']);
-    $boardsData = $this->_get($query)['response']['data'];
+    $boardsData = $this->_get($query)['response'];
+    if (isset($boardsData['data']) && !empty($boardsData['data'])) {
+      $boardsData =  $boardsData['data'];
+    }else{
+      return view('admin.users', compact('heading', 'subheading', 'mondayUsers', 'boardsData'));
+    }
     if ($request->isMethod('post')) {
       if (!empty(auth()->user()) && (auth()->user()->role == 2 || auth()->user()->role == 1)) {
         if (!empty($request->board_id) && !empty($request->user_id)) {
@@ -650,14 +668,35 @@ class DashboardController extends Controller
       $datatoUpdate = [
         'columns' => $data,
       ];
-      $criteria = [
-        'board_id' => $dataArray['board'],
+
+
+      if (!empty($dataArray['email'])) {
+        $criteria = [
+          'board_id' => $dataArray['board'],
+          'email' => $dataArray['email'],
+        ];
+        $updateData = [
+          'columns' => $datatoUpdate['columns'],
+          'email'   => $dataArray['email'],
       ];
+        $user     = BoardColumnMappings::find($criteria);
+        $response = BoardColumnMappings::updateOrCreate($criteria, $updateData);
+      }else{
+        $criteria = [
+          'board_id' => $dataArray['board'],
+          'email' => "",
+        ];
+        $user = BoardColumnMappings::find($criteria['board_id']);
+        $response = BoardColumnMappings::updateOrCreate($criteria, $datatoUpdate);
+      }
+      // $criteria = [
+      //   'board_id' => $dataArray['board'],
+      // ];
 
       // Retrieve the existing record
-      $user = BoardColumnMappings::find($criteria['board_id']);
+      // $user = BoardColumnMappings::find($criteria['board_id']);
 
-      $response = BoardColumnMappings::updateOrCreate($criteria, $datatoUpdate);
+      // $response = BoardColumnMappings::updateOrCreate($criteria, $datatoUpdate);
 
       // Check if the record was updated
       if ($user && $response->wasChanged()) {
@@ -765,8 +804,8 @@ class DashboardController extends Controller
     $dataToSave = array(
       'name'         => trim($request['name']),
       'email'        => trim($request['email']),
-      'phone'        => '',
-      'company_name' => '',
+      'phone'        => trim($request['phone'] ?? ''),
+      'company_name' => trim($request['company_name'] ?? ''),
       'role'         => trim($request['role']),
       'created_at'   => date("Y-m-d H:i:s"),
       'updated_at'   => date("Y-m-d H:i:s"),
@@ -776,12 +815,18 @@ class DashboardController extends Controller
     $insertUserInDB = MondayUsers::createUser($dataToSave);
 
     if ($insertUserInDB['status'] == "success") {
-
+      MondayUsers::setUser(['email' => $request['email']], ['status' => 1]);
       $msg    = "Admin Created Successfully.";
-      if ($request['role'] == 1)
+      if ($request['role'] == 1) {
         $msg    = "Super admin Created Successfully.";
       $status = "success";
       return view('admin.addAdmin', compact('heading', 'subheading',  'msg', 'status'));
+    } elseif ($request['role'] == 0) {
+
+      $msg    = "User Created Successfully.";
+      $status = "success";
+      return view('admin.addAdmin', compact('heading', 'subheading',  'msg', 'status'));
+    }
     } elseif ($insertUserInDB['status'] == "already") {
       $msg    = "Admin Already Exists.";
       $status = "success";

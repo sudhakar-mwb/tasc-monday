@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Governify\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CategoryServiceFormMapping;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use App\Models\GovernifyServiceCategorie;
+use App\Models\GovernifyServiceRequest;
+use App\Models\GovernifyServiceRequestForms;
 use App\Models\GovernifySiteSetting;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
@@ -51,14 +54,14 @@ class ServiceCategoriesController extends Controller
                 $this->validate($request, [
                     'icon'        => "required|string",
                     'title'       => "required|string|unique:governify_service_categories",
-                    'subtitle'    => "required|string",
+                    // 'subtitle'    => "required|string",
                     'description' => "required|string",
                 ], $this->getErrorMessages());
 
                 $insert_array = array(
                     "icon"       => $input['icon'],
                     "title"      => $input['title'],
-                    "subtitle"   => $input['subtitle'],
+                    // "subtitle"   => $input['subtitle'],
                     "description" => $input['description'],
                     "created_at" => date("Y-m-d H:i:s"),
                     "updated_at" => date("Y-m-d H:i:s")
@@ -122,7 +125,7 @@ class ServiceCategoriesController extends Controller
                     'icon'        => "required|string",
                     // 'title'       => [ 'required','string',Rule::unique('governify_service_categories')->ignore($checkStoreExits[0]->id)],
                     'title'       => "required|string|unique:governify_service_categories,title," . $checkStoreExits[0]->id,
-                    'subtitle'    => "required|string",
+                    // 'subtitle'    => "required|string",
                     'description' => "required|string",
                 ], $this->getErrorMessages());
 
@@ -132,7 +135,7 @@ class ServiceCategoriesController extends Controller
                 $update_array = array(
                     'icon'        => $input['icon'],
                     'title'       => $input['title'],
-                    'subtitle'    => $input['subtitle'],
+                    // 'subtitle'    => $input['subtitle'],
                     'description' => $input['description'],
                     "updated_at"  => date("Y-m-d H:i:s")
                 );
@@ -179,6 +182,12 @@ class ServiceCategoriesController extends Controller
                     'deleted_at' => date('Y-m-d H:i:s')
                 );
                 // $deleteServiceCategorie = GovernifyServiceCategorie::updateTableData('governify_service_categories', $params, $dataToUpdate);
+                // Delete dependent records
+                // Update the service_categorie_id to null for the given id
+                GovernifyServiceRequest::where('service_categorie_id', $id)->update(['service_categorie_id' => null]);
+                CategoryServiceFormMapping::where('categorie_id', $id)->delete();
+                // Delete the parent record
+                // Hard Delete
                 $deleteServiceCategorie = GovernifyServiceCategorie::where('id', $id)->delete();
                 if ($deleteServiceCategorie > 0) {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Service Category Deleted Successfully.")));
@@ -186,6 +195,9 @@ class ServiceCategoriesController extends Controller
                     return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Category Not Deleted.")));
                 }
 
+                //Soft Delete
+                /*
+                $deleteServiceCategorie = GovernifyServiceCategorie::updateTableData('governify_service_categories', $params, $dataToUpdate);
                 if ($deleteServiceCategorie['status'] == "success") {
                     // $responseData = array(
                     //     'access_token' => $this->refreshToken()->original[ 'access_token' ]
@@ -194,6 +206,7 @@ class ServiceCategoriesController extends Controller
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' =>  "Service Category Not Deleted.")));
                 }
+                */
             }
             return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Categorie Data Not Found. Invalid Service Categorie Id Provided.")));
         }
@@ -219,9 +232,9 @@ class ServiceCategoriesController extends Controller
                 $criteria = ['status' => 0];
                 $get_data = GovernifySiteSetting::where('id', '=', 1)->first();
 
-                // $this->validate($request, [
-                //     'ui_settings' => 'required|json',
-                // ], $this->getErrorMessages());
+                $this->validate($request, [
+                    'board_id' => 'required',
+                ], $this->getErrorMessages());
 
                 $insert_array = array(
                     "ui_settings" => $request->ui_settings,
@@ -260,6 +273,7 @@ class ServiceCategoriesController extends Controller
 
                 $datatoUpdate['ui_settings'] = json_encode(!empty($insert_array['ui_settings']) ? $insert_array['ui_settings'] : '');
                 $datatoUpdate['status'] = 0;
+                $datatoUpdate['board_id'] = $request['board_id'];
 
                 if (empty($get_data)) {
                     $insert = GovernifySiteSetting::where($criteria)->create($datatoUpdate);
@@ -352,6 +366,191 @@ class ServiceCategoriesController extends Controller
                 }
                 $dataToRender = GovernifyServiceCategorie::whereNull('deleted_at')->orderBy('service_categories_index')->get();
                 return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Service categories order updated successfully.")));
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function getCategoriesWithAllService (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                // $dataToRender = GovernifyServiceCategorie::whereNull('deleted_at')->orderBy('service_categories_index')->get();
+                $dataToRender = GovernifyServiceCategorie::with('serviceRequests')->whereNull('deleted_at')->orderByRaw('CASE WHEN service_categories_index IS NULL THEN 1 ELSE 0 END, service_categories_index')->get();
+                return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Governify Service Categorie Data.")));
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function rejectServiceCategoryMapping (Request $request){
+
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $input = $request->json()->all();
+                $this->validate($request, [
+                    'category_id'        => 'required',
+                    'service_id'        => 'required',
+                ], $this->getErrorMessages());
+                $CategoryServiceFormMappingData = CategoryServiceFormMapping::where(['categorie_id'=> $input['category_id'], 'service_id' => $input['service_id']])->get();
+                if ($CategoryServiceFormMappingData->isNotEmpty()) {
+                    $firstItem = $CategoryServiceFormMappingData->first();
+                    $GovernifyServiceRequestFormsResponse = GovernifyServiceRequestForms::where(['id'=> $firstItem->service_form_id])->get();
+                    $decodedData = json_decode($GovernifyServiceRequestFormsResponse, true);
+                    $formName = $decodedData[0]['name'];
+                   
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => $formName." already assigned to the same service and category.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => 'No Mapping found')));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function listOfOverallStatus(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
+            $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
+            if ($userId) {
+                $query = 'query {
+                    boards( ids: '.$boardId.') {
+                    id
+                    name
+                    state
+                    permissions
+                    board_kind
+                    columns {
+                              title
+                              id
+                              archived
+                              description
+                              settings_str
+                              title
+                              type
+                              width
+                          }
+                        }
+                        }';
+
+                $boardsData = $this->_getMondayData($query);
+
+                if (!empty($boardsData['response']['data']) && !empty($boardsData['response']['data']['boards'] && $boardsData['response']['data']['boards'][0]['columns'])) {
+                    foreach ($boardsData['response']['data']['boards'][0]['columns'] as $item) {
+                        if ($item['id'] === 'status__1') {
+                            $settings_str = json_decode($item['settings_str'], true);
+                            $manipulatedData = [];
+                            foreach ($settings_str['labels'] as $value => $label) {
+                                $manipulatedData[] = ['label' => $label, 'value' => $value];
+                            }
+                            break;
+                        }
+                    }
+                    if (!empty($manipulatedData)) {
+                        return response(json_encode(array('response' => $manipulatedData, 'status' => true, 'message' => "Governify overall status data.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify overall status data not fetch.")));
+                    }
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify overall status data not found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+    public function fetchAllBoards(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $page      = 1;
+                $tolalData  = 1000;
+                $after     = 'null';
+                $mondayData = [];
+                do {
+                    $query = 'query {
+                boards (limit : ' . $tolalData . ', page : ' . $page . '){
+                id
+                name
+                state
+                permissions
+                board_kind
+            }
+        }';
+
+                    $boardsData = $this->_getMondayData($query);
+
+                    if (!empty($boardsData['response']['data']['boards'])) {
+                        // $page += $page;
+                        $page++;
+                    } else {
+                        $after = '';
+                    }
+                    $curr_data = isset($boardsData['response']['data']['boards']) ? $boardsData['response']['data']['boards'] : [];
+                    if (!empty($curr_data)) {
+                        if (count($curr_data))
+                            foreach ($curr_data as $item) {
+                                $mondayData[] = $item;
+                            }
+                    }
+                    $newResponse = $boardsData;
+                } while (!empty($after));
+                unset($newResponse['response']['data']['boards']);
+                $newResponse['response']['data']['boards'] = $mondayData;
+                return $newResponse;
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+    
+    public function fetchBoardWiseColumn($id)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                if (!empty($id)) {
+                    $query = 'query
+                                      {
+                                          boards(ids: ' . $id . ') {
+                                              columns {
+                                              id
+                                              title
+                                              description
+                                              type
+                                              settings_str
+                                              archived
+                                              archived
+                                              width
+                                              }
+                                          }
+                                      }';
+                    $boardsData = $this->_getMondayData($query);
+                    if (!empty($boardsData['response']['data']) && !empty($boardsData['response']['data']['boards']) && !empty($boardsData['response']['data']['boards'][0]['columns'])) {
+                        return response(json_encode(array('response' => $boardsData['response']['data']['boards'][0]['columns'], 'status' => true, 'message' => "Board Columns Data Found.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Columns Not Data Found.")));
+                    }
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Id Not Found")));
+                }
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }

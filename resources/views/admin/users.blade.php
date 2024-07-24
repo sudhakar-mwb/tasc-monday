@@ -50,6 +50,7 @@ if (isset($_GET['success'])) {
                     <th scope="col " class="bg-success site-bg text-light">Assign Board</th>
                     {{-- <th scope="col " class="bg-success site-bg text-light">Password</th> --}}
                     <th scope="col " class="bg-success site-bg text-light">Created Date</th>
+                    <th scope="col " class="bg-success site-bg text-light"> Role </th>
                     <th scope="col " class="bg-success site-bg text-light">Forgot Pass</th>
                     <th scope="col " class="bg-success site-bg text-light">Delete</th>
                 </tr>
@@ -80,16 +81,20 @@ if (isset($_GET['success'])) {
                                     class="board_change form-select m-0 rounded-0 h-100 "
                                     aria-label="Default select example">
                                     <option class=" fs-5">Not Assigned</option>
-                                    @if (count($boardsData['boards']) > 0)
-                                        @foreach ($boardsData['boards'] as $board)
-                                            <option class=" fs-5" value="{{ $board['id'] }}"
-                                                {{ $board['id'] == $user->board_id ? 'selected' : '' }}>
-                                                {{ $board['name'] }}
-                                            </option>
-                                        @endforeach
+                                    @if (!empty($boardsData)) 
+                                        @if (count($boardsData['boards']) > 0)
+                                            @foreach ($boardsData['boards'] as $board)
+                                                <option class=" fs-5" value="{{ $board['id'] }}"
+                                                    {{ $board['id'] == $user->board_id ? 'selected' : '' }}>
+                                                    {{ $board['name'] }}
+                                                </option>
+                                            @endforeach
+                                        @endif
                                     @endif
                                 </select></td>
                             <td>{{ $user->created_at }}</td>
+                            <td>{{ $user->role == 0 ? 'User' : ($user->role == 1 ? 'Super Admin' : 'Admin')}}
+                            </td>
                             <td class="text-info p-0 btn-primary">
                                 <a href="{{ url('/') }}/onboardify/forgot?email={{ $user->email }}"
                                     class="btn m-0 fs-5 rounded-0" style="display: block !important">

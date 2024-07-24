@@ -11,6 +11,6 @@ class IncorpifySiteSettings extends Model
 
     protected $table = 'incorpify_site_setting';
     
-    protected $fillable = ['id', 'ui_settings', 'logo_name', 'logo_location','status' ,'updated_at', 'created_at'];
+    protected $fillable = ['id', 'ui_settings', 'logo_name', 'logo_location', 'board_id', 'status' ,'updated_at', 'created_at'];
 
 }

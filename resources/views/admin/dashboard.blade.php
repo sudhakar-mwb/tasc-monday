@@ -55,7 +55,7 @@ $settings = Session::get('settings');
     <div id="notification-banner" style="display:none"
         class="position-relative custom-banner banner w-100 bg-success  text-center p-2"
         style="background-color:{{ $settings->banner_bg }} !important">
-        <div class="banner-content text-light" style="padding-right:50px;padding-left:50px">
+        <div class="banner-content text-light" style="font-size:1rem;font-weight:400;padding-right:50px;padding-left:50px">
             {{ $settings->banner_content }} </div>
         <button id="remove-n-btn" style="position:absolute;right:0;margin:8px;height: calc(100% - 16px);"
             class="remove-notification text-light p-0 top-0 mx-2 fs-6 px-2 outline-0 bg-transparent border-0">

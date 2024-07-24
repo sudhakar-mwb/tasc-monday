@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('incorpify_site_setting', function (Blueprint $table) {
+        Schema::create('tasc360_site_settings', function (Blueprint $table) {
             $table->id();
-            $table->json('ui_settings');
+            $table->string('ui_settings');
             $table->string('logo_name')->nullable();
             $table->string('logo_location')->nullable();
-            $table->string('meeting_link')->nullable();
-            $table->integer('status')->default(0);
-            $table->string('domain_id')->nullable();
+            $table->string('status')->default(0);
+            $table->string('domain')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('incorpify_site_setting');
+        Schema::dropIfExists('tasc360_site_settings');
     }
 };

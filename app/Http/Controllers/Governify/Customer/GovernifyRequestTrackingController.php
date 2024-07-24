@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Governify\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\GovernifySiteSetting;
 use App\Models\MondayUsers;
 use App\Traits\MondayApis;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class GovernifyRequestTrackingController extends Controller
 {
     use MondayApis;
 
-    public function requestTracking(Request $request)
+    public function requestTrackingUpdate(Request $request)
     {
 
         // Validate the input
@@ -54,8 +55,10 @@ class GovernifyRequestTrackingController extends Controller
         $limit  = !empty($request->limit)  ? $request->limit  : 10;
         $cursor = !empty($cursorData) ? $cursorData : 'cursor:'.'null';
         //Invalid request: You must provide either a 'query_params' or a 'cursor', but not both. Use 'query_params' for the initial request and 'cursor' for paginated requests.
+        $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
+        $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
         $query = 'query {
-            boards(limit: 500, ids: 1493464821) {
+            boards(limit: 500, ids: '.$boardId.') {
             id
             name
             state
@@ -256,11 +259,13 @@ class GovernifyRequestTrackingController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $boardId = 1493464821;
+                $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
+                $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
 
                 $after      = 'ddd';
                 $tolalData  = 500;
                 $cursor     = 'null';
+                $mondayData = [];
                 do {
                     $query = 'query {
                         boards( ids: ' . $boardId . ') {
@@ -510,5 +515,127 @@ class GovernifyRequestTrackingController extends Controller
         $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curl_errors = curl_error($ch);
         return ['status_code' => $status_code, 'response' => json_decode($response, true), 'errors' => $curl_errors];
+    }
+
+    public function requestTracking(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            $getUser = MondayUsers::getUser(['id' => $userId]);
+            if (!empty($getUser) && !empty($getUser->email)) {
+                $userEmail = $getUser->email;
+            }else{
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+            }
+            if ($userId) {
+                $after      = 'ddd';
+                $tolalData  = 200;
+                $cursor     = 'null';
+                $mondayData = [];
+                $GovernifySiteSettingData = GovernifySiteSetting::where('id', '=', 1)->first();
+                $boardId = !empty($GovernifySiteSettingData['board_id']) ? $GovernifySiteSettingData['board_id'] : 1493464821;
+                $ui_settings = json_decode($GovernifySiteSettingData['ui_settings'], true);
+                $email = !empty($ui_settings['selectedColumn']['email']) ? $ui_settings['selectedColumn']['email'] : 'people0__1';
+                do {
+                    $query = 'query {
+                boards( ids: '.$boardId.') {
+                id
+                name
+                state
+                permissions
+                board_kind
+                columns {
+                          title
+                          id
+                          archived
+                          description
+                          settings_str
+                          title
+                          type
+                          width
+                      }
+                      items_page (limit: ' . $tolalData . ', cursor:' . $cursor . ',query_params: {rules: [{column_id: "'.$email.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
+                          cursor,
+                          items {
+                              created_at
+                              creator_id
+                              email
+                              id
+                              name
+                              relative_link
+                              state
+                              updated_at
+                              url
+                              column_values {
+                                 id
+                                 value
+                                 type
+                                 text
+                                 ... on StatusValue  {
+                                    label
+                                    update_id
+                                 }
+                             }updates (limit: 200) {
+                                assets {
+                                    created_at
+                                    file_extension
+                                    file_size
+                                    id
+                                    name
+                                    original_geometry
+                                    public_url
+                                    url
+                                    url_thumbnail 
+                                    }
+                                body
+                                text_body
+                                created_at
+                                creator_id
+                                id
+                                item_id
+                                replies {
+                                    body
+                                    created_at
+                                    creator_id
+                                    id
+                                    text_body
+                                    updated_at
+                                }
+                                updated_at
+                                text_body
+                                creator {
+                                  name
+                                  id
+                                  email
+                                }
+                              } 
+                          }
+                      }
+              }
+            }';
+
+                    $boardsData = $this->_getMondayData($query);
+
+                    if (!empty($boardsData['response']['data']['boards'][0]['items_page']['cursor'])) {
+                        $cursor =  "\"" . $boardsData['response']['data']['boards'][0]['items_page']['cursor'] . "\"";
+                    } else {
+                        $after = '';
+                    }
+                    $curr_data = isset($boardsData['response']['data']['boards'][0]['items_page']['items']) ? $boardsData['response']['data']['boards'][0]['items_page']['items'] : [];
+                    if (!empty($curr_data)) {
+                        if (count($curr_data))
+                            foreach ($curr_data as $item) {
+                                $mondayData[] = $item;
+                            }
+                    }
+                    $newResponse = $boardsData;
+                } while (!empty($after));
+                unset($newResponse['response']['data']['boards'][0]['items_page']['items']);
+                $newResponse['response']['data']['boards'][0]['items_page']['items'] = $mondayData;
+                return $newResponse;
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
     }
 }

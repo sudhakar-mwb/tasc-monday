@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('site_settings', function (Blueprint $table) {
-            $table->id();
-            $table->string('ui_settings');
-            $table->string('logo');
-            $table->string('status')->default(0);
-            $table->string('domain')->nullable();
-            $table->timestamps();
+        Schema::table('incorpify_site_setting', function (Blueprint $table) {
+            $table->integer('board_id')->nullable();
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('site_settings');
+        Schema::table('incorpify_site_setting', function (Blueprint $table) {
+            $table->dropColumn('board_id');
+        });
     }
 };
