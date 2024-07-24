@@ -1238,14 +1238,14 @@ class DashboardController extends Controller
             $graphqlResults = [];
 
             if (isset($incorpifyData['board_id'])) {
-                $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems', $email, $payload['incorpify']['emailColumnId']);
+                $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems', $email, $payload['incorpify']['emailColumnId'], $payload['incorpify']['statusColumnId']);
                 $graphqlResults['Incorpify'] = $this->_getMondayData($incorpifyQuery);
             } else {
                 $graphqlResults['Incorpify'] = [];
             }
 
             if (isset($siteSettingsGovernify['board_id'])) {
-                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId']);
+                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId'], $payload['governify']['statusColumnId']);
                 
                 $graphqlResults['Governify'] = $this->_getMondayData($governifyQuery);
             } else {
@@ -1324,6 +1324,10 @@ class DashboardController extends Controller
                       name
                       created_at
                       updated_at
+
+                      column_values(ids: ["'.$statusColumnId.'"]){
+                        id text
+                      }
                     }
                   }
                 }
@@ -1340,6 +1344,10 @@ class DashboardController extends Controller
                           id
                           created_at
                           updated_at
+
+                          column_values(ids: ["'.$statusColumnId.'"]){
+                            id text
+                          }
                         }
                       }
                   }
