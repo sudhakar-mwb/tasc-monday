@@ -490,4 +490,23 @@ class DashboardController extends Controller
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
+
+    public function getAllCustomer(Request $request)
+    {
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $mondayUsers = MondayUsers::where('role', '=', 0)->get();
+                if (!empty($mondayUsers)) {
+                    return response(json_encode(array('response' => $mondayUsers, 'status' => true, 'message' => "Users data.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Users data not found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }

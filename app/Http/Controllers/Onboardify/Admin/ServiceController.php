@@ -31,7 +31,7 @@ class ServiceController extends Controller
             if ($userId) {
                 // $dataToRender =  GovernifyServiceRequest::with(['serviceCategorie','form'])->whereNull('deleted_at')->orderBy('service_categories_request_index')->get();
                 $dataToRender =  OnboardifyService::whereNull('deleted_at')->get();
-                if (!empty($dataToRender)) {
+                if ($dataToRender->isNotEmpty()) {
                     return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Onboardify Service Request Data.")));
                 }else{
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Service Request Data Not Found.")));
@@ -56,12 +56,12 @@ class ServiceController extends Controller
                 $input = $request->json()->all();
 
                 $this->validate($request, [
-                    'title'       => "required|string|unique:onboardify_service",
-                    // 'title'       => "required|string",
+                    // 'title'       => "required|string|unique:onboardify_service",
+                    'title'       => "required|string",
                     'description' => "required|string",
                     'image_name'  => "required",
                     'image'       => "required",
-                    'form_embed_code'    => "required",
+                    'service_setting_data'  => "required",
                     'board_id' => 'required',
                 ], $this->getErrorMessages());
 
@@ -78,7 +78,7 @@ class ServiceController extends Controller
                 $insert_array = array(
                     "title"       => $request->title,
                     "description" => $request->description,
-                    "form_embed_code" => $request->form_embed_code,
+                    "service_setting_data" => $request->service_setting_data,
                     "board_id" => $request->board_id,
                     "created_at" => date("Y-m-d H:i:s"),
                     "updated_at" => date("Y-m-d H:i:s")
@@ -114,6 +114,8 @@ class ServiceController extends Controller
                 //     return response(json_encode(array('response' => true, 'status' => false, 'message' => 'Image upload failed')));
                 // }
                 // $insert = GovernifyServiceCategorie::insertTableData("governify_service_categories", $insert_array);
+                // Convert the 'service_setting_data' array to a JSON string
+                $insert_array['service_setting_data'] = json_encode($insert_array['service_setting_data']);
                 $insert = OnboardifyService::create($insert_array);
                 if ($insert) {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Service Created Successfully.")));

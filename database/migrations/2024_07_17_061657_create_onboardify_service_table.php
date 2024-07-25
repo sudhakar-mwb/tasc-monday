@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description');
             $table->string('image');
             $table->string('file_location')->nullable();
-            $table->string('form_embed_code');
+            $table->longText('service_setting_data');
             $table->string('board_id');
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
