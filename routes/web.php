@@ -214,6 +214,7 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
 
 Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isAdmin"]], function () {
     Route::get('/userListing', [OnboardifyDashboardController::class, 'userListing']);
+    Route::get('/getAllCustomer', [OnboardifyDashboardController::class, 'getAllCustomer']);
     Route::post('/assignBoard', [OnboardifyDashboardController::class, 'assignBoard']);
     Route::delete('/userDelete/{id}', [OnboardifyDashboardController::class, 'userDelete']);
 
@@ -226,6 +227,7 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
     Route::post('/addAdminOrUser', [OnboardifyDashboardController::class, 'addAdminOrUser']);
     Route::get('/get-board-columns/{id}', [OnboardifyDashboardController::class, 'getBoardColumns']);
     Route::get('/fetchAllBoards',  [OnboardifyDashboardController::class, 'fetchAllBoards']);
+        // Onboardify Service
     Route::get('/serviceRequests', [OnboardifyServiceController::class, 'index']);
     Route::post('/createServiceRequests',  [OnboardifyServiceController::class, 'createServiceRequests']);
     Route::put('/serviceRequests/{id}', [OnboardifyServiceController::class, 'updateServiceRequests']);
@@ -239,7 +241,7 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
     Route::delete('/onboardifyProfile/{id}', [OnboardifyProfileController::class, 'destroy']);
     Route::post('/updateProfileSetting', [OnboardifyProfileController::class, 'updateProfileSetting']);
 
-    // Onboardify Service
+
 });
 
 Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api", "isUser"]], function () {

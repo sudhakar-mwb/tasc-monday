@@ -11,5 +11,5 @@ class OnboardifyService extends Model
 
     protected $table = 'onboardify_service';
     
-    protected $fillable = ['title', 'description', 'image', 'file_location',  'form_embed_code', 'board_id', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['title', 'description', 'image', 'file_location',  'service_setting_data', 'board_id', 'created_at', 'updated_at', 'deleted_at'];
 }
