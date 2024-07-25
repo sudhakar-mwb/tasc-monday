@@ -56,9 +56,10 @@ class DashboardController extends Controller
                         return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mapping Data Not Found.")));
                     }
                 }
-                if (empty($emailKeyForFilter)) {
-                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "The required key for Onboardify board visibility is missing.")));
-                }
+                // if (empty($emailKeyForFilter)) {
+                //     return response(json_encode(array('response' => [], 'status' => false, 'message' => "The required key for Onboardify board visibility is missing.")));
+                // }
+                // items_page (query_params: {rules: [{column_id: "'.$emailKeyForFilter.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
                 do {
                     $query = 'query {
                 boards( ids: '.$boardId.') {
@@ -77,7 +78,7 @@ class DashboardController extends Controller
                           type
                           width
                       }
-                      items_page (query_params: {rules: [{column_id: "'.$emailKeyForFilter.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
+                      items_page {
                           cursor,
                           items {
                               created_at
