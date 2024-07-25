@@ -1195,7 +1195,7 @@ class DashboardController extends Controller
             $payload = $request->json()->all();
 
             $requiredKeys = ['incorpify', 'governify', 'onboardify'];
-            $allowedStatuses = ["completed", "pending", "canceled", "awaiting action"];
+            $allowedStatuses = ["in progress", "completed", "pending", "canceled", "awaiting action"];
 
             foreach ($requiredKeys as $key) {
                 if (!isset($payload[$key]['emailColumnId']) || empty($payload[$key]['emailColumnId']) ||
@@ -1342,12 +1342,13 @@ class DashboardController extends Controller
     {
 
         $allowedStatus = [
+            "in progress"=>"0",
             "completed"=>"1",
             "pending"=>"2",
             "canceled"=>"3",
             "awaiting action"=>"5"
         ];
-        
+
 
         if($type=='items') {
 
