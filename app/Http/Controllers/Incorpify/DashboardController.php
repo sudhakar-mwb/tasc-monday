@@ -1204,8 +1204,11 @@ class DashboardController extends Controller
                 }
             }
 
-            if (!isset($payload['status']) || !in_array(strtolower($payload['status']), $allowedStatuses)) {
-                return $this->returnData("Status is required and must be one of the following: " . implode(", ", $allowedStatuses), false);
+            if(!empty($payload['status'])){
+
+                if (!isset($payload['status']) || !in_array(strtolower($payload['status']), $allowedStatuses)) {
+                    return $this->returnData("Status is required and must be one of the following: " . implode(", ", $allowedStatuses), false);
+                }
             }
 
             // Parse and verify the token
@@ -1246,8 +1249,12 @@ class DashboardController extends Controller
             if (isset($incorpifyData['board_id'])) {
                 $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems', $email, $payload['incorpify']['emailColumnId'], $payload['incorpify']['statusColumnId']);
                 $response = $this->_getMondayData($incorpifyQuery);
-                $filterResult = $this->filterSubitemsByStatus($response, $payload['status']);
-                $graphqlResults['Incorpify'] = $filterResult;
+                if(!isset($payload['status']) || empty($payload['status'])){
+                    $graphqlResults['Incorpify'] = $response;
+                } else {
+                    $filterResult = $this->filterSubitemsByStatus($response, $payload['status']);
+                    $graphqlResults['Incorpify'] = $filterResult;
+                }
 
 
             } else {
@@ -1256,7 +1263,7 @@ class DashboardController extends Controller
 
             if (isset($siteSettingsGovernify['board_id'])) {
 
-                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId'], $payload['governify']['statusColumnId'], $payload['status']);
+                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId'], $payload['governify']['statusColumnId'], $payload['status']??null);
                 
                 $graphqlResults['Governify'] = $this->_getMondayData($governifyQuery);
             } else {
@@ -1349,31 +1356,60 @@ class DashboardController extends Controller
             "awaiting action"=>"5"
         ];
 
+        if($status==null){
+            $allowedStatus = [0,1,2,3,4,5];
+        }
 
         if($type=='items') {
 
-            $statusValue = strtolower($status);
-            return 'query {
-                boards(ids: '.$boardId.') {
-                  items_page(query_params: {
-                    rules: [
-                      {column_id: "'.$emailColumnId.'", compare_value: ["'.$email.'"], operator: any_of},
-                      {column_id: "'.$statusColumnId.'", compare_value: ['.$allowedStatus[$statusValue].'], operator: any_of}
-                    ]
-                  }) {
-                    items {
-                      id
-                      name
-                      created_at
-                      updated_at
 
-                      column_values(ids: ["'.$statusColumnId.'"]){
-                        id text
+            if($status==null){
+                return 'query {
+                    boards(ids: '.$boardId.') {
+                      items_page(query_params: {
+                        rules: [
+                          {column_id: "'.$emailColumnId.'", compare_value: ["'.$email.'"], operator: any_of}
+                        ]
+                      }) {
+                        items {
+                          id
+                          name
+                          created_at
+                          updated_at
+    
+                          column_values(ids: ["'.$statusColumnId.'"]){
+                            id text
+                          }
+                        }
                       }
                     }
-                  }
-                }
-              }';
+                  }';
+            } else {
+
+                $statusValue = strtolower($status);
+                return 'query {
+                    boards(ids: '.$boardId.') {
+                      items_page(query_params: {
+                        rules: [
+                          {column_id: "'.$emailColumnId.'", compare_value: ["'.$email.'"], operator: any_of},
+                          {column_id: "'.$statusColumnId.'", compare_value: ['.$allowedStatus[$statusValue].'], operator: any_of}
+                        ]
+                      }) {
+                        items {
+                          id
+                          name
+                          created_at
+                          updated_at
+    
+                          column_values(ids: ["'.$statusColumnId.'"]){
+                            id text
+                          }
+                        }
+                      }
+                    }
+                  }';
+            }
+           
         } elseif ($type=='subitems'){
             return '{
                 boards(ids: '.$boardId.') {
