@@ -203,4 +203,22 @@ class ProfileController extends Controller
             "min"   => ":attribute should not be less then :min characters."
         ];
     }
+
+    public function allProfileWithServices (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $dataToRender =  OnboardifyProfiles::with('services')->get();
+                if (!empty($dataToRender)) {
+                    return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profile And Services Data Not Found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }

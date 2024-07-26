@@ -210,12 +210,12 @@ class ServiceController extends Controller
                     $insert_array = array(
                         "title" => $request->title,
                         "description" => $request->description,
-                        "form_embed_code" => $request->form_embed_code,
+                        "profile_id" => $request->profile_id,
                         "board_id" => $request->board_id,
                         "updated_at" => date("Y-m-d H:i:s")
                     );
 
-echo '<pre>'; print_r( $insert_array ); echo '</pre>';die('just_die_here_'.__FILE__.' Function -> '.__FUNCTION__.__LINE__);
+
                     if ($request->image) {
                         $timestamp    = now()->timestamp;
                         $imageContent = file_get_contents($request->image);
@@ -231,9 +231,17 @@ echo '<pre>'; print_r( $insert_array ); echo '</pre>';die('just_die_here_'.__FIL
                         }
                     }
 
+                    /*
                     $update = $serviceRequest->update($insert_array);
                     if ($update) {
                         return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Service Request Updated Successfully.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Service Request Not Updated.")));
+                    }
+                    */
+                    $update = GovernifyServiceCategorie::updateTableData("onboardify_service", array("id" => $serviceRequest['id']), $insert_array);
+                    if ($update['status'] == 'success') {
+                        return response(json_encode(array('response' => [$update['data']], 'status' => true, 'message' =>  "Onboardify Service Request Updated Successfully.")));
                     } else {
                         return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Service Request Not Updated.")));
                     }

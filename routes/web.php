@@ -240,6 +240,7 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
     Route::put('/onboardifyProfile/{id}', [OnboardifyProfileController::class, 'editOnboardifyProfile']);
     Route::delete('/onboardifyProfile/{id}', [OnboardifyProfileController::class, 'destroy']);
     Route::post('/updateProfileSetting', [OnboardifyProfileController::class, 'updateProfileSetting']);
+    Route::get('/allProfileWithServices', [OnboardifyProfileController::class, 'allProfileWithServices']);
 
 
 });
