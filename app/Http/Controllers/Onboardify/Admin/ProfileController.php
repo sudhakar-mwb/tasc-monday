@@ -50,7 +50,7 @@ class ProfileController extends Controller
             if ($userId) {
                 $input = $request->json()->all();
                 $this->validate($request, [
-                    'title'  => 'required',
+                    'title'  => 'required|string|unique:onboardify_profiles',
                     'users'  => 'required',
                 ], $this->getErrorMessages());
                 $insert_array = array(
@@ -61,7 +61,7 @@ class ProfileController extends Controller
                 );
                 $insert = GovernifyServiceCategorie::insertTableData("onboardify_profiles", $insert_array);
                 if ($insert['status'] == 'success') {
-                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Profile Created Successfully.")));
+                    return response(json_encode(array('response' => [$insert['data']], 'status' => true, 'message' => "Onboardify Profile Created Successfully.")));
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profile Not Created.")));
                 }
@@ -161,7 +161,7 @@ class ProfileController extends Controller
 
                 if (!empty($OnboardifyProfilesData)) {
                     $this->validate($request, [
-                        'title'  => 'required',
+                        'title'  => 'required|string|unique:onboardify_profiles,title,' . $OnboardifyProfilesData['title'],
                         'users'  => 'required',
                     ], $this->getErrorMessages());
                     $insert_array = array(
@@ -169,11 +169,18 @@ class ProfileController extends Controller
                         "users" => $request->users,
                         "updated_at" => date("Y-m-d H:i:s")
                     );
-                    $update = $OnboardifyProfilesData->update($insert_array);
-                    if ($update) {
-                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Profile Updated Successfully.")));
+                    // $update = $OnboardifyProfilesData->update($insert_array);
+                    // if ($update) {
+                    //     return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Profile Updated Successfully.")));
+                    // } else {
+                    //     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profile Not Updated.")));
+                    // }
+
+                    $update = GovernifyServiceCategorie::updateTableData("onboardify_profiles", array("id" => $OnboardifyProfilesData['id']), $insert_array);
+                    if ($update['status'] == 'success') {
+                        return response(json_encode(array('response' => [$update['data']], 'status' => true, 'message' =>  "Service Category Updated Successfully.")));
                     } else {
-                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profile Not Updated.")));
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Category Not Updated.")));
                     }
                 }else{
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profiles Data Not Found. Invalid Onboardify Profiles Id Provided.")));
