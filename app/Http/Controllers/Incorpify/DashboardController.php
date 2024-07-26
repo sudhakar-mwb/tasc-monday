@@ -1439,31 +1439,57 @@ class DashboardController extends Controller
     public function saveTascSiteSettings(Request $request){
 
         // Validate the incoming request data
-    $validatedData = $request->validate([
-        'ui_settings' => 'required|array',
-        'quick_access' => 'required|array',
-        'slider_images' => 'required|array',
-    ]);
+        $validatedData = $request->validate([
+            'ui_settings' => 'required|array',
+            'quick_access' => 'required|array',
+            'slider_images' => 'required|array',
+        ]);
 
-    // Assuming there's only one record you want to update repeatedly, you can use a fixed identifier or find the first record
-    $tasc360Setting = Tasc360Setting::first();
+        // Assuming there's only one record you want to update repeatedly, you can use a fixed identifier or find the first record
+        $tasc360Setting = Tasc360Setting::first();
 
-    // If the record doesn't exist, create it
-    if (!$tasc360Setting) {
-        $tasc360Setting = new Tasc360Setting();
+        // If the record doesn't exist, create it
+        if (!$tasc360Setting) {
+            $tasc360Setting = new Tasc360Setting();
+        }
+
+        // Update the settings
+        $tasc360Setting->ui_settings = $validatedData['ui_settings'];
+        $tasc360Setting->quick_access = $validatedData['quick_access'];
+        $tasc360Setting->slider_images = $validatedData['slider_images'];
+
+        // Save the record
+        $tasc360Setting->save();
+
+        // Return a JSON response with the created or updated instance
+        return $this->returnData($tasc360Setting);
     }
 
-    // Update the settings
-    $tasc360Setting->ui_settings = $validatedData['ui_settings'];
-    $tasc360Setting->quick_access = $validatedData['quick_access'];
-    $tasc360Setting->slider_images = $validatedData['slider_images'];
+    public function getTascSiteSettings(Request $request){
 
-    // Save the record
-    $tasc360Setting->save();
 
-    // Return a JSON response with the created or updated instance
-    return response()->json($tasc360Setting, 201);
+         // Retrieve all records from the Tasc360Setting model
+        $tasc360Settings = Tasc360Setting::all();
+
+        // Return a JSON response with all the settings
+        return $this->returnData($tasc360Settings);
+
     }
+
+    public function uploadTask360Images(Request $request) {
+
+        echo '<pre>';
+        print_r("hello world");
+        echo '[Line]:     ' . __LINE__ . "\n";
+        echo '[Function]: ' . __FUNCTION__ . "\n";
+        echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
+        echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
+        echo '[File]:     ' . __FILE__ . "\n";
+        die;
+        
+        
+    }
+
 
 
 }
