@@ -213,6 +213,7 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
 Route::group(['prefix' => "tasc360", "middleware" => ["checkUserType:admin"]], function () {
 
     Route::post('/getAllDomain', [IncorpifyDashboard::class, 'getAllDomain']);
+    Route::post('/saveTascSiteSettings', [IncorpifyDashboard::class, 'saveTascSiteSettings']);
 });
 
 require __DIR__ . '/auth.php';
