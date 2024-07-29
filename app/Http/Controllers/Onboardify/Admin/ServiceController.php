@@ -197,8 +197,8 @@ class ServiceController extends Controller
                             }),
                         ],
                         'description' => "required|string",
-                        'image_name'  => "required",
-                        'image'       => "required",
+                        // 'image_name'  => "required",
+                        // 'image'       => "required",
                         // 'service_setting_data'  => "required",
                         'board_id' => 'required',
                         'profile_id' => [
