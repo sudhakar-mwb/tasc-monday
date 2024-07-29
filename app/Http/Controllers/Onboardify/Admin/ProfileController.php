@@ -178,9 +178,9 @@ class ProfileController extends Controller
 
                     $update = GovernifyServiceCategorie::updateTableData("onboardify_profiles", array("id" => $OnboardifyProfilesData['id']), $insert_array);
                     if ($update['status'] == 'success') {
-                        return response(json_encode(array('response' => [$update['data']], 'status' => true, 'message' =>  "Service Category Updated Successfully.")));
+                        return response(json_encode(array('response' => [$update['data']], 'status' => true, 'message' =>  "Onboardify Profile Updated Successfully.")));
                     } else {
-                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service Category Not Updated.")));
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profile Not Updated.")));
                     }
                 }else{
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profiles Data Not Found. Invalid Onboardify Profiles Id Provided.")));
@@ -209,6 +209,24 @@ class ProfileController extends Controller
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
                 $dataToRender =  OnboardifyProfiles::with('services')->get();
+                if (!empty($dataToRender)) {
+                    return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profile And Services Data Not Found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function getProfileWithServicesById ($id){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $dataToRender =  OnboardifyProfiles::with('services')->where('id', $id)->get();
                 if (!empty($dataToRender)) {
                     return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
                 }else{

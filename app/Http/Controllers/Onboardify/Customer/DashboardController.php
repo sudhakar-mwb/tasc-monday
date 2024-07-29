@@ -290,7 +290,7 @@ class DashboardController extends Controller
                             title
                             type
                             width
-                        }activity_logs ( column_ids:'.$idString.', item_ids:'.$itemID.') {
+                        }activity_logs ( limit:500 column_ids:'.$idString.', item_ids:'.$itemID.') {
                           id
                           user_id
                           account_id
