@@ -1486,7 +1486,7 @@ class DashboardController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->returnData('Invalid image format. Please re-upload the image (jpeg|jpg|png|svg).', false);
+            return response()->json($this->returnData('Invalid image format. Please re-upload the image (jpeg|jpg|png|svg).', false), 400);
         }
 
         $input = $request->all();
@@ -1498,9 +1498,17 @@ class DashboardController extends Controller
             list(, $data) = explode(',', $data);
             $data = base64_decode($data);
         
-            // Determine the file extension
-            $extension = explode('/', mime_content_type($imageData))[1];
-        
+            // Determine the file extension manually
+            $mimeToExtension = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/svg+xml' => 'svg',
+                'image/gif' => 'gif'
+            ];
+            
+            $mimeType = explode(':', substr($imageData, 0, strpos($imageData, ';')))[1];
+            $extension = isset($mimeToExtension[$mimeType]) ? $mimeToExtension[$mimeType] : 'bin';
+
             // Use the image_key as the base file name
             $updateFileName = $input['image_key'] . '.' . $extension;
         
@@ -1519,13 +1527,13 @@ class DashboardController extends Controller
             if ($response !== false) {
                 // Return the URL as a response
                 $imageUrl = url('uploads/tasc360/' . $updateFileName);
-                return $this->returnData(['url' => $imageUrl, 'status' => true]);
+                return response()->json($this->returnData(['url' => $imageUrl, 'status' => true]));
             } else {
-                return $this->returnData("Failed to save the image.", false);
+                return response()->json($this->returnData('Failed to save the image.', false), 500);
             }
         }
 
-        return $this->returnData('No image data found.', false);
+        return response()->json($this->returnData('No image data found.', false), 400);
     }
 
     public function deleteUploadedImage(Request $request)
