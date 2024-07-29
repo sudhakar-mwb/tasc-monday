@@ -1328,22 +1328,33 @@ class DashboardController extends Controller
 
 
     //filter out the status 
-    function filterSubitemsByStatus($array, $status) {
-        if (isset($array['response']['data']['boards'][0]['items_page']['items'][0]['subitems'])) {
-            $filteredSubitems = array_filter($array['response']['data']['boards'][0]['items_page']['items'][0]['subitems'], function($subitem) use ($status) {
-                foreach ($subitem['column_values'] as $columnValue) {
-                    if (strtolower($columnValue['text']) == strtolower($status)) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-    
-            $array['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] = array_values($filteredSubitems);
-        }
-    
-        return $array;
-    }
+    function filterSubitemsByStatus($array, $status) {  
+        // Check if the required items structure exists  
+        if (isset($array['response']['data']['boards'][0]['items_page']['items'])) {  
+            // Loop through each item in items_page  
+            foreach ($array['response']['data']['boards'][0]['items_page']['items'] as &$item) {  
+                // Check if subitems exist for each item  
+                if (isset($item['subitems'])) {  
+                    // Filter the subitems based on the provided status  
+                    $filteredSubitems = array_filter($item['subitems'], function($subitem) use ($status) {  
+                        // Check each column value in the subitem  
+                        foreach ($subitem['column_values'] as $columnValue) {  
+                            // Compare text with the status (case insensitive)  
+                            if (strcasecmp($columnValue['text'], $status) === 0) {  
+                                return true; // Status matches  
+                            }  
+                        }  
+                        return false; // Status does not match  
+                    });  
+                    
+                    // Update the item with the filtered subitems (re-indexed)  
+                    $item['subitems'] = array_values($filteredSubitems);  
+                }  
+            }  
+        }  
+        
+        return $array; // Return the modified array  
+    }  
 
 
 
