@@ -57,12 +57,22 @@ class ServiceController extends Controller
 
                 $this->validate($request, [
                     // 'title'       => "required|string|unique:onboardify_service",
-                    'title'       => "required|string",
+                    'title'       => [
+                        'required',
+                        'string',
+                        Rule::unique('onboardify_service')->where(function ($query) use ($request) {
+                            return $query->where('profile_id', $request->profile_id);
+                        }),
+                    ],
                     'description' => "required|string",
                     'image_name'  => "required",
                     'image'       => "required",
-                    'service_setting_data'  => "required",
+                    // 'service_setting_data'  => "required",
                     'board_id' => 'required',
+                    'profile_id' => [
+                        'required',
+                        Rule::exists('onboardify_profiles', 'id'),
+                    ],
                 ], $this->getErrorMessages());
 
                 // Check if the validation fails
@@ -78,7 +88,8 @@ class ServiceController extends Controller
                 $insert_array = array(
                     "title"       => $request->title,
                     "description" => $request->description,
-                    "service_setting_data" => $request->service_setting_data,
+                    // "service_setting_data" => $request->service_setting_data,
+                    "profile_id" => $request->profile_id,
                     "board_id" => $request->board_id,
                     "created_at" => date("Y-m-d H:i:s"),
                     "updated_at" => date("Y-m-d H:i:s")
@@ -115,10 +126,19 @@ class ServiceController extends Controller
                 // }
                 // $insert = GovernifyServiceCategorie::insertTableData("governify_service_categories", $insert_array);
                 // Convert the 'service_setting_data' array to a JSON string
-                $insert_array['service_setting_data'] = json_encode($insert_array['service_setting_data']);
+                // $insert_array['service_setting_data'] = json_encode($insert_array['service_setting_data']);
+                /*
                 $insert = OnboardifyService::create($insert_array);
                 if ($insert) {
                     return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Service Created Successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Service Not Created.")));
+                }
+                */
+
+                $insert = GovernifyServiceCategorie::insertTableData("onboardify_service", $insert_array);
+                if ($insert['status'] == 'success') {
+                    return response(json_encode(array('response' => [$insert['data']], 'status' => true, 'message' => "Onboardify Service Created Successfully.")));
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Service Not Created.")));
                 }
@@ -167,17 +187,30 @@ class ServiceController extends Controller
 
                 if (!empty($serviceRequest)) {
                     $this->validate($request, [
-                        'title'       => "required|string|unique:onboardify_service",
-                        // 'title'       => "required|string",
+                        // 'title'       => "required|string|unique:onboardify_service",
+                        'title'       => [
+                            'required',
+                            'string',
+                            Rule::unique('onboardify_service')->where(function ($query) use ($request, $serviceRequest) {
+                                return $query->where('profile_id', $request->profile_id)
+                                             ->where('id', '!=',$serviceRequest['id']);
+                            }),
+                        ],
                         'description' => "required|string",
-                        'form_embed_code'    => "required",
+                        // 'image_name'  => "required",
+                        // 'image'       => "required",
+                        // 'service_setting_data'  => "required",
                         'board_id' => 'required',
+                        'profile_id' => [
+                            'required',
+                            Rule::exists('onboardify_profiles', 'id'),
+                        ],
                     ], $this->getErrorMessages());
 
                     $insert_array = array(
                         "title" => $request->title,
                         "description" => $request->description,
-                        "form_embed_code" => $request->form_embed_code,
+                        "profile_id" => $request->profile_id,
                         "board_id" => $request->board_id,
                         "updated_at" => date("Y-m-d H:i:s")
                     );
@@ -198,9 +231,17 @@ class ServiceController extends Controller
                         }
                     }
 
+                    /*
                     $update = $serviceRequest->update($insert_array);
                     if ($update) {
                         return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Service Request Updated Successfully.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Service Request Not Updated.")));
+                    }
+                    */
+                    $update = GovernifyServiceCategorie::updateTableData("onboardify_service", array("id" => $serviceRequest['id']), $insert_array);
+                    if ($update['status'] == 'success') {
+                        return response(json_encode(array('response' => [$update['data']], 'status' => true, 'message' =>  "Onboardify Service Request Updated Successfully.")));
                     } else {
                         return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Service Request Not Updated.")));
                     }

@@ -48,7 +48,7 @@ class GovernifyServiceCategorie extends Model
             $updatedData = DB::table($table_name)
                 ->where($params)->update($data);
             if ($updatedData > 0) {
-                return array("status" => "success");
+                return array("status" => "success", "data" => $params);
             } else {
                 return array("status" => "error");
             }

@@ -11,5 +11,10 @@ class OnboardifyService extends Model
 
     protected $table = 'onboardify_service';
     
-    protected $fillable = ['title', 'description', 'image', 'file_location',  'service_setting_data', 'board_id', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['title', 'description', 'image', 'file_location', 'board_id', 'created_at', 'updated_at', 'deleted_at', 'profile_id'];
+
+    public function profile()
+    {
+        return $this->belongsTo(OnboardifyProfile::class, 'profile_id');
+    }
 }
