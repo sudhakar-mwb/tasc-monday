@@ -19,6 +19,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Models\BoardColumnMappings;
 use App\Models\Tasc360Setting;
+use Illuminate\Support\Facades\Storage;
 
 
 class DashboardController extends Controller
@@ -1476,20 +1477,55 @@ class DashboardController extends Controller
 
     }
 
-    public function uploadTask360Images(Request $request) {
+    public function uploadTask360Images(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'image_key' => 'required|string',
+            'image' => 'required|string',
+        ]);
 
-        echo '<pre>';
-        print_r("hello world");
-        echo '[Line]:     ' . __LINE__ . "\n";
-        echo '[Function]: ' . __FUNCTION__ . "\n";
-        echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
-        echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
-        echo '[File]:     ' . __FILE__ . "\n";
-        die;
+        if ($validator->fails()) {
+            return response()->json(['response' => [], 'status' => false, 'message' => 'Invalid image format. Please re-upload the image (jpeg|jpg|png|svg).'], 400);
+        }
+
+        $input = $request->all();
+
+        if (isset($input['image']) && $input['image']) {
+            // Extract and decode the image data
+            $imageData = $input['image'];
+            list($type, $data) = explode(';', $imageData);
+            list(, $data) = explode(',', $data);
+            $data = base64_decode($data);
         
+            // Determine the file extension
+            $extension = explode('/', mime_content_type($imageData))[1];
         
+            // Use the image_key as the base file name
+            $updateFileName = $input['image_key'] . '.' . $extension;
+        
+            // Define the path where the image will be saved
+            $directory = public_path('uploads/tasc360');
+            $filePath = $directory . '/' . $updateFileName;
+
+            // Ensure the directory exists
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+        
+            // Save the image to the specified path
+            $response = file_put_contents($filePath, $data);
+
+            if ($response !== false) {
+                // Return the URL as a response
+                $imageUrl = url('uploads/tasc360/' . $updateFileName);
+                return $this->returnData(['url' => $imageUrl, 'status' => true]);
+            } else {
+                return $this->returnData(['response' => [], 'status' => false, 'message' => 'Failed to save the image.'], false);
+            }
+        }
+
+        return $this->returnData(['response' => [], 'status' => false, 'message' => 'No image data found.'], false);
     }
-
-
 
 }
