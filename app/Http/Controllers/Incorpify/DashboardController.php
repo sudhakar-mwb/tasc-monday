@@ -1252,7 +1252,8 @@ class DashboardController extends Controller
                 $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems', $email, $payload['incorpify']['emailColumnId'], $payload['incorpify']['statusColumnId']);
                 $response = $this->_getMondayData($incorpifyQuery);
                 if(!isset($payload['status']) || empty($payload['status'])){
-                    $graphqlResults['Incorpify'] = $response;
+                    
+                    $graphqlResults['Incorpify'] = $this->filterSubitemsByStatus($response);
                 } else {
                     $filterResult = $this->filterSubitemsByStatus($response, $payload['status']);
                     $graphqlResults['Incorpify'] = $filterResult;
@@ -1328,33 +1329,33 @@ class DashboardController extends Controller
 
 
     //filter out the status 
-    function filterSubitemsByStatus($array, $status) {  
-        // Check if the required items structure exists  
+    function filterSubitemsByStatus($array, $status=null) {  
         if (isset($array['response']['data']['boards'][0]['items_page']['items'])) {  
-            // Loop through each item in items_page  
             foreach ($array['response']['data']['boards'][0]['items_page']['items'] as &$item) {  
-                // Check if subitems exist for each item  
                 if (isset($item['subitems'])) {  
-                    // Filter the subitems based on the provided status  
-                    $filteredSubitems = array_filter($item['subitems'], function($subitem) use ($status) {  
-                        // Check each column value in the subitem  
-                        foreach ($subitem['column_values'] as $columnValue) {  
-                            // Compare text with the status (case insensitive)  
-                            if (strcasecmp($columnValue['text'], $status) === 0) {  
-                                return true; // Status matches  
+                    if($status!=null) {
+
+                        $filteredSubitems = array_filter($item['subitems'], function($subitem) use ($status) {  
+                            foreach ($subitem['column_values'] as $columnValue) {  
+                                if (strcasecmp($columnValue['text'], $status) === 0) {  
+                                    return true;  
+                                }  
                             }  
-                        }  
-                        return false; // Status does not match  
-                    });  
+                            return false;  
+                        });  
+                        $item['subitems'] = array_values($filteredSubitems);  
+                    }
                     
-                    // Update the item with the filtered subitems (re-indexed)  
-                    $item['subitems'] = array_values($filteredSubitems);  
+                    
+                    foreach ($item['subitems'] as $index => &$subitem) {  
+                        $subitem['step'] = 'step ' . ($index + 1);  
+                    }  
                 }  
             }  
         }  
         
-        return $array; // Return the modified array  
-    }  
+        return $array;  
+    }
 
 
 
