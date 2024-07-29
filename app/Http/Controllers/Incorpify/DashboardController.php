@@ -1486,7 +1486,7 @@ class DashboardController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['response' => [], 'status' => false, 'message' => 'Invalid image format. Please re-upload the image (jpeg|jpg|png|svg).'], 400);
+            return $this->returnData('Invalid image format. Please re-upload the image (jpeg|jpg|png|svg).', false);
         }
 
         $input = $request->all();
@@ -1521,11 +1521,42 @@ class DashboardController extends Controller
                 $imageUrl = url('uploads/tasc360/' . $updateFileName);
                 return $this->returnData(['url' => $imageUrl, 'status' => true]);
             } else {
-                return $this->returnData(['response' => [], 'status' => false, 'message' => 'Failed to save the image.'], false);
+                return $this->returnData("Failed to save the image.", false);
             }
         }
 
-        return $this->returnData(['response' => [], 'status' => false, 'message' => 'No image data found.'], false);
+        return $this->returnData('No image data found.', false);
+    }
+
+    public function deleteUploadedImage(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'image_key' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->returnData('Invalid request.', false);
+        }
+
+        $input = $request->all();
+        $imageKey = $input['image_key'];
+
+        // Define the path where the image is saved
+        $directory = public_path('uploads/tasc360');
+        
+        $filePath = $directory . '/' . $imageKey;
+
+        // Check if the file exists and delete it
+        if (file_exists($filePath)) {
+            if (unlink($filePath)) {
+                return $this->returnData(['status' => true, 'message' => 'Image deleted successfully.']);
+            } else {
+                return $this->returnData('Failed to delete the image.', false);
+            }
+        } else {
+            return $this->returnData('Image not found.', false);
+        }
     }
 
 }

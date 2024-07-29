@@ -216,6 +216,7 @@ Route::group(['prefix' => "tasc360", "middleware" => ["checkUserType:admin"]], f
     Route::post('/saveTascSiteSettings', [IncorpifyDashboard::class, 'saveTascSiteSettings']);
     Route::get('/getTascSiteSettings', [IncorpifyDashboard::class, 'getTascSiteSettings']);
     Route::post('/uploadTask360Images', [IncorpifyDashboard::class, 'uploadTask360Images']);
+    Route::post('/deleteUploadedImage', [IncorpifyDashboard::class, 'deleteUploadedImage']);
 
 });
 
