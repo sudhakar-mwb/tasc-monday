@@ -1198,16 +1198,20 @@ class DashboardController extends Controller
 
             $requiredKeys = ['incorpify', 'governify', 'onboardify'];
             $allowedStatuses = ["in progress", "completed", "pending", "canceled", "awaiting action"];
-
+            
             foreach ($requiredKeys as $key) {
                 if (!isset($payload[$key]['emailColumnId']) || empty($payload[$key]['emailColumnId']) ||
                     !isset($payload[$key]['statusColumnId']) || empty($payload[$key]['statusColumnId'])) {
                     return $this->returnData("$key: emailColumnId and statusColumnId are required fields", false);
                 }
+            
+                // Additional check for governify
+                if ($key === 'governify' && (!isset($payload[$key]['catagoryColumnId']) || empty($payload[$key]['catagoryColumnId']))) {
+                    return $this->returnData("$key: catagoryColumnId is a required field", false);
+                }
             }
-
-            if(!empty($payload['status'])){
-
+            
+            if (!empty($payload['status'])) {
                 if (!isset($payload['status']) || !in_array(strtolower($payload['status']), $allowedStatuses)) {
                     return $this->returnData("Status is required and must be one of the following: " . implode(", ", $allowedStatuses), false);
                 }
@@ -1266,7 +1270,7 @@ class DashboardController extends Controller
 
             if (isset($siteSettingsGovernify['board_id'])) {
 
-                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId'], $payload['governify']['statusColumnId'], $payload['status']??null);
+                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId'], $payload['governify']['statusColumnId'], $payload['status']??null, $payload['governify']['catagoryColumnId']);
                 
                 $graphqlResults['Governify'] = $this->_getMondayData($governifyQuery);
             } else {
@@ -1359,7 +1363,7 @@ class DashboardController extends Controller
 
 
 
-    public function constructGraphQLQuery($boardId, $type, $email = null, $emailColumnId = null, $statusColumnId=null, $status=null)
+    public function constructGraphQLQuery($boardId, $type, $email = null, $emailColumnId = null, $statusColumnId=null, $status=null, $serviceCatagoryId = null)
     {
 
         $allowedStatus = [
@@ -1391,7 +1395,7 @@ class DashboardController extends Controller
                           created_at
                           updated_at
     
-                          column_values(ids: ["'.$statusColumnId.'"]){
+                          column_values(ids: ["'.$statusColumnId.'", "'.$serviceCatagoryId.'"]){
                             id text
                           }
                         }
