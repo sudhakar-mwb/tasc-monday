@@ -780,6 +780,7 @@ class AuthController extends Controller
 
         if (!isset($request->id) && empty($request->id)) {
             return [
+                'status'  => false,
                 "success" => false,
                 "message" => "user token is not found"
             ];
@@ -801,12 +802,14 @@ class AuthController extends Controller
 
             if (empty($getUser)) {
                 return response()->json([
+                    'status'  => false,
                     'success' => false,
                     'message' => 'User not found.'
                 ]);
             }
 
             return response()->json([
+                'status'  => true,
                 'success' => true,
                 'data' => [
                     'user_id' => $getUser['id'] ?? "",
@@ -821,6 +824,7 @@ class AuthController extends Controller
         } catch (Exception $e) {
 
             return response()->json([
+                'status'  => false,
                 'success' => false,
                 'message' => 'User not found.'
             ]);
@@ -889,10 +893,12 @@ class AuthController extends Controller
                 $siteUrl = !empty($GovernifySiteSettingResponse['domain']) ? $GovernifySiteSettingResponse['domain'] : 'https://governify.tasc360.com';
                 $domain = $userData['domain'];
             }
-            // elseif ($userData['domain'] == 'onboardify') {
-            //     $SiteSettingsResponse = SiteSettings::where('id', '=', 1)->first()->toArray();
-            //     $sitelogo = !empty($SiteSettingsResponse['logo_location']) ? $SiteSettingsResponse['logo_location'] : '';
-            // }
+            elseif ($userData['domain'] == 'onboardify') {
+                $SiteSettingsResponse = SiteSettings::where('id', '=', 1)->first()->toArray();
+                $sitelogo = !empty($SiteSettingsResponse['logo_location']) ? $SiteSettingsResponse['logo_location'] : '';
+                $siteUrl = !empty($SiteSettingsResponse['domain']) ? $SiteSettingsResponse['domain'] : '';
+                $domain = $userData['domain'];
+            }
             elseif ($userData['domain'] == 'incorpify') {
                 $IncorpifySiteSettingsResponse = IncorpifySiteSettings::where('id', '=', 1)->first()->toArray();
                 $sitelogo = !empty($IncorpifySiteSettingsResponse['logo_location']) ? $IncorpifySiteSettingsResponse['logo_location'] : '';
@@ -1054,10 +1060,11 @@ class AuthController extends Controller
                 $sitelogo = !empty($GovernifySiteSettingResponse['logo_location']) ? $GovernifySiteSettingResponse['logo_location'] : '';
                 $siteUrl = !empty($GovernifySiteSettingResponse['domain']) ? $GovernifySiteSettingResponse['domain'] : '';
             }
-            // elseif ($request['domain'] == 'onboardify') {
-            //     $SiteSettingsResponse = SiteSettings::where('id', '=', 1)->first()->toArray();
-            //     $sitelogo = !empty($SiteSettingsResponse['logo_location']) ? $SiteSettingsResponse['logo_location'] : '';
-            // }
+            elseif ($request['domain'] == 'onboardify') {
+                $SiteSettingsResponse = SiteSettings::where('id', '=', 1)->first()->toArray();
+                $sitelogo = !empty($SiteSettingsResponse['logo_location']) ? $SiteSettingsResponse['logo_location'] : '';
+                $siteUrl = !empty($SiteSettingsResponse['domain']) ? $SiteSettingsResponse['domain'] : '';
+            }
             elseif ($request['domain'] == 'incorpify') {
                 $IncorpifySiteSettingsResponse = IncorpifySiteSettings::where('id', '=', 1)->first()->toArray();
                 $sitelogo = !empty($IncorpifySiteSettingsResponse['logo_location']) ? $IncorpifySiteSettingsResponse['logo_location'] : '';
