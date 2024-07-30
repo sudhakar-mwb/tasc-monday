@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Incorpify;
 
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use Illuminate\Support\Facades\Validator;
@@ -10,9 +11,16 @@ use CURLFile;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
 use App\Models\IncorpifySiteSettings;
+use App\Models\GovernifySiteSetting;
+use App\Models\MondayUsers;
 use App\Models\Incorpify_likes;
 use Illuminate\Support\Facades\DB;
 use App\Models\UpdateNotification;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Models\BoardColumnMappings;
+use App\Models\Tasc360Setting;
+use Illuminate\Support\Facades\Storage;
 
 
 class DashboardController extends Controller
@@ -1183,5 +1191,421 @@ class DashboardController extends Controller
     }
     
 
+    public function getAllDomain(Request $request)
+    {
+        try {
+            // Payload 
+            $payload = $request->json()->all();
+
+            $requiredKeys = ['incorpify', 'governify', 'onboardify'];
+            $allowedStatuses = ["in progress", "completed", "pending", "canceled", "awaiting action"];
+            
+            foreach ($requiredKeys as $key) {
+                if (!isset($payload[$key]['emailColumnId']) || empty($payload[$key]['emailColumnId']) ||
+                    !isset($payload[$key]['statusColumnId']) || empty($payload[$key]['statusColumnId'])) {
+                    return $this->returnData("$key: emailColumnId and statusColumnId are required fields", false);
+                }
+            
+                // Additional check for governify
+                if ($key === 'governify' && (!isset($payload[$key]['catagoryColumnId']) || empty($payload[$key]['catagoryColumnId']))) {
+                    return $this->returnData("$key: catagoryColumnId is a required field", false);
+                }
+            }
+            
+            if (!empty($payload['status'])) {
+                if (!isset($payload['status']) || !in_array(strtolower($payload['status']), $allowedStatuses)) {
+                    return $this->returnData("Status is required and must be one of the following: " . implode(", ", $allowedStatuses), false);
+                }
+            }
+
+            // Parse and verify the token
+            $user = JWTAuth::parseToken()->authenticate();
+
+            // Get the email from the authenticated user
+            $email = $user->email;
+
+            // Search for the email in the three tables and get the data
+            $incorpifyData = $this->getBoardId();
+            $siteSettingsGovernify = GovernifySiteSetting::first()->toArray();
+            $siteSettingsOnboardify = MondayUsers::where('email', '=', $email)->first()->toArray();
+            $siteSettingsOnboardifyData = [];
+            if(isset($siteSettingsOnboardify['board_id'])){
+
+                $siteSettingsOnboardifyData = BoardColumnMappings::where('email', $email)
+                ->where('board_id', (int)$siteSettingsOnboardify['board_id'])
+                ->first();
+
+                $siteSettingsOnboardifyData = json_decode(json_encode($siteSettingsOnboardifyData, true), true);
+                
+
+                if(empty($siteSettingsOnboardifyData['board_id'])){
+                 
+                    $siteSettingsOnboardifyData = BoardColumnMappings::where('board_id', $siteSettingsOnboardify['board_id'])
+                    ->first();
+
+                    $siteSettingsOnboardifyData = json_decode(json_encode($siteSettingsOnboardifyData, true), true);
+
+
+                }
+            }
+
+            // Check if board_id is present and construct the GraphQL query
+            $graphqlQuery = [];
+            $graphqlResults = [];
+
+            if (isset($incorpifyData['board_id'])) {
+                $incorpifyQuery = $this->constructGraphQLQuery($incorpifyData['board_id'], 'subitems', $email, $payload['incorpify']['emailColumnId'], $payload['incorpify']['statusColumnId']);
+                $response = $this->_getMondayData($incorpifyQuery);
+                if(!isset($payload['status']) || empty($payload['status'])){
+                    
+                    $graphqlResults['Incorpify'] = $this->filterSubitemsByStatus($response);
+                } else {
+                    $filterResult = $this->filterSubitemsByStatus($response, $payload['status']);
+                    $graphqlResults['Incorpify'] = $filterResult;
+                }
+
+
+            } else {
+                $graphqlResults['Incorpify'] = [];
+            }
+
+            if (isset($siteSettingsGovernify['board_id'])) {
+
+                $governifyQuery = $this->constructGraphQLQuery($siteSettingsGovernify['board_id'], 'items', $email, $payload['governify']['emailColumnId'], $payload['governify']['statusColumnId'], $payload['status']??null, $payload['governify']['catagoryColumnId']);
+                
+                $graphqlResults['Governify'] = $this->_getMondayData($governifyQuery);
+            } else {
+                $graphqlResults['Governify'] = [];
+            }
+
+
+            //----------------------
+            //Comment Untill the conformation
+            //----------------------
+
+            // if (isset($siteSettingsOnboardifyData['board_id'])) {
+
+            //     //onboardify
+
+            //     $jsonData = json_decode($siteSettingsOnboardifyData['columns'], true);
+
+            //     $emailColumnId = $jsonData['email_key'];
+            //     $statusColumnId = null;
+
+            //     foreach ($jsonData['onboarding_columns'] as $column) {
+            //         if ($column['name'] === 'Email Address') {
+            //             $emailColumnId = $column['id'];
+            //         }
+            //         if (strpos($column['name'], 'Status') !== false) {
+            //             $statusColumnId = $column['id'];
+            //         }
+            //     }
+
+            //     $onboardifyQuery = $this->constructGraphQLQuery($siteSettingsOnboardify['board_id'], 'items', $emailColumnId, $statusColumnId);
+
+            //     echo '<pre>';
+            //     print_r($emailColumnId);
+            //     print_r($statusColumnId);
+            //     print_r($onboardifyQuery);
+            //     echo '[Line]:     ' . __LINE__ . "\n";
+            //     echo '[Function]: ' . __FUNCTION__ . "\n";
+            //     echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
+            //     echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
+            //     echo '[File]:     ' . __FILE__ . "\n";
+            //     die;
+                
+                
+            //     $graphqlResults['Onboardify'] = $this->_getMondayData($onboardifyQuery);
+            // } else {
+            //     $graphqlResults['Onboardify'] = [];
+            // }
+
+            // Return the combined data as a JSON response
+            return response()->json($graphqlResults);
+
+        } catch (JWTException $e) {
+            // Something went wrong whilst decoding the token
+            return response()->json(['error' => 'Token is invalid'], 400);
+        } catch (\Exception $e) {
+            // Handle any other exceptions
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    //filter out the status 
+    function filterSubitemsByStatus($array, $status=null) {  
+        if (isset($array['response']['data']['boards'][0]['items_page']['items'])) {  
+            foreach ($array['response']['data']['boards'][0]['items_page']['items'] as &$item) {  
+                if (isset($item['subitems'])) {  
+                    if($status!=null) {
+
+                        $filteredSubitems = array_filter($item['subitems'], function($subitem) use ($status) {  
+                            foreach ($subitem['column_values'] as $columnValue) {  
+                                if (strcasecmp($columnValue['text'], $status) === 0) {  
+                                    return true;  
+                                }  
+                            }  
+                            return false;  
+                        });  
+                        $item['subitems'] = array_values($filteredSubitems);  
+                    }
+                    
+                    
+                    foreach ($item['subitems'] as $index => &$subitem) {  
+                        $subitem['step'] = 'step ' . ($index + 1);  
+                    }  
+                }  
+            }  
+        }  
+        
+        return $array;  
+    }
+
+
+
+    public function constructGraphQLQuery($boardId, $type, $email = null, $emailColumnId = null, $statusColumnId=null, $status=null, $serviceCatagoryId = null)
+    {
+
+        $allowedStatus = [
+            "in progress"=>"0",
+            "completed"=>"1",
+            "pending"=>"2",
+            "canceled"=>"3",
+            "awaiting action"=>"5"
+        ];
+
+        if($status==null){
+            $allowedStatus = [0,1,2,3,4,5];
+        }
+
+        if($type=='items') {
+
+
+            if($status==null){
+                return 'query {
+                    boards(ids: '.$boardId.') {
+                      items_page(query_params: {
+                        rules: [
+                          {column_id: "'.$emailColumnId.'", compare_value: ["'.$email.'"], operator: any_of}
+                        ]
+                      }) {
+                        items {
+                          id
+                          name
+                          created_at
+                          updated_at
+    
+                          column_values(ids: ["'.$statusColumnId.'", "'.$serviceCatagoryId.'"]){
+                            id text
+                          }
+                        }
+                      }
+                    }
+                  }';
+            } else {
+
+                $statusValue = strtolower($status);
+                return 'query {
+                    boards(ids: '.$boardId.') {
+                      items_page(query_params: {
+                        rules: [
+                          {column_id: "'.$emailColumnId.'", compare_value: ["'.$email.'"], operator: any_of},
+                          {column_id: "'.$statusColumnId.'", compare_value: ['.$allowedStatus[$statusValue].'], operator: any_of}
+                        ]
+                      }) {
+                        items {
+                          id
+                          name
+                          created_at
+                          updated_at
+    
+                          column_values(ids: ["'.$statusColumnId.'"]){
+                            id text
+                          }
+                        }
+                      }
+                    }
+                  }';
+            }
+           
+        } elseif ($type=='subitems'){
+            return '{
+                boards(ids: '.$boardId.') {
+                  items_page(
+                    query_params: {rules: [{column_id: "' . $emailColumnId . '", compare_value: ["' . $email . '"], operator: contains_text}]}
+                  ) {
+                    items {
+                        subitems {
+                          name
+                          id
+                          created_at
+                          updated_at
+
+                          column_values(ids: ["'.$statusColumnId.'"]){
+                            id text
+                          }
+                        }
+                      }
+                  }
+                }
+              }
+            ';
+        }
+    }
+
+    public function saveTascSiteSettings(Request $request){
+
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'ui_settings' => 'required|array',
+            'quick_access' => 'required|array',
+            'slider_images' => 'required|array',
+        ]);
+
+        // Assuming there's only one record you want to update repeatedly, you can use a fixed identifier or find the first record
+        $tasc360Setting = Tasc360Setting::first();
+
+        // If the record doesn't exist, create it
+        if (!$tasc360Setting) {
+            $tasc360Setting = new Tasc360Setting();
+        }
+
+        // Update the settings
+        $tasc360Setting->ui_settings = $validatedData['ui_settings'];
+        $tasc360Setting->quick_access = $validatedData['quick_access'];
+        $tasc360Setting->slider_images = $validatedData['slider_images'];
+
+        // Save the record
+        $tasc360Setting->save();
+
+        // Return a JSON response with the created or updated instance
+        return $this->returnData($tasc360Setting);
+    }
+
+    public function getTascSiteSettings(Request $request){
+
+
+         // Retrieve all records from the Tasc360Setting model
+        $tasc360Settings = Tasc360Setting::all();
+
+        // Return a JSON response with all the settings
+        return $this->returnData($tasc360Settings);
+
+    }
+
+    public function uploadTask360Images(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'image_key' => 'required|string',
+            'image' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($this->returnData('Invalid image format. Please re-upload the image (jpeg|jpg|png|svg).', false), 400);
+        }
+
+        $input = $request->all();
+
+        if (isset($input['image']) && $input['image']) {
+            // Extract and decode the image data
+            $imageData = $input['image'];
+            list($type, $data) = explode(';', $imageData);
+            list(, $data) = explode(',', $data);
+            $data = base64_decode($data);
+        
+            // Determine the file extension manually
+            $mimeToExtension = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/svg+xml' => 'svg',
+                'image/gif' => 'gif'
+            ];
+            
+            $mimeType = explode(':', substr($imageData, 0, strpos($imageData, ';')))[1];
+            $extension = isset($mimeToExtension[$mimeType]) ? $mimeToExtension[$mimeType] : 'bin';
+
+            // Use the image_key as the base file name
+            $updateFileName = $input['image_key'] . '.' . $extension;
+        
+            // Define the path where the image will be saved
+            $directory = public_path('uploads/tasc360');
+            $filePath = $directory . '/' . $updateFileName;
+
+            // Ensure the directory exists
+            if (!file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+        
+            // Save the image to the specified path
+            $response = file_put_contents($filePath, $data);
+
+            if ($response !== false) {
+                // Return the URL as a response
+                $imageUrl = url('uploads/tasc360/' . $updateFileName);
+                return response()->json($this->returnData(['url' => $imageUrl, 'status' => true]));
+            } else {
+                return response()->json($this->returnData('Failed to save the image.', false), 500);
+            }
+        }
+
+        return response()->json($this->returnData('No image data found.', false), 400);
+    }
+
+    public function deleteUploadedImage(Request $request)
+    {
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'image_key' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->returnData('Invalid request.', false);
+        }
+
+        $input = $request->all();
+        $imageKey = $input['image_key'];
+
+        // Define the path where the image is saved
+        $directory = public_path('uploads/tasc360');
+        
+        $filePath = $directory . '/' . $imageKey;
+
+        // Check if the file exists and delete it
+        if (file_exists($filePath)) {
+            if (unlink($filePath)) {
+                return $this->returnData(['status' => true, 'message' => 'Image deleted successfully.']);
+            } else {
+                return $this->returnData('Failed to delete the image.', false);
+            }
+        } else {
+            return $this->returnData('Image not found.', false);
+        }
+    }
+
+    public function getCommonSiteSettings(Request $request){
+        
+        
+        try {
+            $incorpifySettings = IncorpifySiteSettings::all()->toArray();
+            $governifySettings = GovernifySiteSetting::all()->toArray();
+
+            $incorpify = (json_decode($incorpifySettings[0]['ui_settings'], true));
+            $governify = (json_decode($governifySettings[0]['ui_settings'], true));
+
+            $allSettings = [
+                'incorpify' => $incorpify['selectedColumn'],
+                'governify' => $governify['selectedColumn']
+            ];
+
+            return $this->returnData($allSettings);
+
+        } catch (Exception $e) {
+            
+            return $this->returnData($e->getMessage(), false);
+        }
+                
+    }
 
 }

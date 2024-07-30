@@ -214,6 +214,16 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
     Route::get('/serviceRequests', [ServiceRequestsController::class, 'index']);
 });
 
+Route::group(['prefix' => "tasc360", "middleware" => ["checkUserType:admin"]], function () {
+
+    Route::post('/getAllDomain', [IncorpifyDashboard::class, 'getAllDomain']);
+    Route::post('/saveTascSiteSettings', [IncorpifyDashboard::class, 'saveTascSiteSettings']);
+    Route::get('/getTascSiteSettings', [IncorpifyDashboard::class, 'getTascSiteSettings']);
+    Route::post('/uploadTask360Images', [IncorpifyDashboard::class, 'uploadTask360Images']);
+    Route::post('/deleteUploadedImage', [IncorpifyDashboard::class, 'deleteUploadedImage']);
+    Route::get('/getCommonSiteSettings',[IncorpifyDashboard::class, 'getCommonSiteSettings']);
+});
+  
 Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isAdmin"]], function () {
     Route::get('/userListing', [OnboardifyDashboardController::class, 'userListing']);
     Route::get('/getAllCustomer', [OnboardifyDashboardController::class, 'getAllCustomer']);

@@ -815,6 +815,8 @@ class AuthController extends Controller
                     'user_id' => $getUser['id'] ?? "",
                     'email' => $getUser['email'] ?? "",
                     'name' => $getUser['name'] ?? "",
+                    'company' => $getUser['company_name'] ?? "",
+                    'phone' => $getUser['phone'] ?? "",
                     'created_at' => $getUser['created_at'] ?? "",
                 ],
                 'message' => 'User details retrieved successfully.'
