@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Incorpify;
 
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
 use Illuminate\Support\Facades\Validator;
@@ -1581,6 +1582,30 @@ class DashboardController extends Controller
         } else {
             return $this->returnData('Image not found.', false);
         }
+    }
+
+    public function getCommonSiteSettings(Request $request){
+        
+        
+        try {
+            $incorpifySettings = IncorpifySiteSettings::all()->toArray();
+            $governifySettings = GovernifySiteSetting::all()->toArray();
+
+            $incorpify = (json_decode($incorpifySettings[0]['ui_settings'], true));
+            $governify = (json_decode($governifySettings[0]['ui_settings'], true));
+
+            $allSettings = [
+                'incorpify' => $incorpify['selectedColumn'],
+                'governify' => $governify['selectedColumn']
+            ];
+
+            return $this->returnData($allSettings);
+
+        } catch (Exception $e) {
+            
+            return $this->returnData($e->getMessage(), false);
+        }
+                
     }
 
 }
