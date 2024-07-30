@@ -67,8 +67,17 @@ class ServiceController extends Controller
                     'description' => "required|string",
                     'image_name'  => "required",
                     'image'       => "required",
-                    // 'service_setting_data'  => "required",
-                    'board_id' => 'required',
+                    'service_setting_data'  => "required",
+                    // 'board_id' => 'required',
+                    'board_id'    => [
+                        'required',
+                        Rule::unique('onboardify_service')->where(function ($query) use ($request) {
+                            return $query->where('profile_id', $request->profile_id);
+                        }),
+                    ],
+                    'service_column_value_filter' => 'required',
+                    'service_form_link'           => 'required',
+                    'service_chart_link'          => 'required',
                     'profile_id' => [
                         'required',
                         Rule::exists('onboardify_profiles', 'id'),
@@ -88,9 +97,12 @@ class ServiceController extends Controller
                 $insert_array = array(
                     "title"       => $request->title,
                     "description" => $request->description,
-                    // "service_setting_data" => $request->service_setting_data,
+                    "service_setting_data" => json_encode($request->service_setting_data),
                     "profile_id" => $request->profile_id,
                     "board_id" => $request->board_id,
+                    "service_column_value_filter" => json_encode($request->service_column_value_filter),
+                    "service_form_link"           => $request->service_form_link,
+                    "service_chart_link"          => $request->service_chart_link,
                     "created_at" => date("Y-m-d H:i:s"),
                     "updated_at" => date("Y-m-d H:i:s")
                 );
@@ -199,8 +211,18 @@ class ServiceController extends Controller
                         'description' => "required|string",
                         // 'image_name'  => "required",
                         // 'image'       => "required",
-                        // 'service_setting_data'  => "required",
-                        'board_id' => 'required',
+                        'service_setting_data'  => "required",
+                        // 'board_id' => 'required',
+                        'board_id'    => [
+                            'required',
+                            Rule::unique('onboardify_service')->where(function ($query) use ($request, $serviceRequest) {
+                                return $query->where('profile_id', $request->profile_id)
+                                                ->where('id', '!=',$serviceRequest['id']);
+                            }),
+                        ],
+                        'service_column_value_filter' => 'required',
+                        'service_form_link'           => 'required',
+                        'service_chart_link'          => 'required',
                         'profile_id' => [
                             'required',
                             Rule::exists('onboardify_profiles', 'id'),
@@ -210,8 +232,12 @@ class ServiceController extends Controller
                     $insert_array = array(
                         "title" => $request->title,
                         "description" => $request->description,
+                        "service_setting_data" => json_encode($request->service_setting_data),
                         "profile_id" => $request->profile_id,
                         "board_id" => $request->board_id,
+                        "service_column_value_filter" => json_encode($request->service_column_value_filter),
+                        "service_form_link"           => $request->service_form_link,
+                        "service_chart_link"          => $request->service_chart_link,
                         "updated_at" => date("Y-m-d H:i:s")
                     );
 

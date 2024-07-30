@@ -138,7 +138,8 @@ class ProfileController extends Controller
                     $params = array(
                         'id' => $id
                     );
-    
+                    // Delete related services
+                    OnboardifyService::where('profile_id', $id)->delete();
                     $deleteOnboardifyProfiles = OnboardifyProfiles::where('id', $id)->delete();
                     if ($deleteOnboardifyProfiles > 0) {
                         return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Onboardify Profile Deleted Successfully.")));
@@ -161,7 +162,7 @@ class ProfileController extends Controller
 
                 if (!empty($OnboardifyProfilesData)) {
                     $this->validate($request, [
-                        'title'  => 'required|string|unique:onboardify_profiles,title,' . $OnboardifyProfilesData['title'],
+                        'title'  => 'required|string|unique:onboardify_profiles,title,' . $OnboardifyProfilesData['id'],
                         'users'  => 'required',
                     ], $this->getErrorMessages());
                     $insert_array = array(
