@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Models\OnboardifyProfiles;
+use App\Models\OnboardifyService;
 class DashboardController extends Controller
 {
     use MondayApis;
@@ -378,6 +380,33 @@ class DashboardController extends Controller
                     return response(json_encode(array('response' => $get_data, 'status' => true, 'message' => "General Settings Data Fetch.")));
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "General Settings Data Not Found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function allProfileWithServicesByUser (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $userId = $this->verifyToken()->getData()->id;
+                $getUser = MondayUsers::getUser(['id' => $userId]);
+                if (!empty($getUser) && !empty($getUser->email)) {
+                    $userEmail = $getUser->email;
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+                }
+                // $userEmail = '1524185';
+                // Fetch profiles with associated services
+                $dataToRender = OnboardifyProfiles::with('services')->whereRaw('FIND_IN_SET(?, users)', [$userEmail])->get();
+                if (!empty($dataToRender->isNotEmpty())) {
+                    return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profile And Services Data Not Found.")));
                 }
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));

@@ -253,6 +253,7 @@ Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api",
     Route::get('/requestTrackingActivity/{itemID}', [OnboardifyCustomerDashboardController::class, 'requestTrackingActivity']);
     Route::get('/getBoardColourMapping', [OnboardifyCustomerDashboardController::class, 'getBoardColourMapping']);
     Route::get('/getGeneralSettings', [OnboardifyCustomerDashboardController::class, 'getGeneralSettings']);
+    Route::get('/allProfileWithServicesByUser', [OnboardifyCustomerDashboardController::class, 'allProfileWithServicesByUser']);
 });
 
 require __DIR__ . '/auth.php';
