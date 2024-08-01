@@ -1223,7 +1223,7 @@ class DashboardController extends Controller
 
             // Get the email from the authenticated user
             $email = $user->email;
-
+    
             // Search for the email in the three tables and get the data
             $incorpifyData = $this->getBoardId();
             $siteSettingsGovernify = GovernifySiteSetting::first()->toArray();
@@ -1277,48 +1277,11 @@ class DashboardController extends Controller
             } else {
                 $graphqlResults['Governify'] = [];
             }
+           
 
-
-            //----------------------
-            //Comment Untill the conformation
-            //----------------------
-
-            // if (isset($siteSettingsOnboardifyData['board_id'])) {
-
-            //     //onboardify
-
-            //     $jsonData = json_decode($siteSettingsOnboardifyData['columns'], true);
-
-            //     $emailColumnId = $jsonData['email_key'];
-            //     $statusColumnId = null;
-
-            //     foreach ($jsonData['onboarding_columns'] as $column) {
-            //         if ($column['name'] === 'Email Address') {
-            //             $emailColumnId = $column['id'];
-            //         }
-            //         if (strpos($column['name'], 'Status') !== false) {
-            //             $statusColumnId = $column['id'];
-            //         }
-            //     }
-
-            //     $onboardifyQuery = $this->constructGraphQLQuery($siteSettingsOnboardify['board_id'], 'items', $emailColumnId, $statusColumnId);
-
-            //     echo '<pre>';
-            //     print_r($emailColumnId);
-            //     print_r($statusColumnId);
-            //     print_r($onboardifyQuery);
-            //     echo '[Line]:     ' . __LINE__ . "\n";
-            //     echo '[Function]: ' . __FUNCTION__ . "\n";
-            //     echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
-            //     echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
-            //     echo '[File]:     ' . __FILE__ . "\n";
-            //     die;
-                
-                
-            //     $graphqlResults['Onboardify'] = $this->_getMondayData($onboardifyQuery);
-            // } else {
-            //     $graphqlResults['Onboardify'] = [];
-            // }
+            $onboardifyDataResponse = $this->getOnboardifyBoardIds($email);
+            $graphqlResults['Onboardify'] = $onboardifyDataResponse;
+          
 
             // Return the combined data as a JSON response
             return response()->json($graphqlResults);
@@ -1607,5 +1570,75 @@ class DashboardController extends Controller
         }
                 
     }
+
+    public function getOnboardifyBoardIds($userEmail) {
+        if (empty($userEmail)) {
+            return $this->returnData("email is a required field");
+        }
+    
+        $dataToRender = \App\Models\OnboardifyProfiles::with('services')->whereRaw('FIND_IN_SET(?, users)', [$userEmail])->first();
+    
+        if (empty($dataToRender)) {
+            return response()->json(['response' => [], 'status' => false, 'message' => "Currently onboardify profile not assigned to this user."]);
+        }
+    
+        $services = $dataToRender->services->toArray();
+        if (empty($services)) {
+            return response()->json(['response' => [], 'status' => false, 'message' => "Currently onboardify service not assigned to this user."]);
+        }
+    
+        $boardIds = array_column($services, 'board_id');
+        if (empty($boardIds)) {
+            return response()->json(['response' => [], 'status' => false, 'message' => "Board Id not found from onboardify service."]);
+        }
+    
+        $boardIdsString = '[' . implode(',', $boardIds) . ']';
+        $after = 'ddd';
+        $cursor = 'null';
+        $mondayData = [];
+    
+        do {
+            $query = 'query {
+                boards(ids: ' . $boardIdsString . ') {
+                    items_page {
+                        items {
+                            created_at
+                            email
+                            id
+                            name
+                            updated_at
+                            column_values {
+                                id
+                                value
+                                type
+                                text
+                                ... on StatusValue {
+                                    label
+                                    update_id
+                                }
+                            }
+                        }
+                    }
+                }
+            }';
+    
+            $boardsData = $this->_getMondayData($query);
+            $currData = $boardsData['response']['data']['boards'][0]['items_page']['items'] ?? [];
+    
+            $mondayData = array_merge($mondayData, $currData);
+    
+            $cursor = $boardsData['response']['data']['boards'][0]['items_page']['cursor'] ?? null;
+            $after = $cursor ? 'ddd' : '';
+    
+        } while (!empty($after));
+    
+        $newResponse = $boardsData;
+        unset($newResponse['response']['data']['boards'][0]['items_page']['items']);
+        $newResponse['response']['data']['boards'][0]['items_page']['items'] = $mondayData;
+    
+        return $newResponse;
+    }
+    
+    
 
 }
