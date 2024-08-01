@@ -563,7 +563,7 @@ class DashboardController extends Controller
         }
     }
 
-    public function requestTrackingByBoardId ($boardId){
+    public function requestTrackingByBoardId (Request $request,$boardId){
         try {
             $userId = $this->verifyToken()->getData()->id;
             $getUser = MondayUsers::getUser(['id' => $userId]);
@@ -573,10 +573,8 @@ class DashboardController extends Controller
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
             }
             if ($userId) {
-                $after      = 'ddd';
-                $tolalData  = 200;
-                $cursor     = 'null';
-                $mondayData = [];
+                $limit      = !empty($request->limit) ? $request->limit : 10;
+                $cursor     = !empty($request->cursor) ? 'cursor:'.'"'.$request->cursor.'"' : 'cursor:'.'null';
                 // limit: ' . $tolalData . ', cursor:' . $cursor . ',
                 if (empty($boardId)) {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Id not found.")));
@@ -585,7 +583,7 @@ class DashboardController extends Controller
                 //     return response(json_encode(array('response' => [], 'status' => false, 'message' => "The required key for Onboardify board visibility is missing.")));
                 // }
                 // items_page (query_params: {rules: [{column_id: "'.$emailKeyForFilter.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
-                do {
+                // do {
                     $query = 'query {
                 boards( ids: '.$boardId.') {
                 id
@@ -603,7 +601,7 @@ class DashboardController extends Controller
                           type
                           width
                       }
-                      items_page {
+                      items_page (limit: ' . $limit . ', '.$cursor.' ){
                           cursor,
                           items {
                               created_at
@@ -624,7 +622,7 @@ class DashboardController extends Controller
                                     label
                                     update_id
                                 }
-                            }updates (limit: 200) {
+                            }updates (limit: 500) {
                                 assets {
                                     created_at
                                     file_extension
@@ -663,34 +661,21 @@ class DashboardController extends Controller
                 }
             }';
 
-                    $boardsData = $this->_getMondayData($query);
-                    if (!empty($boardsData['response']['data']['boards'][0]['items_page']['cursor'])) {
-                        $cursor =  "\"" . $boardsData['response']['data']['boards'][0]['items_page']['cursor'] . "\"";
-                    } else {
-                        $after = '';
-                    }
-                    $curr_data = isset($boardsData['response']['data']['boards'][0]['items_page']['items']) ? $boardsData['response']['data']['boards'][0]['items_page']['items'] : [];
-                    if (!empty($curr_data)) {
-                        if (count($curr_data))
-                            foreach ($curr_data as $item) {
-                                $mondayData[] = $item;
-                            }
-                    }
-                    $newResponse = $boardsData;
-                } while (!empty($after));
-                unset($newResponse['response']['data']['boards'][0]['items_page']['items']);
-                $newResponse['response']['data']['boards'][0]['items_page']['items'] = $mondayData;
-                if (!empty( $newResponse['response']['data']['boards'][0]['items_page']['items'])) {
-                    return response(json_encode(array('response' => $newResponse['response'], 'status' => true, 'message' => "Board Items Data Found.")));
+                $boardsData = $this->_getMondayData($query);
+                if (!empty( $boardsData['response']['data']['boards'][0]['items_page']['items'])) {
+                    return response(json_encode(array('response' => $boardsData['response'], 'status' => true, 'message' => "Board Items Data Found.")));
                 }else{
-                    return response(json_encode(array('response' => $newResponse['response'], 'status' => false, 'message' => "Board Items Data Not Found.")));
+                    return response(json_encode(array('response' => $boardsData['response'], 'status' => false, 'message' => "Board Items Data Not Found.")));
                 }
-                return $newResponse;
             }else{
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
         } catch (\Exception $e) {
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
+    }
+
+    public function requestTrackingByBoardIdAndSearch (){
+        
     }
 }
