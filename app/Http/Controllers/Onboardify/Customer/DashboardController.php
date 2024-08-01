@@ -675,7 +675,152 @@ class DashboardController extends Controller
         }
     }
 
-    public function requestTrackingByBoardIdAndSearch (){
-        
+    public function requestTrackingByBoardIdAndSearch (Request $request,$boardId){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            $getUser = MondayUsers::getUser(['id' => $userId]);
+            if (!empty($getUser) && !empty($getUser->email)) {
+                $userEmail = $getUser->email;
+            }else{
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+            }
+            if ($userId) {
+
+                // Validate the input
+            $validatedData = $request->validate([
+                'query_params'          => 'array',
+                'query_params.order_by' => 'nullable|array',
+                'limit'                 => 'nullable|string',
+                'cursor'                => 'nullable|string',
+                'query_params.order_by.*.direction' => 'required_with:in:asc,desc',
+                'query_params.order_by.*.column_id' => 'required_with:query_params.order_by|string',
+                'query_params.rules'                => 'nullable|array',
+                'query_params.rules.*.column_id'    => 'required_with:query_params.rules|string',
+                'query_params.rules.*.compare_value' => 'required_with:query_params.rules|array',
+                'query_params.rules.*.operator'      => 'nullable|string',
+                'query_params.operator'              => 'nullable|string|in:and,or'
+            ]);
+
+            if (!empty($validatedData['query_params'])) {
+                $queryParams = json_encode($validatedData['query_params']);
+                // Remove the surrounding double quotes from the JSON string
+                $queryParams = str_replace(['"{', '}"'], ['{', '}'], $queryParams);
+                $queryParams = str_replace(['"direction":', '"column_id":', '"compare_value":', '"operator":', '"rules":', '"order_by":'], ['direction:', 'column_id:', 'compare_value:', 'operator:', 'rules:', 'order_by:'], $queryParams);
+
+
+                // Manually format the query parameters string to match the required format
+                // $queryParams = str_replace(['"{', '}"'], ['{', '}'], $queryParams);
+                // $queryParams = preg_replace('/"(\w+)":/u', '$1:', $queryParams);
+                // Specifically replace the values for direction to be unquoted
+                $queryParams = str_replace(['"asc"', '"desc"', '"and"', '"contains_text"'], ['asc', 'desc', 'and', 'contains_text'], $queryParams);
+            }
+
+            if (!empty($queryParams)) {
+                $queryParamsData = 'query_params: '. $queryParams;
+            }
+            if (!empty($request->cursor)) {
+                $cursorData = !empty($request->cursor) ? 'cursor:'.'"'.$request->cursor.'"' : 'cursor:'.'null';
+            }
+    
+            $limit  = !empty($request->limit)  ? $request->limit  : 200;
+            $cursor = !empty($cursorData) ? $cursorData : 'cursor:'.'null';
+                // limit: ' . $tolalData . ', cursor:' . $cursor . ',
+                if (empty($boardId)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Id not found.")));
+                }
+                // if (empty($emailKeyForFilter)) {
+                //     return response(json_encode(array('response' => [], 'status' => false, 'message' => "The required key for Onboardify board visibility is missing.")));
+                // }
+                // items_page (query_params: {rules: [{column_id: "'.$emailKeyForFilter.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
+                // do {
+                    $query = 'query {
+                boards( ids: '.$boardId.') {
+                id
+                name
+                state
+                permissions
+                board_kind
+                columns {
+                          title
+                          id
+                          archived
+                          description
+                          settings_str
+                          title
+                          type
+                          width
+                      }
+                      items_page (limit: ' . $limit . ', '.(!empty($queryParamsData) ? $queryParamsData : $cursor).'  ){
+                          cursor,
+                          items {
+                              created_at
+                              creator_id
+                              email
+                              id
+                              name
+                              relative_link
+                              state
+                              updated_at
+                              url
+                              column_values {
+                                 id
+                                 value
+                                 type
+                                 text
+                                 ... on StatusValue  {
+                                    label
+                                    update_id
+                                }
+                            }updates (limit: 500) {
+                                assets {
+                                    created_at
+                                    file_extension
+                                    file_size
+                                    id
+                                    name
+                                    original_geometry
+                                    public_url
+                                    url
+                                    url_thumbnail 
+                                }
+                                body
+                                text_body
+                                created_at
+                                creator_id
+                                id
+                                item_id
+                                replies {
+                                    body
+                                    created_at
+                                    creator_id
+                                    id
+                                    text_body
+                                    updated_at
+                                }
+                                updated_at
+                                text_body
+                                creator {
+                                  name
+                                  id
+                                  email
+                                }
+                            } 
+                        }
+                    }
+                }
+            }';
+
+                $boardsData = $this->_getMondayData($query);
+                if (!empty( $boardsData['response']['data']['boards'][0]['items_page']['items'])) {
+                    return response(json_encode(array('response' => $boardsData['response'], 'status' => true, 'message' => "Board Items Data Found.")));
+                }else{
+                    return response(json_encode(array('response' => $boardsData['response'], 'status' => false, 'message' => "Board Items Data Not Found.")));
+                }
+            }else{
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
     }
 }
