@@ -11,7 +11,7 @@ class OnboardifyService extends Model
 
     protected $table = 'onboardify_service';
     
-    protected $fillable = ['title', 'description', 'image', 'file_location', 'board_id', 'created_at', 'updated_at', 'deleted_at', 'profile_id'];
+    protected $fillable = ['title', 'description', 'image', 'file_location', 'service_setting_data', 'board_id', 'service_column_value_filter', 'service_form_link', 'service_chart_link', 'created_at', 'updated_at', 'deleted_at', 'profile_id'];
 
     public function profile()
     {

@@ -17,8 +17,11 @@ return new class extends Migration
             $table->text('description');
             $table->string('image');
             $table->string('file_location')->nullable();
-            // $table->longText('service_setting_data');
+            $table->longText('service_setting_data');
             $table->string('board_id');
+            $table->longText('service_column_value_filter');
+            $table->longText('service_form_link');
+            $table->longText('service_chart_link');
             $table->timestamps();
             $table->dateTime('deleted_at')->nullable();
             $table->unsignedBigInteger('profile_id');
