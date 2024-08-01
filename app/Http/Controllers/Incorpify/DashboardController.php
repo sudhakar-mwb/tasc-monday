@@ -374,33 +374,44 @@ class DashboardController extends Controller
 
     public function getSubItemByEmail(Request $request)
     {
-
         $payload = $request->json()->all();
-
-        $validator = Validator::make($request->all(), [
+    
+        // Add validation rules
+        $validator = Validator::make($payload, [
             'email' => 'required|email|min:0',
             'limit' => 'int|min:0',
             'skip' => 'int|min:0',
+            'column_id' => 'required|string',
+            'description' => 'required|string',
+            'required_action' => 'required|string',
+            'assignee' => 'required|string',
+            'overall_status' => 'required|string',
         ]);
-
+    
         // Custom error messages
         $validator->setAttributeNames([
             'email' => 'Email',
             'limit' => 'Limit',
-            'skip' => 'Skip'
+            'skip' => 'Skip',
+            'column_id' => 'Column ID',
+            'description' => 'Description',
+            'required_action' => 'Required Action',
+            'assignee' => 'Assignee',
+            'overall_status' => 'Overall Status',
         ]);
-
+    
         if ($validator->fails()) {
             return $this->returnData($validator->errors(), false);
         }
-
-        //search the subitems of the items by email address
-        $column_id = "email__1";
-        $description = "text";
-        $required_action = "dup__of_description__1";
-        $assignee = "assigness__1";
-        $overall_status = "status__1";
-
+    
+        // Extract variables from payload
+        $column_id = $payload['column_id'];
+        $description = $payload['description'];
+        $required_action = $payload['required_action'];
+        $assignee = $payload['assignee'];
+        $overall_status = $payload['overall_status'];
+    
+        // GraphQL query
         $query = '{
             boards(ids: 1472103835) {
               items_page(
@@ -427,51 +438,52 @@ class DashboardController extends Controller
             }
           }
         ';
-
+    
         $response = $this->_getMondayData($query);
-
+    
         $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] ?? [];
-
+    
         if (empty($subitems)) {
             return $this->returnData("no data found", false);
         }
-
+    
         $updatedSubitemIDs = [];
         $getLastState = UpdateNotification::where('email', $request->email)->first();
         if (!empty($getLastState)) {
-
+    
             $getLastStateItemData = json_decode(json_decode($getLastState['item_data'], true), true);
             $updatedSubitemIDs = $this->getSubitemsWithNewUpdates($getLastStateItemData, $response);
         }
-
+    
         $updateNotification = UpdateNotification::updateOrCreate(
             ['email' => $request->email], // Search criteria
             ['item_data' => json_encode(json_encode($response, true), true)] // Data to be updated or created
         );
-
+    
         $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] ?? [];
-
+    
         if (empty($subitems)) {
             return $this->returnData("no data found", false);
         }
-
+    
         $total_subitem = count($subitems);
         $limit = $payload['limit'];
         $skip = $payload['skip'];
-
+    
         $send_response = [];
-
+    
         if ($limit > $total_subitem) {
             $send_response = array_slice($subitems, $skip, $total_subitem);
         } else {
             $send_response = array_slice($subitems, $skip, $limit);
         }
-
+    
         $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] = $send_response;
         $response['response']['data']['boards'][0]['items_page']['items'][0]['new_updates'] = $updatedSubitemIDs;
-
+    
         return $this->returnData($response);
     }
+    
 
 
     //helper functions 
