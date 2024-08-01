@@ -12,6 +12,7 @@ use App\Models\GovernifyServiceRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
+use App\Models\GovernifyCreateServiceRecords;
 class ServiceRequestsController extends Controller
 {
     use MondayApis;
@@ -338,6 +339,114 @@ class ServiceRequestsController extends Controller
             }
         } catch (\Exception $e) {
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function createGovernifyServiceRecord (Request $request){
+        $userId = $this->verifyToken()->getData()->id;
+        if ($userId) {
+            try {
+                $input = $request->json()->all();
+
+                $this->validate($request, [
+                    'user_id'           => "required|string",
+                    'category_id'       => "required|string",
+                    'service_id'        => "required|string",
+                    'form_id'           => "required|string",
+                    'governify_item_id' => "required|string",
+                ], $this->getErrorMessages());
+
+                // Define the criteria for matching an existing record
+                $attributes = [
+                    'user_id'     => $request->user_id,
+                    'category_id' => $request->category_id,
+                    'service_id'  => $request->service_id,
+                    'form_id'     => $request->form_id,
+                ];
+
+                // Define the values to update or set in the new record
+                $values = [
+                    'governify_item_id' => $request->governify_item_id
+                ];
+                // Perform the update or create operation
+                $record = GovernifyCreateServiceRecords::updateOrCreate($attributes, $values);
+
+                // Check if the record was recently created or updated
+                if ($record->wasRecentlyCreated) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Governify Service Created Successfully.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Governify Service Updated Successfully.")));
+                    $response = '';
+                }
+            } catch (\Exception $e) {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+            }
+        } else {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+        }
+    }
+
+    public function getGovernifyServiceRecord (Request $request){
+        $userId = $this->verifyToken()->getData()->id;
+        if ($userId) {
+            try {
+                // Get query parameters
+                $userId = $request->query('user_id');
+                $categoryId = $request->query('category_id');
+                $serviceId = $request->query('service_id');
+                $formId = $request->query('form_id');
+
+                 // Validate the query parameters
+                $validatedData = $request->validate([
+                    'user_id'     => 'required|integer',
+                    'category_id' => 'required|integer',
+                    'service_id'  => 'required|integer',
+                    'form_id'     => 'required|integer',
+                ]);
+
+                // Fetch the record based on the query parameters
+                $record = GovernifyCreateServiceRecords::where([
+                    'user_id' => $userId,
+                    'category_id' => $categoryId,
+                    'service_id' => $serviceId,
+                    'form_id' => $formId,
+                ])->first();
+
+                // Return the record or a not found response
+                if ($record) {
+                    if (!empty($record['governify_item_id'])) {
+                        $query = '{
+                            items(ids: ' . $record['governify_item_id'] . ') {
+                                created_at
+                                email
+                                id
+                                name
+                                column_values {
+                                   id
+                                   value
+                                   type
+                                   text
+                                }
+                            }
+                          }';
+                
+                        $response = $this->_getMondayData($query);
+                        if (!empty($response['response']['data']['items'])) {
+                            return response(json_encode(array('response' => $response['response']['data']['items'], 'status' => true, 'message' => "Governify Item Data Found.")));   
+                        }else{
+                            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify Item Data Not Found From Monday Platform.")));   
+                        }
+                    }else{
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify Item Id Not Found In Database.")));   
+                    }
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Governify Service Item Data Not Found.")));
+                }
+            } catch (\Exception $e) {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+            }
+        } else {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
         }
     }
 }

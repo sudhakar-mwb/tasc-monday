@@ -210,6 +210,8 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
 
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
     Route::get('/serviceRequests', [ServiceRequestsController::class, 'index']);
+    Route::post('/createGovernifyServiceRecord', [ServiceRequestsController::class, 'createGovernifyServiceRecord']);
+    Route::get('/getGovernifyServiceRecord', [ServiceRequestsController::class, 'getGovernifyServiceRecord']);
 });
 
 Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isAdmin"]], function () {
