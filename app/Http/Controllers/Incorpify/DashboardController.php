@@ -1197,7 +1197,7 @@ class DashboardController extends Controller
             // Payload 
             $payload = $request->json()->all();
 
-            $requiredKeys = ['incorpify', 'governify', 'onboardify'];
+            $requiredKeys = ['incorpify', 'governify'];
             $allowedStatuses = ["in progress", "completed", "pending", "canceled", "awaiting action"];
             
             foreach ($requiredKeys as $key) {
@@ -1212,8 +1212,8 @@ class DashboardController extends Controller
                 }
             }
             
-            if (!empty($payload['status'])) {
-                if (!isset($payload['status']) || !in_array(strtolower($payload['status']), $allowedStatuses)) {
+            if (isset($payload['status'])) {
+                if (!in_array(strtolower($payload['status']), $allowedStatuses)) {
                     return $this->returnData("Status is required and must be one of the following: " . implode(", ", $allowedStatuses), false);
                 }
             }
