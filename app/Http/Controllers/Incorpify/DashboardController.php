@@ -374,33 +374,44 @@ class DashboardController extends Controller
 
     public function getSubItemByEmail(Request $request)
     {
-
         $payload = $request->json()->all();
-
-        $validator = Validator::make($request->all(), [
+    
+        // Add validation rules
+        $validator = Validator::make($payload, [
             'email' => 'required|email|min:0',
             'limit' => 'int|min:0',
             'skip' => 'int|min:0',
+            'column_id' => 'required|string',
+            'description' => 'required|string',
+            'required_action' => 'required|string',
+            'assignee' => 'required|string',
+            'overall_status' => 'required|string',
         ]);
-
+    
         // Custom error messages
         $validator->setAttributeNames([
             'email' => 'Email',
             'limit' => 'Limit',
-            'skip' => 'Skip'
+            'skip' => 'Skip',
+            'column_id' => 'Column ID',
+            'description' => 'Description',
+            'required_action' => 'Required Action',
+            'assignee' => 'Assignee',
+            'overall_status' => 'Overall Status',
         ]);
-
+    
         if ($validator->fails()) {
             return $this->returnData($validator->errors(), false);
         }
-
-        //search the subitems of the items by email address
-        $column_id = "email__1";
-        $description = "text";
-        $required_action = "dup__of_description__1";
-        $assignee = "assigness__1";
-        $overall_status = "status__1";
-
+    
+        // Extract variables from payload
+        $column_id = $payload['column_id'];
+        $description = $payload['description'];
+        $required_action = $payload['required_action'];
+        $assignee = $payload['assignee'];
+        $overall_status = $payload['overall_status'];
+    
+        // GraphQL query
         $query = '{
             boards(ids: 1472103835) {
               items_page(
@@ -427,51 +438,52 @@ class DashboardController extends Controller
             }
           }
         ';
-
+    
         $response = $this->_getMondayData($query);
-
+    
         $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] ?? [];
-
+    
         if (empty($subitems)) {
             return $this->returnData("no data found", false);
         }
-
+    
         $updatedSubitemIDs = [];
         $getLastState = UpdateNotification::where('email', $request->email)->first();
         if (!empty($getLastState)) {
-
+    
             $getLastStateItemData = json_decode(json_decode($getLastState['item_data'], true), true);
             $updatedSubitemIDs = $this->getSubitemsWithNewUpdates($getLastStateItemData, $response);
         }
-
+    
         $updateNotification = UpdateNotification::updateOrCreate(
             ['email' => $request->email], // Search criteria
             ['item_data' => json_encode(json_encode($response, true), true)] // Data to be updated or created
         );
-
+    
         $subitems = $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] ?? [];
-
+    
         if (empty($subitems)) {
             return $this->returnData("no data found", false);
         }
-
+    
         $total_subitem = count($subitems);
         $limit = $payload['limit'];
         $skip = $payload['skip'];
-
+    
         $send_response = [];
-
+    
         if ($limit > $total_subitem) {
             $send_response = array_slice($subitems, $skip, $total_subitem);
         } else {
             $send_response = array_slice($subitems, $skip, $limit);
         }
-
+    
         $response['response']['data']['boards'][0]['items_page']['items'][0]['subitems'] = $send_response;
         $response['response']['data']['boards'][0]['items_page']['items'][0]['new_updates'] = $updatedSubitemIDs;
-
+    
         return $this->returnData($response);
     }
+    
 
 
     //helper functions 
@@ -1197,7 +1209,7 @@ class DashboardController extends Controller
             // Payload 
             $payload = $request->json()->all();
 
-            $requiredKeys = ['incorpify', 'governify', 'onboardify'];
+            $requiredKeys = ['incorpify', 'governify'];
             $allowedStatuses = ["in progress", "completed", "pending", "canceled", "awaiting action"];
             
             foreach ($requiredKeys as $key) {
@@ -1212,8 +1224,8 @@ class DashboardController extends Controller
                 }
             }
             
-            if (!empty($payload['status'])) {
-                if (!isset($payload['status']) || !in_array(strtolower($payload['status']), $allowedStatuses)) {
+            if (isset($payload['status'])) {
+                if (!in_array(strtolower($payload['status']), $allowedStatuses)) {
                     return $this->returnData("Status is required and must be one of the following: " . implode(", ", $allowedStatuses), false);
                 }
             }
@@ -1223,7 +1235,7 @@ class DashboardController extends Controller
 
             // Get the email from the authenticated user
             $email = $user->email;
-
+    
             // Search for the email in the three tables and get the data
             $incorpifyData = $this->getBoardId();
             $siteSettingsGovernify = GovernifySiteSetting::first()->toArray();
@@ -1277,48 +1289,11 @@ class DashboardController extends Controller
             } else {
                 $graphqlResults['Governify'] = [];
             }
+           
 
-
-            //----------------------
-            //Comment Untill the conformation
-            //----------------------
-
-            // if (isset($siteSettingsOnboardifyData['board_id'])) {
-
-            //     //onboardify
-
-            //     $jsonData = json_decode($siteSettingsOnboardifyData['columns'], true);
-
-            //     $emailColumnId = $jsonData['email_key'];
-            //     $statusColumnId = null;
-
-            //     foreach ($jsonData['onboarding_columns'] as $column) {
-            //         if ($column['name'] === 'Email Address') {
-            //             $emailColumnId = $column['id'];
-            //         }
-            //         if (strpos($column['name'], 'Status') !== false) {
-            //             $statusColumnId = $column['id'];
-            //         }
-            //     }
-
-            //     $onboardifyQuery = $this->constructGraphQLQuery($siteSettingsOnboardify['board_id'], 'items', $emailColumnId, $statusColumnId);
-
-            //     echo '<pre>';
-            //     print_r($emailColumnId);
-            //     print_r($statusColumnId);
-            //     print_r($onboardifyQuery);
-            //     echo '[Line]:     ' . __LINE__ . "\n";
-            //     echo '[Function]: ' . __FUNCTION__ . "\n";
-            //     echo '[Class]:    ' . (__CLASS__ ? __CLASS__ : 'N/A') . "\n";
-            //     echo '[Method]:   ' . (__METHOD__ ? __METHOD__ : 'N/A') . "\n";
-            //     echo '[File]:     ' . __FILE__ . "\n";
-            //     die;
-                
-                
-            //     $graphqlResults['Onboardify'] = $this->_getMondayData($onboardifyQuery);
-            // } else {
-            //     $graphqlResults['Onboardify'] = [];
-            // }
+            $onboardifyDataResponse = $this->getOnboardifyBoardIds($email);
+            $graphqlResults['Onboardify'] = $onboardifyDataResponse;
+          
 
             // Return the combined data as a JSON response
             return response()->json($graphqlResults);
@@ -1607,5 +1582,75 @@ class DashboardController extends Controller
         }
                 
     }
+
+    public function getOnboardifyBoardIds($userEmail) {
+        if (empty($userEmail)) {
+            return $this->returnData("email is a required field");
+        }
+    
+        $dataToRender = \App\Models\OnboardifyProfiles::with('services')->whereRaw('FIND_IN_SET(?, users)', [$userEmail])->first();
+    
+        if (empty($dataToRender)) {
+            return response()->json(['response' => [], 'status' => false, 'message' => "Currently onboardify profile not assigned to this user."]);
+        }
+    
+        $services = $dataToRender->services->toArray();
+        if (empty($services)) {
+            return response()->json(['response' => [], 'status' => false, 'message' => "Currently onboardify service not assigned to this user."]);
+        }
+    
+        $boardIds = array_column($services, 'board_id');
+        if (empty($boardIds)) {
+            return response()->json(['response' => [], 'status' => false, 'message' => "Board Id not found from onboardify service."]);
+        }
+    
+        $boardIdsString = '[' . implode(',', $boardIds) . ']';
+        $after = 'ddd';
+        $cursor = 'null';
+        $mondayData = [];
+    
+        do {
+            $query = 'query {
+                boards(ids: ' . $boardIdsString . ') {
+                    items_page {
+                        items {
+                            created_at
+                            email
+                            id
+                            name
+                            updated_at
+                            column_values {
+                                id
+                                value
+                                type
+                                text
+                                ... on StatusValue {
+                                    label
+                                    update_id
+                                }
+                            }
+                        }
+                    }
+                }
+            }';
+    
+            $boardsData = $this->_getMondayData($query);
+            $currData = $boardsData['response']['data']['boards'][0]['items_page']['items'] ?? [];
+    
+            $mondayData = array_merge($mondayData, $currData);
+    
+            $cursor = $boardsData['response']['data']['boards'][0]['items_page']['cursor'] ?? null;
+            $after = $cursor ? 'ddd' : '';
+    
+        } while (!empty($after));
+    
+        $newResponse = $boardsData;
+        unset($newResponse['response']['data']['boards'][0]['items_page']['items']);
+        $newResponse['response']['data']['boards'][0]['items_page']['items'] = $mondayData;
+    
+        return $newResponse;
+    }
+    
+    
 
 }

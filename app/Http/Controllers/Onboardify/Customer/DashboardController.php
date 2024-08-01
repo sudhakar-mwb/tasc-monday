@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Models\OnboardifyProfiles;
+use App\Models\OnboardifyService;
 class DashboardController extends Controller
 {
     use MondayApis;
@@ -380,6 +382,311 @@ class DashboardController extends Controller
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "General Settings Data Not Found.")));
                 }
             } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function allProfileWithServicesByUser (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $userId = $this->verifyToken()->getData()->id;
+                $getUser = MondayUsers::getUser(['id' => $userId]);
+                if (!empty($getUser) && !empty($getUser->email)) {
+                    $userEmail = $getUser->email;
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+                }
+                // $userEmail = '1524185';
+                // Fetch profiles with associated services
+                $dataToRender = OnboardifyProfiles::with('services')->whereRaw('FIND_IN_SET(?, users)', [$userEmail])->get();
+                if (!empty($dataToRender->isNotEmpty())) {
+                    return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profile And Services Data Not Found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function getAllRequestTrackingByUserServices (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $userId = $this->verifyToken()->getData()->id;
+                $getUser = MondayUsers::getUser(['id' => $userId]);
+                if (!empty($getUser) && !empty($getUser->email)) {
+                    $userEmail = $getUser->email;
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+                }
+                // Fetch profiles with associated services
+                $dataToRender = OnboardifyProfiles::with('services')->whereRaw('FIND_IN_SET(?, users)', [$userEmail])->get()->first();
+                if (!empty($dataToRender)) {
+                    if (!empty($dataToRender['services'])) {
+                        $boardId = [];
+                        foreach ($dataToRender['services'] as $services) {
+                            $boardId[] = $services['board_id'];
+                        }
+                        if (!empty($boardId)) {
+                            // $boardId = array_map('intval', $boardId);
+                            // Convert the array to a string.
+                            $boardIdsString = '[' . implode(',', $boardId) . ']';
+                        }else{
+                            return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Id not found from onboardify service.")));
+                        }
+                        $after      = 'ddd';
+                        $tolalData  = 200;
+                        $cursor     = 'null';
+                        $mondayData = [];
+                        // limit: ' . $tolalData . ', cursor:' . $cursor . ',
+                        // items_page (query_params: {rules: [{column_id: "'.$emailKeyForFilter.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
+                        do {
+                            $query = 'query {
+                        boards( ids: '.$boardIdsString.') {
+                        id
+                        name
+                        state
+                        permissions
+                        board_kind
+                        columns {
+                            title
+                            id
+                            archived
+                            description
+                            settings_str
+                            title
+                            type
+                            width
+                        }
+                        items_page {
+                            cursor,
+                            items {
+                                created_at
+                                creator_id
+                                email
+                                id
+                                name
+                                relative_link
+                                state
+                                updated_at
+                                url
+                                column_values {
+                                   id
+                                   value
+                                   type
+                                   text
+                                   ... on StatusValue  {
+                                      label
+                                      update_id
+                                }
+                               }updates (limit: 200) {
+                                  assets {
+                                      created_at
+                                      file_extension
+                                      file_size
+                                      id
+                                      name
+                                      original_geometry
+                                      public_url
+                                      url
+                                      url_thumbnail 
+                                    }
+                                  body
+                                  text_body
+                                  created_at
+                                  creator_id
+                                  id
+                                  item_id
+                                  replies {
+                                      body
+                                      created_at
+                                      creator_id
+                                      id
+                                      text_body
+                                      updated_at
+                                    }
+                                  updated_at
+                                  text_body
+                                  creator {
+                                    name
+                                    id
+                                    email
+                                 }
+                            } 
+                        }
+                    }
+                }
+              }';
+
+                            $boardsData = $this->_getMondayData($query);
+                            if (!empty($boardsData['response']['data']['boards'][0]['items_page']['cursor'])) {
+                                $cursor =  "\"" . $boardsData['response']['data']['boards'][0]['items_page']['cursor'] . "\"";
+                            } else {
+                                $after = '';
+                            }
+                            $curr_data = isset($boardsData['response']['data']['boards'][0]['items_page']['items']) ? $boardsData['response']['data']['boards'][0]['items_page']['items'] : [];
+                            if (!empty($curr_data)) {
+                                if (count($curr_data))
+                                    foreach ($curr_data as $item) {
+                                        $mondayData[] = $item;
+                                    }
+                            }
+                            $newResponse = $boardsData;
+                        } while (!empty($after));
+                        unset($newResponse['response']['data']['boards'][0]['items_page']['items']);
+                        $newResponse['response']['data']['boards'][0]['items_page']['items'] = $mondayData;
+                        if (!empty( $newResponse['response']['data']['boards'][0]['items_page']['items'])) {
+                            return response(json_encode(array('response' => $newResponse['response'], 'status' => true, 'message' => "Board Items Data Found.")));
+                        }else{
+                            return response(json_encode(array('response' => $newResponse['response'], 'status' => false, 'message' => "Board Items Data Not Found.")));
+                        }
+                    }else{
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Currently onboardify service not assign to this user.")));
+                    }
+                    
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Currently onboardify profile not assign to this user.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function requestTrackingByBoardId ($boardId){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            $getUser = MondayUsers::getUser(['id' => $userId]);
+            if (!empty($getUser) && !empty($getUser->email)) {
+                $userEmail = $getUser->email;
+            }else{
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+            }
+            if ($userId) {
+                $after      = 'ddd';
+                $tolalData  = 200;
+                $cursor     = 'null';
+                $mondayData = [];
+                // limit: ' . $tolalData . ', cursor:' . $cursor . ',
+                if (empty($boardId)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Id not found.")));
+                }
+                // if (empty($emailKeyForFilter)) {
+                //     return response(json_encode(array('response' => [], 'status' => false, 'message' => "The required key for Onboardify board visibility is missing.")));
+                // }
+                // items_page (query_params: {rules: [{column_id: "'.$emailKeyForFilter.'", compare_value: ["' . $userEmail . '"], operator: contains_text}]}){
+                do {
+                    $query = 'query {
+                boards( ids: '.$boardId.') {
+                id
+                name
+                state
+                permissions
+                board_kind
+                columns {
+                          title
+                          id
+                          archived
+                          description
+                          settings_str
+                          title
+                          type
+                          width
+                      }
+                      items_page {
+                          cursor,
+                          items {
+                              created_at
+                              creator_id
+                              email
+                              id
+                              name
+                              relative_link
+                              state
+                              updated_at
+                              url
+                              column_values {
+                                 id
+                                 value
+                                 type
+                                 text
+                                 ... on StatusValue  {
+                                    label
+                                    update_id
+                                }
+                            }updates (limit: 200) {
+                                assets {
+                                    created_at
+                                    file_extension
+                                    file_size
+                                    id
+                                    name
+                                    original_geometry
+                                    public_url
+                                    url
+                                    url_thumbnail 
+                                }
+                                body
+                                text_body
+                                created_at
+                                creator_id
+                                id
+                                item_id
+                                replies {
+                                    body
+                                    created_at
+                                    creator_id
+                                    id
+                                    text_body
+                                    updated_at
+                                }
+                                updated_at
+                                text_body
+                                creator {
+                                  name
+                                  id
+                                  email
+                                }
+                            } 
+                        }
+                    }
+                }
+            }';
+
+                    $boardsData = $this->_getMondayData($query);
+                    if (!empty($boardsData['response']['data']['boards'][0]['items_page']['cursor'])) {
+                        $cursor =  "\"" . $boardsData['response']['data']['boards'][0]['items_page']['cursor'] . "\"";
+                    } else {
+                        $after = '';
+                    }
+                    $curr_data = isset($boardsData['response']['data']['boards'][0]['items_page']['items']) ? $boardsData['response']['data']['boards'][0]['items_page']['items'] : [];
+                    if (!empty($curr_data)) {
+                        if (count($curr_data))
+                            foreach ($curr_data as $item) {
+                                $mondayData[] = $item;
+                            }
+                    }
+                    $newResponse = $boardsData;
+                } while (!empty($after));
+                unset($newResponse['response']['data']['boards'][0]['items_page']['items']);
+                $newResponse['response']['data']['boards'][0]['items_page']['items'] = $mondayData;
+                if (!empty( $newResponse['response']['data']['boards'][0]['items_page']['items'])) {
+                    return response(json_encode(array('response' => $newResponse['response'], 'status' => true, 'message' => "Board Items Data Found.")));
+                }else{
+                    return response(json_encode(array('response' => $newResponse['response'], 'status' => false, 'message' => "Board Items Data Not Found.")));
+                }
+                return $newResponse;
+            }else{
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
         } catch (\Exception $e) {
