@@ -141,6 +141,7 @@ class DashboardController extends Controller
                     ];
 
                     if (!empty($dataArray['email'])) {
+                        // Not Required Issue Generate
                         $criteria = [
                             'board_id' => $dataArray['board'],
                             'email'    => $dataArray['email'],
@@ -159,8 +160,7 @@ class DashboardController extends Controller
                         }
                     } else {
                         $criteria = [
-                            'board_id' => $dataArray['board'],
-                            'email' => "",
+                            'board_id' => $dataArray['board']
                         ];
                         $user = BoardColumnMappings::where($criteria)->get();
                         $response = BoardColumnMappings::updateOrCreate($criteria, $datatoUpdate);
