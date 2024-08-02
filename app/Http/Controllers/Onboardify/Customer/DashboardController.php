@@ -874,4 +874,22 @@ class DashboardController extends Controller
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
+
+    public function getBoardIdByUser (){
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $mondayUsers = MondayUsers::where(['id'=>$userId])->first();
+                if (!empty($mondayUsers) && !empty($mondayUsers['board_id']) ) {
+                    return response(json_encode(array('response' => $mondayUsers['board_id'] , 'status' => true, 'message' => "User Board Id Found.")));
+                } else {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Users data or Board Id not found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }
