@@ -212,6 +212,8 @@ Route::group(['prefix' => "governify/customer", "middleware" => ["auth:api", "is
 
     Route::get('/governifySiteSetting', [ServiceCategoriesController::class, 'getGovernifySiteSetting']);
     Route::get('/serviceRequests', [ServiceRequestsController::class, 'index']);
+    Route::post('/createGovernifyServiceRecord', [ServiceRequestsController::class, 'createGovernifyServiceRecord']);
+    Route::get('/getGovernifyServiceRecord', [ServiceRequestsController::class, 'getGovernifyServiceRecord']);
 });
 
 Route::group(['prefix' => "tasc360", "middleware" => ["checkUserType:admin"]], function () {
@@ -265,6 +267,13 @@ Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api",
     Route::get('/requestTrackingActivity/{itemID}', [OnboardifyCustomerDashboardController::class, 'requestTrackingActivity']);
     Route::get('/getBoardColourMapping', [OnboardifyCustomerDashboardController::class, 'getBoardColourMapping']);
     Route::get('/getGeneralSettings', [OnboardifyCustomerDashboardController::class, 'getGeneralSettings']);
+    Route::get('/allProfileWithServicesByUser', [OnboardifyCustomerDashboardController::class, 'allProfileWithServicesByUser']);
+    Route::get('/getAllRequestTrackingByUserServices', [OnboardifyCustomerDashboardController::class, 'getAllRequestTrackingByUserServices']);
+    Route::post('/requestTrackingByBoardId/{boardId}', [OnboardifyCustomerDashboardController::class, 'requestTrackingByBoardId']);
+    Route::post('/requestTrackingByBoardIdAndSearch/{boardId}', [OnboardifyCustomerDashboardController::class, 'requestTrackingByBoardIdAndSearch']);
+    Route::get('/getFilterColumnByBoardId/{boardId}', [OnboardifyCustomerDashboardController::class, 'getFilterColumnByBoardId']);
+    // temp route need to remove
+    Route::get('/getBoardIdByUser', [OnboardifyCustomerDashboardController::class, 'getBoardIdByUser']);
 });
 
 require __DIR__ . '/auth.php';

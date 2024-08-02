@@ -20,7 +20,7 @@ use Illuminate\Support\Str;
 use App\Models\GovernifyServiceRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
-
+use DB;
 class ProfileController extends Controller
 {
     use MondayApis;
@@ -53,6 +53,23 @@ class ProfileController extends Controller
                     'title'  => 'required|string|unique:onboardify_profiles',
                     'users'  => 'required',
                 ], $this->getErrorMessages());
+
+                // Parse the users from the request
+                $users = explode(',', $request->users);
+
+                // Fetch all profiles and remove specified users
+                $profiles = OnboardifyProfiles::all();
+
+                foreach ($profiles as $profile) {
+                    $profileUsers = explode(',', $profile->users);
+                    $updatedUsers = array_diff($profileUsers, $users);
+
+                    if (count($updatedUsers) != count($profileUsers)) {
+                        $profile->users = implode(',', $updatedUsers);
+                        $profile->save();
+                    }
+                }
+
                 $insert_array = array(
                     "title"      => $input['title'],
                     "users"      => $input['users'],
@@ -165,6 +182,23 @@ class ProfileController extends Controller
                         'title'  => 'required|string|unique:onboardify_profiles,title,' . $OnboardifyProfilesData['id'],
                         'users'  => 'required',
                     ], $this->getErrorMessages());
+
+                    // Parse the users from the request
+                    $users = explode(',', $request->users);
+
+                    // Fetch all profiles and remove specified users
+                    $profiles = OnboardifyProfiles::all();
+
+                    foreach ($profiles as $profile) {
+                        $profileUsers = explode(',', $profile->users);
+                        $updatedUsers = array_diff($profileUsers, $users);
+
+                        if (count($updatedUsers) != count($profileUsers)) {
+                            $profile->users = implode(',', $updatedUsers);
+                            $profile->save();
+                        }
+                    }
+
                     $insert_array = array(
                         "title" => $request->title,
                         "users" => $request->users,
@@ -228,7 +262,7 @@ class ProfileController extends Controller
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
                 $dataToRender =  OnboardifyProfiles::with('services')->where('id', $id)->get();
-                if (!empty($dataToRender)) {
+                if (!empty($dataToRender->isNotEmpty())) {
                     return response(json_encode(array('response' => $dataToRender, 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
                 }else{
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify Profile And Services Data Not Found.")));
