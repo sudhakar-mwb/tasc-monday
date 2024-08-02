@@ -108,7 +108,7 @@ class DashboardController extends Controller
                         return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mppaing Data Not Found.")));
                     }
                 } elseif (!empty($board_id) && empty($email)) {
-                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id, 'email' => ""])->get();
+                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id])->get();
                     if (!empty($BoardColumnMappingData)) {
                         return response(json_encode(array('response' => $BoardColumnMappingData, 'status' => true, 'message' => "Board Column Mppaing Data.")));
                     } else {
