@@ -842,7 +842,7 @@ class DashboardController extends Controller
                             state
                             permissions
                             board_kind
-                            columns (ids:"status8"){
+                            columns (ids:"'.$statusKey.'"){
                                       title
                                       id
                                       archived
