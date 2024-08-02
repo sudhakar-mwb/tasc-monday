@@ -259,6 +259,7 @@ Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api",
     Route::get('/getAllRequestTrackingByUserServices', [OnboardifyCustomerDashboardController::class, 'getAllRequestTrackingByUserServices']);
     Route::post('/requestTrackingByBoardId/{boardId}', [OnboardifyCustomerDashboardController::class, 'requestTrackingByBoardId']);
     Route::post('/requestTrackingByBoardIdAndSearch/{boardId}', [OnboardifyCustomerDashboardController::class, 'requestTrackingByBoardIdAndSearch']);
+    Route::get('/getFilterColumnByBoardId/{boardId}', [OnboardifyCustomerDashboardController::class, 'getFilterColumnByBoardId']);
 });
 
 require __DIR__ . '/auth.php';

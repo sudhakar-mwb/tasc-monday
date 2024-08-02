@@ -712,7 +712,7 @@ class DashboardController extends Controller
                 // $queryParams = str_replace(['"{', '}"'], ['{', '}'], $queryParams);
                 // $queryParams = preg_replace('/"(\w+)":/u', '$1:', $queryParams);
                 // Specifically replace the values for direction to be unquoted
-                $queryParams = str_replace(['"asc"', '"desc"', '"and"', '"contains_text"'], ['asc', 'desc', 'and', 'contains_text'], $queryParams);
+                $queryParams = str_replace(['"asc"', '"desc"', '"and"', '"or"', '"contains_text"'], ['asc', 'desc', 'and','or', 'contains_text'], $queryParams);
             }
 
             if (!empty($queryParams)) {
@@ -817,6 +817,57 @@ class DashboardController extends Controller
                     return response(json_encode(array('response' => $boardsData['response'], 'status' => false, 'message' => "Board Items Data Not Found.")));
                 }
             }else{
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function getFilterColumnByBoardId ($boardId){
+
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $boardId])->first();
+                if (!empty($BoardColumnMappingsData)) {
+                   $mappingData = json_decode($BoardColumnMappingsData['columns'], true);
+                   if (!empty($mappingData['required_columns']) && !empty($mappingData['required_columns']['overall_status'])) {
+                        $statusKey = $mappingData['required_columns']['overall_status'];
+
+                        $query = 'query {
+                            boards( ids: '.$boardId.') {
+                            id
+                            name
+                            state
+                            permissions
+                            board_kind
+                            columns (ids:"status8"){
+                                      title
+                                      id
+                                      archived
+                                      description
+                                      settings_str
+                                      title
+                                      type
+                                      width
+                                    }
+                                }
+                            }';
+            
+                        $boardsData = $this->_getMondayData($query);
+                        if (!empty( $boardsData['response']['data']['boards'][0]['columns'])) {
+                            return response(json_encode(array('response' => $boardsData['response'], 'status' => true, 'message' => "Board Columns Data Found.")));
+                        }else{
+                            return response(json_encode(array('response' => $boardsData['response'], 'status' => false, 'message' => "Board Columns Data Not Found.")));
+                        }
+                   }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mappings Data Not Found For Filter column.")));
+                   }
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board Column Mappings Data Not Found.")));
+                }
+            } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
         } catch (\Exception $e) {
