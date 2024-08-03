@@ -858,6 +858,9 @@ class AuthController extends Controller
                     'updated_at'   => date("Y-m-d H:i:s"),
                     'password'     => Hash::make(trim($input['password'])),
                     'board_id'     => 1393670128,
+                    'utm_source'     => !empty($input['utm_source'])   ? $input['utm_source']   : '',
+                    'utm_medium'     => !empty($input['utm_medium'])   ? $input['utm_medium']   : '',
+                    'utm_campaign'   => !empty($input['utm_campaign']) ? $input['utm_campaign'] : '',
                 );
 
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
