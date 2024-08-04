@@ -573,7 +573,7 @@ class DashboardController extends Controller
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
             }
             if ($userId) {
-                $limit      = !empty($request->limit) ? $request->limit : 10;
+                $limit      = !empty($request->limit) ? $request->limit : 5;
                 $cursor     = !empty($request->cursor) ? 'cursor:'.'"'.$request->cursor.'"' : 'cursor:'.'null';
                 // limit: ' . $tolalData . ', cursor:' . $cursor . ',
                 if (empty($boardId)) {
