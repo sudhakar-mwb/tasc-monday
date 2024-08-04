@@ -182,12 +182,12 @@ class DashboardController extends Controller
             }
             if ($userEmail) {
                 if (!empty($getUser->board_id)) {
-                    $getBoardColumnMappings = BoardColumnMappings::where(['board_id' => $getUser->board_id, 'email'=>$getUser->email])->first();
+                    $getBoardColumnMappings = BoardColumnMappings::where(['board_id' => $getUser->board_id])->first();
                     if(!empty($getBoardColumnMappings)){
                         return response(json_encode(array('response' => $getBoardColumnMappings, 'status' => true, 'message' => "Board Column Mapping Data.")));
                     }
                     else{
-                        $getBoardColumnMappings = BoardColumnMappings::where(['board_id' => $getUser->board_id, 'email'=>""])->first();
+                        $getBoardColumnMappings = BoardColumnMappings::where(['board_id' => $getUser->board_id])->first();
                         if (!empty($getBoardColumnMappings)) {
                             return response(json_encode(array('response' => $getBoardColumnMappings, 'status' => true, 'message' => "Board Column Mapping Data.")));
                         }else{
@@ -212,7 +212,7 @@ class DashboardController extends Controller
                 $board_id = $request->query('board_id');
                 $email    = $request->query('email');
                 if (!empty($board_id) && !empty($email)) {
-                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id, 'email' => $email])->get();
+                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id])->get();
                     if (!empty($BoardColumnMappingData)) {
                         return response(json_encode(array('response' => $BoardColumnMappingData, 'status' => true, 'message' => "Board Column Mppaing Data.")));
                     } else {

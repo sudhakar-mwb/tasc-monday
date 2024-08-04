@@ -101,7 +101,7 @@ class DashboardController extends Controller
                 $board_id = $request->query('board_id');
                 $email    = $request->query('email');
                 if (!empty($board_id) && !empty($email)) {
-                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id, 'email' => $email])->get();
+                    $BoardColumnMappingData = BoardColumnMappings::where(['board_id' => $board_id])->get();
                     if (!empty($BoardColumnMappingData)) {
                         return response(json_encode(array('response' => $BoardColumnMappingData, 'status' => true, 'message' => "Board Column Mppaing Data.")));
                     } else {
