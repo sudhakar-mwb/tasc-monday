@@ -258,7 +258,7 @@ class DashboardController extends Controller
                         $onboardingColumnsKeyForFilter = $onboardingColumnsKeys['onboarding_columns'];
                     }
                 }else{
-                    $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id, 'email'=>""])->first();
+                    $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id])->first();
                     if (!empty($BoardColumnMappingsData['columns'])) {
                         $onboardingColumnsKeys = json_decode($BoardColumnMappingsData['columns'], true);
                         if (!empty($onboardingColumnsKeys['onboarding_columns'])) {
