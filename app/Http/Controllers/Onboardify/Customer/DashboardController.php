@@ -251,7 +251,7 @@ class DashboardController extends Controller
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
             }
 
-                $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id, 'email'=>$userEmail])->first();
+                $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id])->first();
                 if (!empty($BoardColumnMappingsData['columns'])) {
                     $onboardingColumnsKeys = json_decode($BoardColumnMappingsData['columns'], true);
                     if (!empty($onboardingColumnsKeys['onboarding_columns'])) {
