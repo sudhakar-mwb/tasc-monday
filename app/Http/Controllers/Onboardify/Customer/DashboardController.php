@@ -41,14 +41,14 @@ class DashboardController extends Controller
                 }else{
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboardify board not assign to this user.")));
                 }
-                $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $boardId, 'email'=>$userEmail])->first();
+                $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $boardId])->first();
                 if (!empty($BoardColumnMappingsData['columns'])) {
                     $checkEmailKey = json_decode($BoardColumnMappingsData['columns'], true);
                     if (!empty($checkEmailKey['email_key'])) {
                         $emailKeyForFilter = $checkEmailKey['email_key'];
                     }
                 }else{
-                    $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $boardId, 'email'=>""])->first();
+                    $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $boardId])->first();
                     if (!empty($BoardColumnMappingsData['columns'])) {
                         $checkEmailKey = json_decode($BoardColumnMappingsData['columns'], true);
                         if (!empty($checkEmailKey['email_key'])) {
