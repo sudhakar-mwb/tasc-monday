@@ -258,7 +258,7 @@ class DashboardController extends Controller
                         $onboardingColumnsKeyForFilter = $onboardingColumnsKeys['onboarding_columns'];
                     }
                 }else{
-                    $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id, 'email'=>""])->first();
+                    $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id])->first();
                     if (!empty($BoardColumnMappingsData['columns'])) {
                         $onboardingColumnsKeys = json_decode($BoardColumnMappingsData['columns'], true);
                         if (!empty($onboardingColumnsKeys['onboarding_columns'])) {
@@ -573,7 +573,7 @@ class DashboardController extends Controller
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
             }
             if ($userId) {
-                $limit      = !empty($request->limit) ? $request->limit : 5;
+                $limit      = !empty($request->limit) ? $request->limit : 10;
                 $cursor     = !empty($request->cursor) ? 'cursor:'.'"'.$request->cursor.'"' : 'cursor:'.'null';
                 // limit: ' . $tolalData . ', cursor:' . $cursor . ',
                 if (empty($boardId)) {
