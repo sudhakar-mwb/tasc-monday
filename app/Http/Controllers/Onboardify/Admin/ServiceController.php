@@ -97,10 +97,10 @@ class ServiceController extends Controller
                 $insert_array = array(
                     "title"       => $request->title,
                     "description" => $request->description,
-                    "service_setting_data" => json_encode($request->service_setting_data),
+                    "service_setting_data" => ($request->service_setting_data),
                     "profile_id" => $request->profile_id,
                     "board_id" => $request->board_id,
-                    "service_column_value_filter" => json_encode($request->service_column_value_filter),
+                    "service_column_value_filter" => ($request->service_column_value_filter),
                     "service_form_link"           => $request->service_form_link,
                     "service_chart_link"          => $request->service_chart_link,
                     "created_at" => date("Y-m-d H:i:s"),
@@ -232,10 +232,10 @@ class ServiceController extends Controller
                     $insert_array = array(
                         "title" => $request->title,
                         "description" => $request->description,
-                        "service_setting_data" => json_encode($request->service_setting_data),
+                        "service_setting_data" => ($request->service_setting_data),
                         "profile_id" => $request->profile_id,
                         "board_id" => $request->board_id,
-                        "service_column_value_filter" => json_encode($request->service_column_value_filter),
+                        "service_column_value_filter" => ($request->service_column_value_filter),
                         "service_form_link"           => $request->service_form_link,
                         "service_chart_link"          => $request->service_chart_link,
                         "updated_at" => date("Y-m-d H:i:s")
