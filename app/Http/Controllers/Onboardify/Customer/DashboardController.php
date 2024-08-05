@@ -301,6 +301,7 @@ class DashboardController extends Controller
                      items (ids: [' . $itemID . ']) {
                         id
                         name
+                        created_at
                         column_values {
                            id
                            value
@@ -563,7 +564,7 @@ class DashboardController extends Controller
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
             }
             if ($userId) {
-                $limit      = !empty($request->limit) ? $request->limit : 5;
+                $limit      = !empty($request->limit) ? $request->limit : 500;
                 $cursor     = !empty($request->cursor) ? 'cursor:'.'"'.$request->cursor.'"' : 'cursor:'.'null';
                 // limit: ' . $tolalData . ', cursor:' . $cursor . ',
                 if (empty($boardId)) {
@@ -579,17 +580,11 @@ class DashboardController extends Controller
                 id
                 name
                 columns {
-                          title
-                          id
-                          id
-                          archived
-                          description
-                          id             
-                          archived
-                          description
-                          settings_str
-                          title
-                          type
+                        title
+                        id             
+                        settings_str
+                        title
+                        type
                       }
                       items_page (limit: ' . $limit . ', '.$cursor.' ){
                           cursor,
@@ -748,18 +743,12 @@ class DashboardController extends Controller
                             boards( ids: '.$boardId.') {
                             id
                             name
-                            state
-                            permissions
-                            board_kind
                             columns (ids:"'.$statusKey.'"){
                                       title
                                       id
-                                      archived
-                                      description
                                       settings_str
                                       title
                                       type
-                                      width
                                     }
                                 }
                             }';
