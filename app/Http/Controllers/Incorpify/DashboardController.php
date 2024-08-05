@@ -262,9 +262,10 @@ class DashboardController extends Controller
             $required_action = "dup__of_description__1";
             $assignee = "assigness__1";
             $overall_status = "status__1";
+            $boardId = $this->getBoardId()['board_id']??"";
 
             $query = '{
-            boards(ids: 1472103835) {
+            boards(ids: '.$boardId.') {
             items_page(
                 query_params: {rules: [{column_id: "' . $column_id . '", compare_value: ["' . $payload['email'] . '"], operator: contains_text}]}
             ) {
@@ -375,16 +376,14 @@ class DashboardController extends Controller
     public function getSubItemByEmail(Request $request)
     {
         $payload = $request->json()->all();
+        $boardId = $this->getBoardId()['board_id']??"";
     
         // Add validation rules
         $validator = Validator::make($payload, [
             'email' => 'required|email|min:0',
             'limit' => 'int|min:0',
             'skip' => 'int|min:0',
-            'column_id' => 'required|string',
-            'description' => 'required|string',
-            'required_action' => 'required|string',
-            'assignee' => 'required|string',
+            'email_column_id' => 'required|string',
             'overall_status' => 'required|string',
         ]);
     
@@ -393,10 +392,7 @@ class DashboardController extends Controller
             'email' => 'Email',
             'limit' => 'Limit',
             'skip' => 'Skip',
-            'column_id' => 'Column ID',
-            'description' => 'Description',
-            'required_action' => 'Required Action',
-            'assignee' => 'Assignee',
+            'email_column_id' => 'Column ID',
             'overall_status' => 'Overall Status',
         ]);
     
@@ -405,17 +401,14 @@ class DashboardController extends Controller
         }
     
         // Extract variables from payload
-        $column_id = $payload['column_id'];
-        $description = $payload['description'];
-        $required_action = $payload['required_action'];
-        $assignee = $payload['assignee'];
+        $email_column_id = $payload['email_column_id'];
         $overall_status = $payload['overall_status'];
     
         // GraphQL query
         $query = '{
-            boards(ids: 1472103835) {
+            boards(ids: '.$boardId.') {
               items_page(
-                query_params: {rules: [{column_id: "' . $column_id . '", compare_value: ["' . $payload['email'] . '"], operator: contains_text}]}
+                query_params: {rules: [{email_column_id: "' . $email_column_id . '", compare_value: ["' . $payload['email'] . '"], operator: contains_text}]}
               ) {
                 items {
                     id
@@ -425,7 +418,7 @@ class DashboardController extends Controller
                       id
                       created_at
                       updated_at
-                      column_values(ids: ["' . $description . '", "' . $required_action . '", "' . $assignee . '", "' . $overall_status . '"]) {
+                      column_values(ids: ["' . $overall_status . '"]) {
                         id
                         text
                      }
@@ -637,10 +630,11 @@ class DashboardController extends Controller
 
         $group_id = "topics";
 
+        $boardId = $this->getBoardId()['board_id']??"";
 
         $query = 'mutation {
             create_item(
-              board_id: 1472103835
+              board_id: '.$boardId.'
               group_id: "' . $group_id . '"
               item_name: "' . $payload['your_company_name'] . '"
               column_values: ' . $column_values . '
