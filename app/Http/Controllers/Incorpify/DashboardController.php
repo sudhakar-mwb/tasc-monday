@@ -1231,8 +1231,7 @@ class DashboardController extends Controller
             $siteSettingsOnboardifyData = [];
             if(isset($siteSettingsOnboardify['board_id'])){
 
-                $siteSettingsOnboardifyData = BoardColumnMappings::where('email', $email)
-                ->where('board_id', (int)$siteSettingsOnboardify['board_id'])
+                $siteSettingsOnboardifyData = BoardColumnMappings::where('board_id', (int)$siteSettingsOnboardify['board_id'])
                 ->first();
 
                 $siteSettingsOnboardifyData = json_decode(json_encode($siteSettingsOnboardifyData, true), true);
