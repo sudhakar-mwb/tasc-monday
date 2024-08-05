@@ -285,13 +285,10 @@ class DashboardController extends Controller
                         boards(ids: ' . $getUser->board_id . ') {
                         columns {
                             title
-                            id
-                            archived
-                            description
+                            id             
                             settings_str
                             title
                             type
-                            width
                         }activity_logs ( limit:500 column_ids:'.$idString.', item_ids:'.$itemID.') {
                           id
                           user_id
@@ -302,15 +299,8 @@ class DashboardController extends Controller
                           created_at
                       }}
                      items (ids: [' . $itemID . ']) {
-                        created_at
-                        creator_id
-                        email
                         id
                         name
-                        relative_link
-                        state
-                        updated_at
-                        url
                         column_values {
                            id
                            value
@@ -588,31 +578,25 @@ class DashboardController extends Controller
                 boards( ids: '.$boardId.') {
                 id
                 name
-                state
-                permissions
-                board_kind
                 columns {
                           title
                           id
+                          id
+                          archived
+                          description
+                          id             
                           archived
                           description
                           settings_str
                           title
                           type
-                          width
                       }
                       items_page (limit: ' . $limit . ', '.$cursor.' ){
                           cursor,
                           items {
                               created_at
-                              creator_id
-                              email
                               id
                               name
-                              relative_link
-                              state
-                              updated_at
-                              url
                               column_values {
                                  id
                                  value
@@ -622,40 +606,7 @@ class DashboardController extends Controller
                                     label
                                     update_id
                                 }
-                            }updates (limit: 500) {
-                                assets {
-                                    created_at
-                                    file_extension
-                                    file_size
-                                    id
-                                    name
-                                    original_geometry
-                                    public_url
-                                    url
-                                    url_thumbnail 
-                                }
-                                body
-                                text_body
-                                created_at
-                                creator_id
-                                id
-                                item_id
-                                replies {
-                                    body
-                                    created_at
-                                    creator_id
-                                    id
-                                    text_body
-                                    updated_at
-                                }
-                                updated_at
-                                text_body
-                                creator {
-                                  name
-                                  id
-                                  email
-                                }
-                            } 
+                            }
                         }
                     }
                 }
