@@ -692,27 +692,18 @@ class DashboardController extends Controller
                 permissions
                 board_kind
                 columns {
-                          title
-                          id
-                          archived
-                          description
-                          settings_str
-                          title
-                          type
-                          width
+                        title
+                        id             
+                        settings_str
+                        title
+                        type
                       }
                       items_page (limit: ' . $limit . ', '.(!empty($queryParamsData) ? $queryParamsData : $cursor).'  ){
                           cursor,
                           items {
                               created_at
-                              creator_id
-                              email
                               id
                               name
-                              relative_link
-                              state
-                              updated_at
-                              url
                               column_values {
                                  id
                                  value
@@ -721,39 +712,6 @@ class DashboardController extends Controller
                                  ... on StatusValue  {
                                     label
                                     update_id
-                                }
-                            }updates (limit: 500) {
-                                assets {
-                                    created_at
-                                    file_extension
-                                    file_size
-                                    id
-                                    name
-                                    original_geometry
-                                    public_url
-                                    url
-                                    url_thumbnail 
-                                }
-                                body
-                                text_body
-                                created_at
-                                creator_id
-                                id
-                                item_id
-                                replies {
-                                    body
-                                    created_at
-                                    creator_id
-                                    id
-                                    text_body
-                                    updated_at
-                                }
-                                updated_at
-                                text_body
-                                creator {
-                                  name
-                                  id
-                                  email
                                 }
                             } 
                         }
