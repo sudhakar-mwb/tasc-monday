@@ -274,4 +274,41 @@ class ProfileController extends Controller
             return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
         }
     }
+
+    public function cloneOnboardifyProfile ($profileId){
+
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                // Fetch the original profile
+                $originalProfile = OnboardifyProfiles::findOrFail($profileId);
+
+                if (empty($originalProfile)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Something went wrong profile information not retrieved.")));
+                }
+                // Clone the profile
+                $newProfile = $originalProfile->replicate();
+                $newProfile->title = $originalProfile->title . ' - Clone';
+                $newProfile->users = '';
+                $newProfile->save();
+
+                // Fetch associated services
+                $originalServices = OnboardifyService::where('profile_id', $profileId)->get();
+
+                // Clone each service and associate it with the new profile
+                foreach ($originalServices as $originalService) {
+                    $newService = $originalService->replicate();
+                    $newService->profile_id = $newProfile->id;
+                    $newService->save();
+                }
+
+                DB::commit();
+                return response(json_encode(array('response' => [$newProfile->id], 'status' => tue, 'message' => "Profile cloned successfully.")));
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }
