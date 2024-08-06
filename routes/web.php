@@ -256,6 +256,7 @@ Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "is
     Route::post('/updateProfileSetting', [OnboardifyProfileController::class, 'updateProfileSetting']);
     Route::get('/allProfileWithServices', [OnboardifyProfileController::class, 'allProfileWithServices']);
     Route::get('/getProfileWithServicesById/{id}', [OnboardifyProfileController::class, 'getProfileWithServicesById']);
+    Route::get('/cloneOnboardifyProfile/{profileId}', [OnboardifyProfileController::class, 'cloneOnboardifyProfile']);
 
 
 });
