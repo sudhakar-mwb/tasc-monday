@@ -292,18 +292,26 @@ class ProfileController extends Controller
                 $newProfile->users = '';
                 $newProfile->save();
 
-                // Fetch associated services
-                $originalServices = OnboardifyService::where('profile_id', $profileId)->get();
+                if (!empty($newProfile->id)) {
+                    // Fetch associated services
+                    $originalServices = OnboardifyService::where('profile_id', $profileId)->get();
+                    if (!empty($originalServices->isNotEmpty())) {
+                        // Clone each service and associate it with the new profile
+                        foreach ($originalServices as $originalService) {
+                            $newService = $originalService->replicate();
+                            $newService->profile_id = $newProfile->id;
+                            $newService->save();
+                        }
 
-                // Clone each service and associate it with the new profile
-                foreach ($originalServices as $originalService) {
-                    $newService = $originalService->replicate();
-                    $newService->profile_id = $newProfile->id;
-                    $newService->save();
+                        DB::commit();
+                        return response(json_encode(array('response' => [$newProfile->id], 'status' => true, 'message' => "Profile and service cloned successfully.")));
+                    }else{
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Profile cloned successfully.")));  
+                    }
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Something went wrong profile not cloned.")));
                 }
 
-                DB::commit();
-                return response(json_encode(array('response' => [$newProfile->id], 'status' => tue, 'message' => "Profile cloned successfully.")));
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
             }
