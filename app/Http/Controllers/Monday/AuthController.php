@@ -861,9 +861,18 @@ class AuthController extends Controller
                     'utm_source'     => !empty($input['utm_source'])   ? $input['utm_source']   : '',
                     'utm_medium'     => !empty($input['utm_medium'])   ? $input['utm_medium']   : '',
                     'utm_campaign'   => !empty($input['utm_campaign']) ? $input['utm_campaign'] : '',
+                    'company_owner'  => false
                 );
 
+                //validating the company 
+                $getCompanyDetails = json_decode(json_encode(MondayUsers::getUser(["company_name"=>$dataToSave['company_name']]), true), true);
+
+                if(empty($getCompanyDetails)){
+                    $dataToSave['company_owner'] = true;
+                }
+
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
+                
                 if ($insertUserInDB['status'] == "success") {
                     $msg    = "User Created Successfully.";
                     $status = "success";
