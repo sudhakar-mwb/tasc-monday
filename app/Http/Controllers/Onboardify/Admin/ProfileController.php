@@ -286,9 +286,32 @@ class ProfileController extends Controller
                 if (empty($originalProfile)) {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Something went wrong profile information not retrieved.")));
                 }
+
+                if ($originalProfile['make_default']) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "The default profile cannot be cloned.")));
+                }
+
+                // Calculate the auto-increment value for the new profile title
+                $baseTitle = $originalProfile->title . ' - Clone';
+                $increment = 1;
+
+                // Find the highest increment used so far for cloned profiles with the same base title
+                $latestClone = OnboardifyProfiles::where('title', 'like', "$baseTitle%")
+                    ->orderByRaw('LENGTH(title) DESC')
+                    ->orderBy('title', 'DESC')
+                    ->first();
+
+                if ($latestClone) {
+                    $titleParts = explode(' - Clone', $latestClone->title);
+                    if (isset($titleParts[1]) && is_numeric(trim($titleParts[1]))) {
+                        $increment = (int) trim($titleParts[1]) + 1;
+                    }
+                }
+
                 // Clone the profile
                 $newProfile = $originalProfile->replicate();
-                $newProfile->title = $originalProfile->title . ' - Clone';
+                // $newProfile->title = $originalProfile->title . ' - Clone';
+                $newProfile->title = "$baseTitle $increment";
                 $newProfile->users = '';
                 $newProfile->save();
 
