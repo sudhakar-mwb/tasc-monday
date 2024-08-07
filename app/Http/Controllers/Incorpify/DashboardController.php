@@ -23,6 +23,7 @@ use App\Models\BoardColumnMappings;
 use App\Models\Tasc360Setting;
 use Illuminate\Support\Facades\Storage;
 use App\Models\TascPlateform;
+use App\Models\TascInvitation;
 
 
 class DashboardController extends Controller
@@ -1697,6 +1698,29 @@ class DashboardController extends Controller
         ];
 
         $response = $this->sendInvitationEmail($verificationData);
+        
+
+        //save the invitation
+        $inviteData = [
+            'inviter_id' => $userData['id'],
+            'invitee_email' => $payload['invited_user_email'],
+            'invitation_status' => 'pending',
+            'onboardify_status' => false,
+            'incorpify_status' => false,
+            'governify_status' => false,
+        ];
+
+        $responseData = $this->updateInviteData($inviteData, $plateForms);
+
+        // Check if the record already exists
+        // $existingRecord = TascInvitation::where($responseData)->first();
+
+        // if (!$existingRecord) {
+        //     $save = TascInvitation::create($responseData);
+        // }
+
+        $save = TascInvitation::create($responseData);
+
 
         return [
             "success"=> true,
@@ -1704,6 +1728,29 @@ class DashboardController extends Controller
             "data"=> []
         ];
 
+    }
+
+    function updateInviteData(array $inviteData, array $plateForms): array
+    {
+        // Define the platform status keys
+        $statusKeys = ['onboardify_status', 'governify_status', 'incorpify_status'];
+        
+        // Iterate over each status key
+        foreach ($statusKeys as $statusKey) {
+            // Extract the platform name from the status key (e.g., 'onboardify' from 'onboardify_status')
+            $platformName = str_replace('_status', '', $statusKey);
+            
+            // Check if the platform name is in the plateForms array
+            if (in_array($platformName, $plateForms)) {
+                // Set the corresponding status to true
+                $inviteData[$statusKey] = true;
+            } else {
+                // Set the corresponding status to false
+                $inviteData[$statusKey] = false;
+            }
+        }
+    
+        return $inviteData;
     }
 
 
@@ -1858,10 +1905,4 @@ class DashboardController extends Controller
         }
     }
     
-    
-    
-    
-    
-    
-
 }
