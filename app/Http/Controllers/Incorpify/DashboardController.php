@@ -1675,11 +1675,18 @@ class DashboardController extends Controller
 
         //prepare url
         $plateForms = [];
+        $plateFormsSignup = "";
         foreach ($platformData as $platform) {
-            $plateForms[] = $platform['plateform_name']; // Assuming 'signup_url' is the column name
+            $plateForms[] = $platform['plateform_name'];
+            if(count($payload['plateformId'])==1){
+                $plateFormsSignup = $platform["plateform_signuplink"];
+            } 
         }
-
-        $baseUrl = "https://login.tasc360.com/invite";
+        if(empty($plateFormsSignup)){
+            $baseUrl = "https://login.tasc360.com/invite";
+        } else {
+            $baseUrl = $plateFormsSignup;
+        }
 
         $parameters = [
             "user_email"=> $userData['email'],
