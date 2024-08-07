@@ -224,6 +224,9 @@ Route::group(['prefix' => "tasc360", "middleware" => ["checkUserType:admin"]], f
     Route::post('/uploadTask360Images', [IncorpifyDashboard::class, 'uploadTask360Images']);
     Route::post('/deleteUploadedImage', [IncorpifyDashboard::class, 'deleteUploadedImage']);
     Route::get('/getCommonSiteSettings',[IncorpifyDashboard::class, 'getCommonSiteSettings']);
+    Route::get('/getPlateformData', [IncorpifyDashboard::class, 'getPlateformData']);
+    Route::post('/sendInviteUserMail', [IncorpifyDashboard::class, 'sendInviteUserMail']);
+    Route::post('/inviteRegistration', [IncorpifyDashboard::class, 'inviteRegistration']);
 });
   
 Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isAdmin"]], function () {

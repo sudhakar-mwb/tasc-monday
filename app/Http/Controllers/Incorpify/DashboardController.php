@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Incorpify;
 
 use App\Http\Controllers\Controller;
+use App\Models\OnboardifyProfiles;
 use Exception;
 use Illuminate\Http\Request;
 use App\Traits\MondayApis;
@@ -21,6 +22,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Models\BoardColumnMappings;
 use App\Models\Tasc360Setting;
 use Illuminate\Support\Facades\Storage;
+use App\Models\TascPlateform;
 
 
 class DashboardController extends Controller
@@ -1606,5 +1608,260 @@ class DashboardController extends Controller
         }
                 
     }
+
+    public function getPlateformData(Request $request) {
+    
+        // Retrieve all records from the TascPlateform table
+        $platforms = TascPlateform::all();
+
+        // Return the results as a JSON response
+        return response()->json([
+            'status' => 'success',
+            'data' => $platforms
+        ]);
+    }
+
+    public function sendInviteUserMail(Request $request) {
+        $payload = $request->all();
+    
+        // Define the validation rules
+        $rules = [
+            'plateformId' => 'required|array|min:1',
+            'plateformId.*' => 'required|integer',
+            'user_email_id' => 'required|email',
+            'invited_user_email' => 'required|email',
+        ];
+    
+        // Define custom validation messages if necessary
+        $messages = [
+            'plateformId.required' => 'The platform ID is required.',
+            'plateformId.array' => 'The platform ID must be an array.',
+            'plateformId.min' => 'The platform ID array must contain at least one ID.',
+            'plateformId.*.required' => 'Each platform ID is required.',
+            'plateformId.*.integer' => 'Each platform ID must be an integer.',
+            'user_email_id.required' => 'The user email ID is required.',
+            'user_email_id.email' => 'The user email ID must be a valid email address.',
+            'invited_user_email.required' => 'The invited user email is required.',
+            'invited_user_email.email' => 'The invited user email must be a valid email address.',
+        ];
+    
+        // Perform the validation
+        $validator = Validator::make($request->all(), $rules, $messages);
+    
+        // Check if validation fails
+        if ($validator->fails()) {
+            return $this->returnData(['errors' => $validator->errors()], false);
+        }
+    
+        // Fetch the platform data by ids
+        $platformIds = $payload['plateformId'];
+        $platformData = TascPlateform::whereIn('id', $platformIds)->get();
+    
+        if ($platformData->isEmpty()) {
+            return $this->returnData("Invalid platform ID(s) found", false);
+        }
+
+        $userData = json_decode(json_encode($this->verifyTOken()->getData(), true), true);
+       
+        // Apply json_encode and json_decode on the platform data
+        $platformData = json_decode(json_encode($platformData, true), true);
+        
+        $dataToRender = json_decode(json_encode(OnboardifyProfiles::with('services')->whereRaw('FIND_IN_SET(?, users)', [$userData['email']])->get()->first(), true), true);
+
+        if(!isset($dataToRender['id']) || empty($dataToRender['id'])){
+            return $this->returnData("Profile Id is not available", false);
+        }
+
+        //prepare url
+        $plateForms = [];
+        foreach ($platformData as $platform) {
+            $plateForms[] = $platform['plateform_name']; // Assuming 'signup_url' is the column name
+        }
+
+        $baseUrl = "https://login.tasc360.com/invite";
+
+        $parameters = [
+            "user_email"=> $userData['email'],
+            "invited_user_email"=> $payload['invited_user_email'],
+            "company_name"=> $userData['company_name'],
+            "plateform"=> $plateForms,
+            "profile_id"=> $dataToRender['id']
+        ];
+
+        $encodedParams = http_build_query($parameters);
+        $finalUrl = $baseUrl."?".$encodedParams;
+
+        $verificationData = [
+           "invited_user_email"=> $payload['invited_user_email'],
+           "url"=> $finalUrl 
+        ];
+
+        $response = $this->sendInvitationEmail($verificationData);
+
+        return [
+            "success"=> true,
+            "message"=> "Email successfully send",
+            "data"=> []
+        ];
+
+    }
+
+
+    public function sendInvitationEmail($invitationData) {
+
+        $sitelogo = "https://login.tasc360.com/assets/1.png"; // Replace with the actual path to your logo
+        $email = $invitationData['invited_user_email'];
+    
+        $mail_body = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>TASC360 | Invitation</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f2f2f2;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 30px auto;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                }
+                .logo img {
+                    width: 120px;
+                    margin-bottom: 20px;
+                }
+                .header {
+                    background-color: #007BFF;
+                    color: #ffffff;
+                    padding: 20px;
+                    border-radius: 10px 10px 0 0;
+                    font-size: 24px;
+                    font-weight: bold;
+                }
+                .message {
+                    margin: 20px 0;
+                    font-size: 16px;
+                    color: #333333;
+                    line-height: 1.5;
+                }
+                .button {
+                    display: inline-block;
+                    padding: 12px 24px;
+                    background-color: #007BFF;
+                    color: #ffffff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    margin-top: 20px;
+                }
+                .button:hover {
+                    background-color: #0056b3;
+                }
+                .footer {
+                    margin-top: 20px;
+                    font-size: 14px;
+                    color: #777777;
+                }
+                .footer a {
+                    color: #007BFF;
+                    text-decoration: none;
+                }
+                .footer a:hover {
+                    text-decoration: underline;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    You\'re Invited to Join TASC360
+                </div>
+                <div class="logo">
+                    <img src="' . $sitelogo . '" alt="TASC Logo">
+                </div>
+                <div class="message">
+                    <p>Hello ' . $invitationData['invited_user_email'] . ',</p>
+                    <p>You have been invited to join our platform. To get started, please click the button below to accept the invitation and complete your registration:</p>
+                    <p><a href="' . $invitationData['url'] . '" class="button">Accept Invitation</a></p>
+                    <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
+                    <a href ="'.$invitationData['url'].'">' . $invitationData['url'] . '</p>
+                </div>
+                <div class="footer">
+                    <p>If you have any questions, please contact us at <a href="mailto:KSAAutomation@tascoutsourcing.com">KSAAutomation@tascoutsourcing.com</a></p>
+                </div>
+            </div>
+        </body>
+        </html>';
+    
+        try {
+            $subject = "You're Invited to Join TASC360";
+    
+            $data = array(
+                "personalizations" => array(
+                    array(
+                        "to" => array(
+                            array(
+                                "email" => $email,
+                                "name" => $invitationData['invited_user_email']
+                            )
+                        )
+                    )
+                ),
+                "from" => array(
+                    "email" => "KSAAutomation@tascoutsourcing.com"
+                ),
+                "subject" => $subject,
+                "content" => array(
+                    array(
+                        "type" => "text/html",
+                        "value" => $mail_body
+                    )
+                )
+            );
+    
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.sendgrid.com/v3/mail/send',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => json_encode($data),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: Bearer ' . env('SENDGRID_API_KEY'),
+                    'Content-Type: application/json'
+                ),
+            ));
+    
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+    
+            if ($err) {
+                throw new \Exception("cURL Error #: " . $err);
+            }
+    
+            return $response;
+        } catch (\Exception $e) {
+            // Log the error or handle it as necessary
+            throw $e;
+        }
+    }
+    
+    
+    
+    
+    
+    
 
 }
