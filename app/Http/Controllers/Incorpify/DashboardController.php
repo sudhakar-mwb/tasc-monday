@@ -21,7 +21,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use App\Models\BoardColumnMappings;
 use App\Models\Tasc360Setting;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\OnboardifyProfiles;
 
 class DashboardController extends Controller
 {
@@ -1607,4 +1607,20 @@ class DashboardController extends Controller
                 
     }
 
+    public function checkUserProfileStatus ($emailId){
+        try {
+            if ($emailId) {
+                $OnboardifyProfilesData = OnboardifyProfiles::with('services')->whereRaw('FIND_IN_SET(?, users)', [$emailId])->get()->first();
+                if ($OnboardifyProfilesData['make_default']) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "This user is assigned to default profile.")));
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "This user is not assigned to default profile.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
 }

@@ -224,6 +224,7 @@ Route::group(['prefix' => "tasc360", "middleware" => ["checkUserType:admin"]], f
     Route::post('/uploadTask360Images', [IncorpifyDashboard::class, 'uploadTask360Images']);
     Route::post('/deleteUploadedImage', [IncorpifyDashboard::class, 'deleteUploadedImage']);
     Route::get('/getCommonSiteSettings',[IncorpifyDashboard::class, 'getCommonSiteSettings']);
+    Route::get('/checkUserProfileStatus/{emailId}',[IncorpifyDashboard::class, 'checkUserProfileStatus']);
 });
   
 Route::group(['prefix' => "newonboardify/admin","middleware" => ["auth:api", "isAdmin"]], function () {
@@ -275,6 +276,7 @@ Route::group(['prefix' => "newonboardify/customer","middleware" =>  ["auth:api",
     Route::get('/getFilterColumnByBoardId/{boardId}', [OnboardifyCustomerDashboardController::class, 'getFilterColumnByBoardId']);
     // temp route need to remove
     Route::get('/getBoardIdByUser', [OnboardifyCustomerDashboardController::class, 'getBoardIdByUser']);
+    Route::get('/exportDataByBoardId/{boardId}', [OnboardifyCustomerDashboardController::class, 'exportDataByBoardId']);
 });
 
 require __DIR__ . '/auth.php';

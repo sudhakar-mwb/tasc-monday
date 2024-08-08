@@ -113,24 +113,24 @@ class ProfileController extends Controller
                             return response(json_encode(array('response' => [], 'status' => false, 'message' => "Profile Not Updated.")));
                         }
                     }
-                    $profiles = OnboardifyProfiles::where('id', '!=', $input['profile_id'])->get()->toArray();
-                    foreach ($profiles as $key => $value) {
-                        if ($value['make_default'] == 1) {
-                            return response(json_encode(array('response' => [], 'status' => false, 'message' =>$value['title']. ' already set as default profile. First remove from default association.' )));
-                        }
-                    }
-                    
-                    // $allOnboardifyProfilesData =   OnboardifyProfiles::all()->toArray();
-                    // foreach ($allOnboardifyProfilesData as $key => $value) {
-                    //     OnboardifyProfiles::where('id', $value['id'])->update(["make_default" => 0,
-                    //     "updated_at"   => date("Y-m-d H:i:s")]);
+                    // $profiles = OnboardifyProfiles::where('id', '!=', $input['profile_id'])->get()->toArray();
+                    // foreach ($profiles as $key => $value) {
+                    //     if ($value['make_default'] == 1) {
+                    //         return response(json_encode(array('response' => [], 'status' => false, 'message' =>$value['title']. ' already set as default profile. First remove from default association.' )));
+                    //     }
                     // }
+                    
+                    $allOnboardifyProfilesData =   OnboardifyProfiles::all()->toArray();
+                    foreach ($allOnboardifyProfilesData as $key => $value) {
+                        OnboardifyProfiles::where('id', $value['id'])->update(["make_default" => 0,
+                        "updated_at"   => date("Y-m-d H:i:s")]);
+                    }
                     $update =  OnboardifyProfiles::where('id', $input['profile_id'])->update($update_array);
-                if ($update) {
-                    return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Profile Updated Successfully.")));
-                } else {
-                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Profile Not Updated.")));
-                }
+                    if ($update) {
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' =>  "Profile Updated Successfully.")));
+                    } else {
+                        return response(json_encode(array('response' => [], 'status' => false, 'message' => "Profile Not Updated.")));
+                    }
                 }else{
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "This profile details not found in database.")));
                 }
