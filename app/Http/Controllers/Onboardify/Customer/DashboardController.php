@@ -238,7 +238,7 @@ class DashboardController extends Controller
         }
     }
 
-    public function requestTrackingActivity ($itemID){
+    public function requestTrackingActivity (Request $request){
         try {
             $userId = $this->verifyToken()->getData()->id;
             
@@ -251,6 +251,17 @@ class DashboardController extends Controller
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
             }
 
+                // Retrieve query parameters
+                $boardId = $request->query('board_id');
+                $itemID  = $request->query('item_id');
+
+                // Validate the query parameters
+                $validatedData = $request->validate([
+                    'board_id' => 'required|integer',
+                    'item_id'  => 'required|integer',
+                ]);
+
+                /*
                 $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id])->first();
                 if (!empty($BoardColumnMappingsData['columns'])) {
                     $onboardingColumnsKeys = json_decode($BoardColumnMappingsData['columns'], true);
@@ -271,10 +282,28 @@ class DashboardController extends Controller
                 if (empty($onboardingColumnsKeyForFilter)) {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "The required key for Onboardify board visibility is missing.")));
                 }
+                */
+
+                $OnboardifyProfilesData = OnboardifyProfiles::with(['services' => function ($query) use ($boardId) {
+                    $query->where('board_id', $boardId);
+                }])->whereRaw('FIND_IN_SET(?, users)', [$userEmail])->first();
+
+                if (empty($OnboardifyProfilesData)) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
+                }
+
+                if (empty($OnboardifyProfilesData['services'][0]->service_setting_data)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service settings data is not available for this user.")));
+                }
+                $serviceSettingData = json_decode($OnboardifyProfilesData['services'][0]->service_setting_data, true);
+
+                if (empty($serviceSettingData['onboarding_columns'])) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboarding columns mapping data is not available for this user.")));
+                }
 
                 $idArray = [];
 
-                foreach ($onboardingColumnsKeyForFilter as $item) {
+                foreach ($serviceSettingData['onboarding_columns'] as $item) {
                     $idArray[] = '"' . $item['id'] . '"';
                 }
 
@@ -282,7 +311,7 @@ class DashboardController extends Controller
                 // activity_logs (from: "' . Carbon::now()->subWeek()->startOfDay()->toIso8601String() . '", to: "' . Carbon::now()->toIso8601String() . '", column_ids:'.$idString.', item_ids:'.$itemID.')
                 if (!empty($idString)) {
                     $query = '{
-                        boards(ids: ' . $getUser->board_id . ') {
+                        boards(ids: ' . $boardId . ') {
                         columns {
                             title
                             id             
