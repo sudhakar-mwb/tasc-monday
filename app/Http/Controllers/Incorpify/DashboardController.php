@@ -1232,6 +1232,21 @@ class DashboardController extends Controller
             $siteSettingsGovernify = GovernifySiteSetting::first()->toArray();
             $siteSettingsOnboardify = MondayUsers::where('email', '=', $email)->first()->toArray();
             $siteSettingsOnboardifyData = [];
+            
+            //Left to work 
+            //Left to work 
+            //Left to work 
+            //Left to work 
+            //Left to work 
+            //Left to work 
+            //Left to work 
+            //Left to work 
+            //Left to work 
+            //Left to work 
+            //Left to work 
+
+            // $dataToRender = OnboardifyProfiles::with('services')->whereRaw('FIND_IN_SET(?, users)', [$email])->get()->first();
+            
             if(isset($siteSettingsOnboardify['board_id'])){
 
                 $siteSettingsOnboardifyData = BoardColumnMappings::where('board_id', (int)$siteSettingsOnboardify['board_id'])
@@ -1653,7 +1668,7 @@ class DashboardController extends Controller
         if ($validator->fails()) {
             return $this->returnData(['errors' => $validator->errors()], false);
         }
-    
+
         // Fetch the platform data by ids
         $platformIds = $payload['plateformId'];
         $platformData = TascPlateform::whereIn('id', $platformIds)->get();
@@ -1704,8 +1719,6 @@ class DashboardController extends Controller
            "url"=> $finalUrl 
         ];
 
-        $response = $this->sendInvitationEmail($verificationData);
-        
 
         //save the invitation
         $inviteData = [
@@ -1717,23 +1730,63 @@ class DashboardController extends Controller
             'governify_status' => false,
         ];
 
-        $responseData = $this->updateInviteData($inviteData, $plateForms);
+        //check where the invite user has already invited or not
 
-        // Check if the record already exists
-        // $existingRecord = TascInvitation::where($responseData)->first();
+        $getInvitedDataObj = TascInvitation::where("invitee_email", $payload['invited_user_email'])->first();
+        $getInvitedData = json_decode(json_encode($getInvitedDataObj, true), true);
 
-        // if (!$existingRecord) {
-        //     $save = TascInvitation::create($responseData);
-        // }
+        if(!empty($getInvitedData)){
 
-        $save = TascInvitation::create($responseData);
+            $status = $getInvitedData['invitation_status'];
+
+            //for the done case and the pending case db getting updated
+
+            foreach ($plateForms as $key => $value) {
+                $value = $value."_status";
+                $getInvitedDataObj->$value = true;
+
+            }
+
+            $responseDbUpdate = $getInvitedDataObj->save();
 
 
-        return [
-            "success"=> true,
-            "message"=> "Email successfully send",
-            "data"=> []
-        ];
+            if($status == "done") {
+                
+                $response = $this->sendInvitationEmail($verificationData, true);
+                
+                return [
+                    "success"=> true,
+                    "message"=> "Access granted for the provided domain as the invited user is already exist",
+                    "data"=> []
+                ];
+
+            } else { //pending status condition
+
+                //a regular email has been send to the invited users 
+                $response = $this->sendInvitationEmail($verificationData);
+
+                return [
+                    "success"=> true,
+                    "message"=> "Email successfully send",
+                    "data"=> []
+                ];
+
+            }
+            
+        } else {
+
+            $response = $this->sendInvitationEmail($verificationData);
+
+            $responseData = $this->updateInviteData($inviteData, $plateForms);
+
+            $save = TascInvitation::create($responseData);
+
+            return [
+                "success"=> true,
+                "message"=> "Email successfully send",
+                "data"=> []
+            ];
+        }
 
     }
 
@@ -1761,103 +1814,136 @@ class DashboardController extends Controller
     }
 
 
-    public function sendInvitationEmail($invitationData) {
+    public function sendInvitationEmail($invitationData, $userExists = false) {
 
         $sitelogo = "https://login.tasc360.com/assets/1.png"; // Replace with the actual path to your logo
         $email = $invitationData['invited_user_email'];
     
-        $mail_body = '
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>TASC360 | Invitation</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #f2f2f2;
-                }
-                .container {
-                    max-width: 600px;
-                    margin: 30px auto;
-                    padding: 20px;
-                    background-color: #ffffff;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    text-align: center;
-                }
-                .logo img {
-                    width: 120px;
-                    margin-bottom: 20px;
-                }
-                .header {
-                    background-color: #007BFF;
-                    color: #ffffff;
-                    padding: 20px;
-                    border-radius: 10px 10px 0 0;
-                    font-size: 24px;
-                    font-weight: bold;
-                }
-                .message {
-                    margin: 20px 0;
-                    font-size: 16px;
-                    color: #333333;
-                    line-height: 1.5;
-                }
-                .button {
-                    display: inline-block;
-                    padding: 12px 24px;
-                    background-color: #007BFF;
-                    color: #ffffff;
-                    text-decoration: none;
-                    border-radius: 5px;
-                    font-size: 16px;
-                    font-weight: bold;
-                    margin-top: 20px;
-                }
-                .button:hover {
-                    background-color: #0056b3;
-                }
-                .footer {
-                    margin-top: 20px;
-                    font-size: 14px;
-                    color: #777777;
-                }
-                .footer a {
-                    color: #007BFF;
-                    text-decoration: none;
-                }
-                .footer a:hover {
-                    text-decoration: underline;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    You\'re Invited to Join TASC360
+        if ($userExists) {
+            $subject = "Access Granted to TASC360";
+            $mail_body = '
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>TASC360 | Access Granted</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f2f2f2;
+                    }
+                    .container {
+                        max-width: 600px;
+                        margin: 30px auto;
+                        padding: 20px;
+                        background-color: #ffffff;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        text-align: center;
+                    }
+                    .logo img {
+                        width: 120px;
+                        margin-bottom: 20px;
+                    }
+                    .header {
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        padding: 20px;
+                        border-radius: 10px 10px 0 0;
+                        font-size: 24px;
+                        font-weight: bold;
+                    }
+                    .message {
+                        margin: 20px 0;
+                        font-size: 16px;
+                        color: #333333;
+                        line-height: 1.5;
+                    }
+                    .button {
+                        display: inline-block;
+                        padding: 12px 24px;
+                        background-color: #007BFF;
+                        color: #ffffff;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        margin-top: 20px;
+                    }
+                    .button:hover {
+                        background-color: #0056b3;
+                    }
+                    .footer {
+                        margin-top: 20px;
+                        font-size: 14px;
+                        color: #777777;
+                    }
+                    .footer a {
+                        color: #007BFF;
+                        text-decoration: none;
+                    }
+                    .footer a:hover {
+                        text-decoration: underline;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        Access Granted to TASC360
+                    </div>
+                    <div class="logo">
+                        <img src="' . $sitelogo . '" alt="TASC Logo">
+                    </div>
+                    <div class="message">
+                        <p>Hello ' . $invitationData['invited_user_email'] . ',</p>
+                        <p>Your account has been granted access to TASC360. You can now log in to your account using your existing credentials.</p>
+                        <p><a href="' . $invitationData['url'] . '" class="button">Go to TASC360</a></p>
+                        <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
+                        <a href="' . $invitationData['url'] . '">' . $invitationData['url'] . '</a>
+                    </div>
+                    <div class="footer">
+                        <p>If you have any questions, please contact us at <a href="mailto:KSAAutomation@tascoutsourcing.com">KSAAutomation@tascoutsourcing.com</a></p>
+                    </div>
                 </div>
-                <div class="logo">
-                    <img src="' . $sitelogo . '" alt="TASC Logo">
+            </body>
+            </html>';
+        } else {
+            $subject = "You're Invited to Join TASC360";
+            $mail_body = '
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>TASC360 | Invitation</title>
+                <style>
+                    /* (Keep the styles same as before) */
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        You\'re Invited to Join TASC360
+                    </div>
+                    <div class="logo">
+                        <img src="' . $sitelogo . '" alt="TASC Logo">
+                    </div>
+                    <div class="message">
+                        <p>Hello ' . $invitationData['invited_user_email'] . ',</p>
+                        <p>You have been invited to join our platform. To get started, please click the button below to accept the invitation and complete your registration:</p>
+                        <p><a href="' . $invitationData['url'] . '" class="button">Accept Invitation</a></p>
+                        <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
+                        <a href ="'.$invitationData['url'].'">' . $invitationData['url'] . '</a>
+                    </div>
+                    <div class="footer">
+                        <p>If you have any questions, please contact us at <a href="mailto:KSAAutomation@tascoutsourcing.com">KSAAutomation@tascoutsourcing.com</a></p>
+                    </div>
                 </div>
-                <div class="message">
-                    <p>Hello ' . $invitationData['invited_user_email'] . ',</p>
-                    <p>You have been invited to join our platform. To get started, please click the button below to accept the invitation and complete your registration:</p>
-                    <p><a href="' . $invitationData['url'] . '" class="button">Accept Invitation</a></p>
-                    <p>If you cannot click the button, please copy and paste the following URL into your browser:</p>
-                    <a href ="'.$invitationData['url'].'">' . $invitationData['url'] . '</p>
-                </div>
-                <div class="footer">
-                    <p>If you have any questions, please contact us at <a href="mailto:KSAAutomation@tascoutsourcing.com">KSAAutomation@tascoutsourcing.com</a></p>
-                </div>
-            </div>
-        </body>
-        </html>';
+            </body>
+            </html>';
+        }
     
         try {
-            $subject = "You're Invited to Join TASC360";
-    
             $data = array(
                 "personalizations" => array(
                     array(
@@ -1911,5 +1997,6 @@ class DashboardController extends Controller
             throw $e;
         }
     }
+    
     
 }

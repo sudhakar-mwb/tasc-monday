@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Monday;
 use App\Http\Controllers\Controller;
 use App\Models\GovernifySiteSetting;
 use App\Models\IncorpifySiteSettings;
+use App\Models\OnboardifyProfiles;
+use App\Models\TascInvitation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use App\Traits\MondayApis;
@@ -838,7 +840,9 @@ class AuthController extends Controller
             $this->setSetting();
             if ($request->isMethod('post')) {
                 $input = $request->json()->all();
-                $this->validate($request, [
+
+                //preparing validation data 
+                $validationPayload = [
                     'name'         => 'required',
                     'company_name' => 'required',
                     // 'phone'        => 'required|regex:/^[+]{1}(?:[0-9\-\(\)\/\.]\s?){6,15}[0-9]{1}$/',
@@ -846,7 +850,31 @@ class AuthController extends Controller
                     'email'        => 'required|email|unique:monday_users',
                     'password'     => 'required|min:6|max:100',
                     'domain'       => 'required',
-                ], $this->getErrorMessages());
+                ];
+
+                $inviteFlow = false;
+
+                if(isset($input["profile_id"]) && isset($input["plateform"])){
+
+                    $validationPayload["plateform"] = "required|array|min:1";
+                    $validationPayload["plateform.*"] = "required|string|in:incorpify,governify,onboardify";
+                    $validationPayload["profile_id"] = 'required|integer';
+                    $inviteFlow = true;
+                }
+
+                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
+                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
+                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
+                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
+
+                
+
+                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
+                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
+                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
+                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
+
+                $this->validate($request, $validationPayload, $this->getErrorMessages());
 
                 $dataToSave = array(
                     'name'         => trim($input['name']),
@@ -871,15 +899,55 @@ class AuthController extends Controller
                     $dataToSave['company_owner'] = true;
                 }
 
+                if($inviteFlow){
+                    $dataToSave['status'] = 1;
+                }
+
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
                 
                 if ($insertUserInDB['status'] == "success") {
                     $msg    = "User Created Successfully.";
                     $status = "success";
-                    // send verification email
-                    $dataToSave['domain'] = trim($input['domain']);
-                    $this->sendVerificationEmailToUser($dataToSave);
+
+
+                      //invite flow 
+                      if ($inviteFlow) {
+                        $getInviteData = TascInvitation::where("invitee_email", $input['email'])->first();
+                    
+                        if ($getInviteData) {
+                            $getInviteData->invitation_status = 'done';
+                            $updateDataResponse = $getInviteData->save();
+    
+    
+                            //update the profile table 
+                            $data = json_decode(json_encode(OnboardifyProfiles::find(["id"=> $input['profile_id']]), true), true);
+                            
+    
+                            if(!empty($data)) {
+    
+                                $users = $data[0]['users'];
+                                $users = $users.",".$input['email'];
+    
+                                $getProfileObj = OnboardifyProfiles::where("id", $input['profile_id'])->first();
+                                $getProfileObj->users = $users;
+                                $updatedProfileData = $getProfileObj->save();
+                                
+                            }
+                    
+                        } 
+                    } else {
+
+                        // send verification email
+                        $dataToSave['domain'] = trim($input['domain']);
+                        $this->sendVerificationEmailToUser($dataToSave);
+                    }
+
                     $this->createMondayContacts($dataToSave);
+
+                    if($inviteFlow){
+                        return response(json_encode(array('response' => [], 'status' => true, 'message' => "Invitation accepted and user created successfully. Welcome aboard!")));
+                    }
+
                     return response(json_encode(array('response' => [], 'status' => true, 'message' => "Just verify your email address to confirm that you want to use this email.")));
                     //
                     return $this->thankssignup();
