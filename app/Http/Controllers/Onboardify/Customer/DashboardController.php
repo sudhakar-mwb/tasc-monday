@@ -762,11 +762,33 @@ class DashboardController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $boardId])->first();
-                if (!empty($BoardColumnMappingsData)) {
-                   $mappingData = json_decode($BoardColumnMappingsData['columns'], true);
-                   if (!empty($mappingData['required_columns']) && !empty($mappingData['required_columns']['overall_status'])) {
-                        $statusKey = $mappingData['required_columns']['overall_status'];
+                $getUser = MondayUsers::getUser(['id' => $userId]);
+                if (!empty($getUser) && !empty($getUser->email)) {
+                    $userEmail = $getUser->email;
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+                }
+                $OnboardifyProfilesData = OnboardifyProfiles::with(['services' => function ($query) use ($boardId) {
+                    $query->where('board_id', $boardId);
+                }])->whereRaw('FIND_IN_SET(?, users)', [$userEmail])->first();
+
+                if (empty($OnboardifyProfilesData)) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
+                }
+
+                if (empty($OnboardifyProfilesData['services'][0]->service_setting_data)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service settings data is not available for this user.")));
+                }
+                $serviceSettingData = json_decode($OnboardifyProfilesData['services'][0]->service_setting_data, true);
+
+                if (empty($serviceSettingData['required_columns'])) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Required onboarding columns mapping data is not available for this user.")));
+                }
+
+
+                if (!empty($serviceSettingData['required_columns'])) {
+                   if (!empty($serviceSettingData['required_columns']) && !empty($serviceSettingData['required_columns']['overall_status'])) {
+                        $statusKey = $serviceSettingData['required_columns']['overall_status'];
 
                         $query = 'query {
                             boards( ids: '.$boardId.') {
