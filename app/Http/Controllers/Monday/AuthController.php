@@ -862,7 +862,7 @@ class AuthController extends Controller
                     $inviteFlow = true;
                 }
 
-                // $this->validate($request, $validationPayload, $this->getErrorMessages());
+                $this->validate($request, $validationPayload, $this->getErrorMessages());
 
                 $dataToSave = array(
                     'name'         => trim($input['name']),
