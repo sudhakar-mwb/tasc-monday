@@ -238,7 +238,7 @@ class DashboardController extends Controller
         }
     }
 
-    public function requestTrackingActivity ($itemID){
+    public function requestTrackingActivity (Request $request){
         try {
             $userId = $this->verifyToken()->getData()->id;
             
@@ -251,6 +251,17 @@ class DashboardController extends Controller
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
             }
 
+                // Retrieve query parameters
+                $boardId = $request->query('board_id');
+                $itemID  = $request->query('item_id');
+
+                // Validate the query parameters
+                $validatedData = $request->validate([
+                    'board_id' => 'required|integer',
+                    'item_id'  => 'required|integer',
+                ]);
+
+                /*
                 $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $getUser->board_id])->first();
                 if (!empty($BoardColumnMappingsData['columns'])) {
                     $onboardingColumnsKeys = json_decode($BoardColumnMappingsData['columns'], true);
@@ -271,10 +282,28 @@ class DashboardController extends Controller
                 if (empty($onboardingColumnsKeyForFilter)) {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "The required key for Onboardify board visibility is missing.")));
                 }
+                */
+
+                $OnboardifyProfilesData = OnboardifyProfiles::with(['services' => function ($query) use ($boardId) {
+                    $query->where('board_id', $boardId);
+                }])->whereRaw('FIND_IN_SET(?, users)', [$userEmail])->first();
+
+                if (empty($OnboardifyProfilesData)) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
+                }
+
+                if (empty($OnboardifyProfilesData['services'][0]->service_setting_data)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service settings data is not available for this user.")));
+                }
+                $serviceSettingData = json_decode($OnboardifyProfilesData['services'][0]->service_setting_data, true);
+
+                if (empty($serviceSettingData['onboarding_columns'])) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Onboarding columns mapping data is not available for this user.")));
+                }
 
                 $idArray = [];
 
-                foreach ($onboardingColumnsKeyForFilter as $item) {
+                foreach ($serviceSettingData['onboarding_columns'] as $item) {
                     $idArray[] = '"' . $item['id'] . '"';
                 }
 
@@ -282,7 +311,7 @@ class DashboardController extends Controller
                 // activity_logs (from: "' . Carbon::now()->subWeek()->startOfDay()->toIso8601String() . '", to: "' . Carbon::now()->toIso8601String() . '", column_ids:'.$idString.', item_ids:'.$itemID.')
                 if (!empty($idString)) {
                     $query = '{
-                        boards(ids: ' . $getUser->board_id . ') {
+                        boards(ids: ' . $boardId . ') {
                         columns {
                             title
                             id             
@@ -733,11 +762,33 @@ class DashboardController extends Controller
         try {
             $userId = $this->verifyToken()->getData()->id;
             if ($userId) {
-                $BoardColumnMappingsData = BoardColumnMappings::where(['board_id' => $boardId])->first();
-                if (!empty($BoardColumnMappingsData)) {
-                   $mappingData = json_decode($BoardColumnMappingsData['columns'], true);
-                   if (!empty($mappingData['required_columns']) && !empty($mappingData['required_columns']['overall_status'])) {
-                        $statusKey = $mappingData['required_columns']['overall_status'];
+                $getUser = MondayUsers::getUser(['id' => $userId]);
+                if (!empty($getUser) && !empty($getUser->email)) {
+                    $userEmail = $getUser->email;
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Login User Details Not Found")));
+                }
+                $OnboardifyProfilesData = OnboardifyProfiles::with(['services' => function ($query) use ($boardId) {
+                    $query->where('board_id', $boardId);
+                }])->whereRaw('FIND_IN_SET(?, users)', [$userEmail])->first();
+
+                if (empty($OnboardifyProfilesData)) {
+                    return response(json_encode(array('response' => [], 'status' => true, 'message' => "Onboardify Profile And Services Data Found.")));
+                }
+
+                if (empty($OnboardifyProfilesData['services'][0]->service_setting_data)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service settings data is not available for this user.")));
+                }
+                $serviceSettingData = json_decode($OnboardifyProfilesData['services'][0]->service_setting_data, true);
+
+                if (empty($serviceSettingData['required_columns'])) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Required onboarding columns mapping data is not available for this user.")));
+                }
+
+
+                if (!empty($serviceSettingData['required_columns'])) {
+                   if (!empty($serviceSettingData['required_columns']) && !empty($serviceSettingData['required_columns']['overall_status'])) {
+                        $statusKey = $serviceSettingData['required_columns']['overall_status'];
 
                         $query = 'query {
                             boards( ids: '.$boardId.') {
@@ -782,6 +833,256 @@ class DashboardController extends Controller
                     return response(json_encode(array('response' => $mondayUsers['board_id'] , 'status' => true, 'message' => "User Board Id Found.")));
                 } else {
                     return response(json_encode(array('response' => [], 'status' => false, 'message' => "Users data or Board Id not found.")));
+                }
+            } else {
+                return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
+            }
+        } catch (\Exception $e) {
+            return response(json_encode(array('response' => [], 'status' => false, 'message' => $e->getMessage())));
+        }
+    }
+
+    public function exportDataByBoardIds ($boardId) {
+        // $boardId=1393670128;
+        // $userId=34;
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if (!$userId) {
+                return response()->json(['response' => [], 'status' => false, 'message' => "Invalid User."]);
+            }
+
+            $mondayUsers = MondayUsers::find($userId);
+            if (empty($boardId)) {
+                return response()->json(['response' => [], 'status' => false, 'message' => "Board id not found."]);
+            }
+
+            $OnboardifyProfilesData = OnboardifyProfiles::with(['services' => function ($query) use ($boardId) {
+                $query->where('board_id', $boardId);
+            }])->whereRaw('FIND_IN_SET(?, users)', [$mondayUsers->email])->first();
+
+            if (empty($OnboardifyProfilesData) || !$OnboardifyProfilesData->services->isNotEmpty()) {
+                return response()->json(['response' => [], 'status' => false, 'message' => "Service is not available for this user."]);
+            }
+
+            if (empty($OnboardifyProfilesData->services[0]->service_setting_data)) {
+                return response()->json(['response' => [], 'status' => false, 'message' => "Service settings data is not available for this user."]);
+            }
+
+            $serviceSettingData = json_decode($OnboardifyProfilesData->services[0]->service_setting_data, true);
+
+            $combined_keys = array_merge(
+                $serviceSettingData['onboarding_columns'],
+                $serviceSettingData['candidate_coulmns'],
+                $serviceSettingData['sub_headings_column']
+            );
+
+            $uniqueData = array_map("unserialize", array_unique(array_map("serialize", $combined_keys)));
+
+            $query = 'query {
+                boards(ids: '.$boardId.') {
+                    id
+                    name
+                    columns {
+                        title
+                        id
+                    }
+                    items_page(limit: 500) {
+                        cursor,
+                        items {
+                            created_at
+                            id
+                            name
+                            column_values {
+                                id
+                                value
+                                type
+                                text
+                                ... on StatusValue  {
+                                    label
+                                    update_id
+                                }
+                            }
+                        }
+                    }
+                }
+            }';
+
+            $exportResponse = $this->_getMondayData($query)['response'];
+
+            if (empty($exportResponse['data']['boards'][0]['items_page']['items']) || empty($exportResponse['data']['boards'][0]['columns'])) {
+                return response()->json(['response' => [], 'status' => false, 'message' => "Something went wrong board data not fetched."]);
+            }
+
+            // Create a response stream for CSV output
+            $csvResponse = response()->stream(function () use ($exportResponse, $uniqueData) {
+                $output = fopen('php://output', 'w');
+
+                $new_array = [];
+                foreach ($uniqueData as $item) {
+                    $new_array[$item['id']] = $item['name'];
+                }
+
+                $csvHeader = [];
+                foreach ($exportResponse['data']['boards'][0]['items_page']['items'] as $item) {
+                    if (!empty($item['column_values'])) {
+                        if (!empty($item['name'])) {
+                            $csvHeader['Name'] = $item['name'];
+                        }
+                        foreach ($item['column_values'] as $itemValue) {
+                            if (array_key_exists($itemValue['id'], $new_array)) {
+                                $csvHeader[$new_array[$itemValue['id']]] = $itemValue['text'];
+                            }
+                        }
+                    }
+                }
+
+                fputcsv($output, array_keys($csvHeader));
+
+                $rows = [];
+                foreach ($exportResponse['data']['boards'][0]['items_page']['items'] as $item) {
+                    $rowData = [];
+                    if (!empty($item['column_values'])) {
+                        if (!empty($item['name'])) {
+                            $rowData['Name'] = $item['name'];
+                        }
+                        foreach ($item['column_values'] as $itemValue) {
+                            if (array_key_exists($itemValue['id'], $new_array)) {
+                                $rowData[$new_array[$itemValue['id']]] = $itemValue['text'];
+                            }
+                        }
+                        $rows[] = $rowData;
+                    }
+                    fputcsv($output, array_values($rowData));
+                }
+
+                fclose($output);
+            }, 200, [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="onboardify_data.csv"',
+            ]);
+
+            return $csvResponse;
+
+        } catch (\Exception $e) {
+            return response()->json(['response' => [], 'status' => false, 'message' => $e->getMessage()]);
+        }
+    }
+
+
+    public function exportDataByBoardId ($boardId){
+        // $boardId=1393670128;
+        // $userId=34;
+        try {
+            $userId = $this->verifyToken()->getData()->id;
+            if ($userId) {
+                $mondayUsers = MondayUsers::where(['id'=>$userId])->first();
+                if (empty($boardId)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Board id not found.")));
+                }
+
+                $OnboardifyProfilesData = OnboardifyProfiles::with(['services' => function ($query) use ($boardId) {
+                    $query->where('board_id', $boardId);
+                }])->whereRaw('FIND_IN_SET(?, users)', [$mondayUsers['email']])->first();
+
+
+
+                if (empty($OnboardifyProfilesData['services']->isNotEmpty())) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service is not available for this user.")));
+                }
+                if (empty($OnboardifyProfilesData['services'][0]->service_setting_data)) {
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Service settings data is not available for this user.")));
+                }
+                $serviceSettingData = json_decode($OnboardifyProfilesData['services'][0]->service_setting_data, true);
+
+                $combined_keys = array_merge(
+                    $serviceSettingData['onboarding_columns'],
+                    $serviceSettingData['candidate_coulmns'],
+                    $serviceSettingData['sub_headings_column']
+                );
+                // Remove duplicate arrays based on their values
+                $uniqueData = array_map("unserialize", array_unique(array_map("serialize", $combined_keys)));
+
+                
+                $query = 'query {
+                    boards( ids: '.$boardId.') {
+                    id
+                    name
+                    columns {
+                        title
+                        id
+                        }
+                        items_page (limit: 500 ){
+                            cursor,
+                            items {
+                                    created_at
+                                    id
+                                    name
+                                    column_values {
+                                        id
+                                        value
+                                        type
+                                        text
+                                        ... on StatusValue  {
+                                        label
+                                        update_id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }';
+    
+                $exportResponse = $this->_getMondayData($query)['response'];
+
+                if (!empty($exportResponse['data']['boards'][0]['items_page']['items']) && !empty($exportResponse['data']['boards'][0]['columns'])) {
+                    // Set headers for CSV download
+                    header('Content-Type: text/csv');
+                    header('Content-Disposition: attachment; filename="onboardify_data.csv"');
+                    // Open file pointer
+                    $output = fopen('php://output', 'w');
+
+                    $new_array  = array();
+                    foreach ($uniqueData as $item) {
+                        $new_array[$item['id']] = $item['name'];
+                    }
+
+                    $csvHeader = [];
+                    foreach ($exportResponse['data']['boards'][0]['items_page']['items'] as $item) {
+                        if (!empty($item['column_values'])) {
+                            if (!empty($item['name'])) {
+                                $csvHeader['Name'] = $item['name'];
+                            }
+                            foreach ($item['column_values'] as $itemValue) {
+                                if (array_key_exists($itemValue['id'], $new_array)) {
+                                    $csvHeader[$new_array[$itemValue['id']]] =  $itemValue['text'];
+                                }
+                            }
+                        }
+                    }
+
+                    fputcsv($output, array_keys($csvHeader));
+
+                    $rows    = [];
+                    $rowData = [];
+                    foreach ($exportResponse['data']['boards'][0]['items_page']['items'] as $item) {
+                        if (!empty($item['column_values'])) {
+                                if (!empty($item['name'])) {
+                                    $rowData['Name'] = $item['name'];
+                                }
+                                foreach ($item['column_values'] as $itemValue) {
+                                    if (array_key_exists($itemValue['id'], $new_array)) {
+                                        $rowData[$new_array[$itemValue['id']]] =  $itemValue['text'];
+                                    }
+                                }
+                            $rows[] = $rowData;
+                        }
+                        fputcsv($output, array_values($rowData));
+                        // fputcsv($output, $rowData);
+                    }
+                    // Close file pointer
+                    fclose($output);
+                }else{
+                    return response(json_encode(array('response' => [], 'status' => false, 'message' => "Something went wrong board data not fetch.")));
                 }
             } else {
                 return response(json_encode(array('response' => [], 'status' => false, 'message' => "Invalid User.")));
