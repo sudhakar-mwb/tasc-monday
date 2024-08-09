@@ -862,19 +862,7 @@ class AuthController extends Controller
                     $inviteFlow = true;
                 }
 
-                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
-                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
-                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
-                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
-
-                
-
-                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
-                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
-                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
-                //CURENTLLYYYYYYYYYYYYYYYYY WORRKINGGGGGG ON ITTTTT
-
-                $this->validate($request, $validationPayload, $this->getErrorMessages());
+                // $this->validate($request, $validationPayload, $this->getErrorMessages());
 
                 $dataToSave = array(
                     'name'         => trim($input['name']),
@@ -899,8 +887,41 @@ class AuthController extends Controller
                     $dataToSave['company_owner'] = true;
                 }
 
+                $getInviteData = [];
+
                 if($inviteFlow){
                     $dataToSave['status'] = 1;
+                    $getInviteData = TascInvitation::where("invitee_email", $input['email'])->first();
+
+                    if(empty($getInviteData)){
+
+                        return [
+                            "success"=> false,
+                            "message"=> "Invitation Users is not found",
+                            "code" => "invalid_email",
+                            "status_code" => "user not found"
+                        ];
+                    }
+
+                    $getInviteData = $getInviteData->toArray(); 
+                    $OldtimeStamp = strtotime($getInviteData['updated_at']);
+                    $currentTimeStamp = time();
+
+                    $timeDifference = $currentTimeStamp - $OldtimeStamp;
+
+                    // 72 hours in seconds
+                    $seventyTwoHoursInSeconds = 72 * 60 * 60;
+
+                    if ($timeDifference > $seventyTwoHoursInSeconds) {
+                        
+                        return [
+                            "success" => false,
+                            "message" => "Link has been expired",
+                            "code" => "link_expired",
+                            "status_code" => 410
+                        ];
+                    }
+
                 }
 
                 $insertUserInDB = MondayUsers::createUser($dataToSave);
@@ -912,7 +933,6 @@ class AuthController extends Controller
 
                       //invite flow 
                       if ($inviteFlow) {
-                        $getInviteData = TascInvitation::where("invitee_email", $input['email'])->first();
                     
                         if ($getInviteData) {
                             $getInviteData->invitation_status = 'done';
