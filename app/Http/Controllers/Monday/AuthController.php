@@ -903,8 +903,8 @@ class AuthController extends Controller
                         ];
                     }
 
-                    $getInviteData = $getInviteData->toArray(); 
-                    $OldtimeStamp = strtotime($getInviteData['updated_at']);
+                    $getInviteDataNew = $getInviteData->toArray(); 
+                    $OldtimeStamp = strtotime($getInviteDataNew['updated_at']);
                     $currentTimeStamp = time();
 
                     $timeDifference = $currentTimeStamp - $OldtimeStamp;
