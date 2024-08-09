@@ -1677,8 +1677,9 @@ class DashboardController extends Controller
             return $this->returnData("Invalid platform ID(s) found", false);
         }
 
-        $userData = json_decode(json_encode($this->verifyTOken()->getData(), true), true);
-       
+        // $userData = json_decode(json_encode($this->verifyTOken()->getData(), true), true);
+        $userData = MondayUsers::where(['email'=>$payload['user_email_id']])->first();
+
         // Apply json_encode and json_decode on the platform data
         $platformData = json_decode(json_encode($platformData, true), true);
         
