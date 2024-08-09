@@ -1699,7 +1699,7 @@ class DashboardController extends Controller
             } 
         }
         if(empty($plateFormsSignup)){
-            $baseUrl = "https://login.tasc360.com/invite";
+            $baseUrl = "https://login.tasc360.com/signup";
         } else {
             $baseUrl = $plateFormsSignup;
         }
